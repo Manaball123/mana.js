@@ -2,7 +2,9 @@
 //antibruteforce(bullet_impact event)
 
 
-
+//TODO: ui updates
+        //save data from ui to aa array
+        //verify auth intergity with password
 
 
 
@@ -400,30 +402,30 @@ UI.AddTextbox([ "Config","SUBTAB_MGR","Password","SHEET_MGR","Password" ], "Conf
 UI.AddCheckbox(main_path,"UPDATE CONFIG(Tick this only if you're configuring)");
 
 //aa settings(presets and stuff)
-UI.AddDropdown(aa_path,"Presets")
+UI.AddDropdown(aa_path,"Presets",["1","2"],0)
 //real
-UI.AddDropdown(aa_path,"Real Mode",["Static","Jitter","Switch","Sway","Random"])
-UI.AddDropdown(aa_path,"Switch Phase",["1","2"])
-UI.AddSliderInt(aa_path,"Real Offset",min,max)
-UI.AddSliderInt(aa_path,"Real Delta",min,max)
+UI.AddDropdown(aa_path,"Real Mode",["Static","Jitter","Switch","Sway","Random"],0)
+UI.AddDropdown(aa_path,"Switch Phase",["1","2"],0)
+UI.AddSliderInt(aa_path,"Real Offset",-180,180)
+UI.AddSliderInt(aa_path,"Real Delta",-180,180)
 UI.AddSliderFloat(aa_path,"Real Delay",0.01,3.0)
 UI.AddCheckbox(aa_path,"Varying delay")
 UI.AddSliderFloat(aa_path,"Real Delay MaxDelta",0.01,1.0)
 
 //fake
-UI.AddDropdown(aa_path,"Fake Mode",["Static","Jitter","Switch","Sway","Random"])
-UI.AddDropdown(aa_path,"Switch Phase",["1","2"])
-UI.AddSliderInt(aa_path,"Fake Offset",min,max)
-UI.AddSliderInt(aa_path,"Fake Delta",min,max)
+UI.AddDropdown(aa_path,"Fake Mode",["Static","Jitter","Switch","Sway","Random"],0)
+UI.AddDropdown(aa_path,"Switch Phase",["1","2"],0)
+UI.AddSliderInt(aa_path,"Fake Offset",-60,60)
+UI.AddSliderInt(aa_path,"Fake Delta",-60,60)
 UI.AddSliderFloat(aa_path,"Fake Delay",0.01,3.0)
 UI.AddCheckbox(aa_path,"Varying Fake Delay")
 UI.AddSliderFloat(aa_path,"Fake Delay MaxDelta",0.01,1.0)
 
 //lby
-UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"])
-UI.AddDropdown(aa_path,"Switch Phase",["1","2"])
-UI.AddSliderInt(aa_path,"LBY Offset",min,max)
-UI.AddSliderInt(aa_path,"LBY Delta",min,max)
+UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"],0)
+UI.AddDropdown(aa_path,"Switch Phase",["1","2"],0)
+UI.AddSliderInt(aa_path,"LBY Offset",-30,30)
+UI.AddSliderInt(aa_path,"LBY Delta",-30,30)
 UI.AddSliderFloat(aa_path,"LBY Delay",0.01,3.0)
 UI.AddCheckbox(aa_path,"Varying LBY Delay")
 UI.AddSliderFloat(aa_path,"LBY Delay MaxDelta",0.01,1.0)
@@ -442,6 +444,8 @@ var realModeVal=UI.GetValue(aa_path,"Real Mode")
 var fakeModeVal=UI.GetValue(aa_path,"Real Mode")
 var LBYModeVal=UI.GetValue(aa_path,"LBY Mode")
 
+var uiUpdate=false;
+
 //test file writing
 var configName="Mana1";
 DataFile.Load(configName);
@@ -459,6 +463,8 @@ var jitterPhaseCounter=[0,0,0]
 var switchPhaseCounter=[0,0,0]
 var randomTimeOffset=[0.0,0.0,0.0]
 var randomOffsetHolder=[0,0,0]
+var swayCycleTimer=0.0;
+
 
 //mode: 0=real, 1=fake, 2=lby
 function SetOffset(value,mode)
@@ -552,13 +558,13 @@ function updateAA(preset)
 
             //sway
             case 3:
-                let swayCycleTimer=clampTo01(swayTimer[i]+AA[preset][3][i+9])
+                swayCycleTimer=clampTo01(swayTimer[i]+AA[preset][3][i+9]);
                 if(currentTime<=swayCycleTimer)
                 {
                     //delta=(finish-start)
                     //percentage=(fullCycleTime-currentTime)/timePerCycle
 
-                    SetOffset(AA[preset][3][i]+(AA[preset][3][i+9]*(swayCycleTimer/AA[preset][3][i+9])),i);
+                    SetOffset(round(AA[preset][3][i]+(AA[preset][3][i+9]*(swayCycleTimer/AA[preset][3][i+9]))),i);
                 }
                 else
                 {
@@ -609,10 +615,35 @@ function updateConfig()
         realModeVal=UI.GetValue(aa_path,"Real Mode")
         fakeModeVal=UI.GetValue(aa_path,"Real Mode")
         LBYModeVal=UI.GetValue(aa_path,"LBY Mode")
+        uiUpdate=false;
         //updating aa tab
-        if(presetVal!=presetCache || realModeVal!=realModeCache || fakeModeVal!=fakeModeCache || LBYModeVal!=LBYModeCache)
 
-        
+        //TODO: ui updates
+        //save data from ui to aa array
+        //verify auth intergity with password
+        if(presetVal!=presetCache)
+        {
+            presetCache=presetVal;
+            uiUpdate=true;
+            
+        }
+        if(realModeVal!=realModeCache)
+        {
+            realModeCache=realModeVal;
+            uiUpdate=true;
+        }
+        if(fakeModeVal!=fakeModeCache)
+        {
+            fakeModeCache=fakeModeVal;
+            uiUpdate=true;
+        }
+        if(LBYModeVal!=LBYModeCache)
+        {
+            LBYModeCache=LBYModeVal;
+            uiUpdate=true;
+        }
+        //update aa values
+
 
 
         
