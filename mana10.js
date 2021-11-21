@@ -370,6 +370,10 @@ function zeroToNegOne(variable)
     {
         return(-1)
     }
+    else
+    {
+        return(variable)
+    }
 }
 
 function clampTo01(variable)
@@ -377,6 +381,10 @@ function clampTo01(variable)
     if(variable<0.01)
     {
         return(0.01)
+    }
+    else
+    {
+        return(variable)
     }
 }
 
@@ -393,11 +401,46 @@ UI.AddCheckbox(main_path,"UPDATE CONFIG(Tick this only if you're configuring)");
 
 //aa settings(presets and stuff)
 UI.AddDropdown(aa_path,"Presets")
+//real
+UI.AddDropdown(aa_path,"Real Mode",["Static","Jitter","Switch","Sway","Random"])
+UI.AddDropdown(aa_path,"Switch Phase",["1","2"])
+UI.AddSliderInt(aa_path,"Real Offset",min,max)
+UI.AddSliderInt(aa_path,"Real Delta",min,max)
+UI.AddSliderFloat(aa_path,"Real Delay",0.01,3.0)
+UI.AddCheckbox(aa_path,"Varying delay")
+UI.AddSliderFloat(aa_path,"Real Delay MaxDelta",0.01,1.0)
+
+//fake
+UI.AddDropdown(aa_path,"Fake Mode",["Static","Jitter","Switch","Sway","Random"])
+UI.AddDropdown(aa_path,"Switch Phase",["1","2"])
+UI.AddSliderInt(aa_path,"Fake Offset",min,max)
+UI.AddSliderInt(aa_path,"Fake Delta",min,max)
+UI.AddSliderFloat(aa_path,"Fake Delay",0.01,3.0)
+UI.AddCheckbox(aa_path,"Varying Fake Delay")
+UI.AddSliderFloat(aa_path,"Fake Delay MaxDelta",0.01,1.0)
+
+//lby
+UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"])
+UI.AddDropdown(aa_path,"Switch Phase",["1","2"])
+UI.AddSliderInt(aa_path,"LBY Offset",min,max)
+UI.AddSliderInt(aa_path,"LBY Delta",min,max)
+UI.AddSliderFloat(aa_path,"LBY Delay",0.01,3.0)
+UI.AddCheckbox(aa_path,"Varying LBY Delay")
+UI.AddSliderFloat(aa_path,"LBY Delay MaxDelta",0.01,1.0)
+
 /*
 UI.AddSubTab(["Config", "SUBTAB_MGR"], "Config Subtab");
 UI.AddDropdown(["Config", "SUBTAB_MGR", "Config Subtab", "Config Subtab"], "Dropdown", ["element 1", "element 2"], 0);
 */
+var presetCache=UI.GetValue(aa_path,"Presets")
+var realModeCache=UI.GetValue(aa_path,"Real Mode")
+var fakeModeCache=UI.GetValue(aa_path,"Real Mode")
+var LBYModeCache=UI.GetValue(aa_path,"LBY Mode")
 
+var presetVal=UI.GetValue(aa_path,"Presets")
+var realModeVal=UI.GetValue(aa_path,"Real Mode")
+var fakeModeVal=UI.GetValue(aa_path,"Real Mode")
+var LBYModeVal=UI.GetValue(aa_path,"LBY Mode")
 
 //test file writing
 var configName="Mana1";
@@ -420,7 +463,7 @@ var randomOffsetHolder=[0,0,0]
 //mode: 0=real, 1=fake, 2=lby
 function SetOffset(value,mode)
 {
-    value=clampTo01(value)
+    
     switch(mode)
     {
         case 0:
@@ -456,7 +499,7 @@ function updateAA(preset)
             case 1:
 
                 //if time to change phase
-                if(currentTime>=jitterTimer[i]+AA[preset][1][i+9]+jitterTimeOffset[i])
+                if(currentTime>=clampTo01(jitterTimer[i]+AA[preset][1][i+9]+jitterTimeOffset[i]))
                 {
                     
                     jitterTimer[i]=currentTime;
@@ -488,7 +531,7 @@ function updateAA(preset)
                 
                 
                 //if phase completed
-                if(currentTime>=switchTimer[i]+AA[preset][2][i+4][i])
+                if(currentTime>=clampTo01(switchTimer[i]+AA[preset][2][i+4][i]))
                 {
                     //if phase index maxed out
                     if(switchPhaseCounter[i]>=AA[preset][2][3][i])
@@ -509,7 +552,7 @@ function updateAA(preset)
 
             //sway
             case 3:
-                let swayCycleTimer=swayTimer[i]+AA[preset][3][i+9]
+                let swayCycleTimer=clampTo01(swayTimer[i]+AA[preset][3][i+9])
                 if(currentTime<=swayCycleTimer)
                 {
                     //delta=(finish-start)
@@ -526,7 +569,7 @@ function updateAA(preset)
 
             //random
             case 4:
-                if(currentTime>=jitterTimer[i]+AA[preset][1][i+6]+randomTimeOffset[i])
+                if(currentTime>=clampTo01(jitterTimer[i]+AA[preset][1][i+6]+randomTimeOffset[i]))
                 {
                     randomTimer[i]=currentTime;
                     //generates offsets if randomized set to true
@@ -558,11 +601,18 @@ function updateConfig()
 {
     
     const DoUpdate = UI.GetValue(main_path.concat("UPDATE CONFIG(Tick this only if you're configuring)"))
+    
     if(DoUpdate==1)
     {
         // do magic here
-        
+        presetVal=UI.GetValue(aa_path,"Presets")
+        realModeVal=UI.GetValue(aa_path,"Real Mode")
+        fakeModeVal=UI.GetValue(aa_path,"Real Mode")
+        LBYModeVal=UI.GetValue(aa_path,"LBY Mode")
         //updating aa tab
+        if(presetVal!=presetCache || realModeVal!=realModeCache || fakeModeVal!=fakeModeCache || LBYModeVal!=LBYModeCache)
+
+        
 
 
         
