@@ -5,7 +5,7 @@
 //ABORTED DECIPHERING DUE TO BEING RETARDED AT MATH(sad)
 //CORE FUNCTION AT LINE 68
 
-
+//do output in line 145 and line 269
 
 //adding ui elements
 UI.AddSubTab(["Rage", "SUBTAB_MGR"], "MIXO-YAW");
@@ -21,7 +21,7 @@ function ExtendVector(vector, angle, extension)
 {
     //get angle in radians
     var radianAngle = radian(angle);
-
+    
     return [extension * Math.cos(radianAngle) + vector[0], extension * Math.sin(radianAngle) + vector[1], vector[2]];
 }
 
@@ -54,6 +54,9 @@ function VectorNormalize(vec)
 }
 //damn i need to get better at vectors tbh
 
+//OK I KNOW WHAT THIS IS
+//DOT PRODUCT: PROJECTION OF A VECTOR TO ANOTHER * OTHER VECTOR
+
 function VectorDot(a, b)
 {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -76,10 +79,12 @@ function ClosestPointOnRay(target, rayStart, rayEnd)
     
     //proving my theory that this is some sort of "abseloute direction"
     dir = VectorNormalize(dir);
+
+    //dot product of the enemy bullet beam to enemy--> player
     var rangeAlong = VectorDot(dir, to);
 
 
-    //these check for if ray is 
+    //these check for if angle between 2 rays >90
     if (rangeAlong < 0.0)
     {
         return rayStart;
@@ -92,7 +97,8 @@ function ClosestPointOnRay(target, rayStart, rayEnd)
     //WHAT. IS. THIS. 
     //Seriously, what the fuck is this???
     //goddamn fucking chink, confuses me on the VERY FUCKING LAST PART OF THIS SHIT REEEEEEEEEEEEEEEEEEEEEEEE
-
+    
+    //ok....? I kinda know what this, but shouldnt it be vector subtract or something?
     return VectorAdd(rayStart, VectorMultiply(dir, [rangeAlong, rangeAlong, rangeAlong]));
 }
 
@@ -251,9 +257,15 @@ function OnBulletImpact()
                 fakePos = ExtendVector(bodyVec, fakeAngle, 10.0);
             }
             headDist = headDist.toFixed(1);
+
+            //if bullet shot closer to fake
             if (VectorDistance(closestRayPoint, fakePos) < VectorDistance(closestRayPoint, realPos))
             {
                 lastHitTime = curtime;
+
+                
+
+
                 UI.ToggleHotkey(["Rage", "Anti Aim", "General", "Key assignment", "AA Direction inverter"])
                 //Cheat.PrintChat("\x04 [MIXO-YAW Anti brute] 子弹与头部距离 "+headDist+"\n")
             }
