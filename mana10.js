@@ -428,7 +428,7 @@ UI.AddSliderInt(aa_path,"Number Of Real Switch Phases",1,16)
 UI.AddSliderInt(aa_path,"Real Offset",-180,180)
 UI.AddSliderInt(aa_path,"Real Delta",-180,180)
 UI.AddSliderFloat(aa_path,"Real Delay",0.01,3.0)
-UI.AddCheckbox(aa_path,"Varying Real Delay")
+UI.AddCheckbox(aa_path,"Randomized Real Delay")
 UI.AddSliderFloat(aa_path,"Real Delay MaxDelta",0.01,1.0)
 
 //fake
@@ -438,7 +438,7 @@ UI.AddSliderInt(aa_path,"Number Of Fake Switch Phases",1,16)
 UI.AddSliderInt(aa_path,"Fake Offset",-60,60)
 UI.AddSliderInt(aa_path,"Fake Delta",-60,60)
 UI.AddSliderFloat(aa_path,"Fake Delay",0.01,3.0)
-UI.AddCheckbox(aa_path,"Varying Fake Delay")
+UI.AddCheckbox(aa_path,"Randomized Fake Delay")
 UI.AddSliderFloat(aa_path,"Fake Delay MaxDelta",0.01,1.0)
 
 //lby
@@ -448,7 +448,7 @@ UI.AddSliderInt(aa_path,"Number Of LBY Switch Phases",1,16)
 UI.AddSliderInt(aa_path,"LBY Offset",-30,30)
 UI.AddSliderInt(aa_path,"LBY Delta",-30,30)
 UI.AddSliderFloat(aa_path,"LBY Delay",0.01,3.0)
-UI.AddCheckbox(aa_path,"Varying LBY Delay")
+UI.AddCheckbox(aa_path,"Randomized LBY Delay")
 UI.AddSliderFloat(aa_path,"LBY Delay MaxDelta",0.01,1.0)
 
 //preset interface
@@ -456,7 +456,7 @@ UI.AddTextbox(main_path,"New Preset Name:")
 UI.AddCheckbox(main_path,"Create New Preset")
 
 //preset management interface
-UI.AddDropdown(aa_path,"")
+UI.AddDropdown(aa_control_path,"Behaviors")
 
 
 
@@ -474,6 +474,17 @@ var realModeVal=UI.GetValue(aa_path.concat("Real Mode"))
 var fakeModeVal=UI.GetValue(aa_path.concat("Fake Mode"))
 var LBYModeVal=UI.GetValue(aa_path.concat("LBY Mode"))
 
+var realSwitchCache=0;
+var fakeSwitchCache=0;
+var LBYSwitchCache=0;
+
+var realSwitchVal=0;
+var fakeSwitchVal=0;
+var LBYSwitchVal=0;
+
+
+
+
 var uiUpdate=false;
 
 //test file writing
@@ -485,12 +496,14 @@ var switchTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()]
 var swayTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()]
 var randomTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()]
 
+var currentTime=Globals.Realtime()
 var jitterTimeOffset=[0.0,0.0,0.0]
 var jitterPhaseCounter=[0,0,0]
 var switchPhaseCounter=[0,0,0]
 var randomTimeOffset=[0.0,0.0,0.0]
 var randomOffsetHolder=[0,0,0]
 var swayCycleTimer=0.0;
+var bruteforceActive=false
 
 function modeToString(variable)
 {
@@ -553,7 +566,7 @@ function SetOffset(value,mode)
 function updateAA(preset) 
 {
     AntiAim.SetOverride(1)
-    var currentTime=Globals.Realtime()
+    currentTime=Globals.Realtime()
     //iterate through 3 angle types
     for(i=0;i<3;i++)
     {
@@ -803,7 +816,7 @@ function OnHurt()
 
 
                 //change this to whatever ur using to switch directions/mode(maybe add a counter)
-                UI.ToggleHotkey(["Rage", "Anti Aim", "General", "Key assignment", "AA Direction inverter"])
+                bruteforceActive=true;
 
 
 
@@ -927,7 +940,7 @@ function OnBulletImpact()
                 
 
 
-                UI.ToggleHotkey(["Rage", "Anti Aim", "General", "Key assignment", "AA Direction inverter"])
+                bruteforceActive=true
                 //Cheat.PrintChat("\x04 [MIXO-YAW Anti brute] 子弹与头部距离 "+headDist+"\n")
             }
         }
@@ -958,16 +971,12 @@ function updateConfig()
             AA[currentLength]=presetTemplate
             AA[currentLength][6]=UI.GetValue(main_path,"New Preset Name:")
         }
-        //TODO: ui updates
+
+        //TODO: ui updates(half done)
         //save data from ui to aa array
         //verify auth intergity with password
 
 
-        
-        for(i=0;i<len;i++)
-        {
-            
-        }
         if(presetVal!=presetCache)
         {
             presetCache=presetVal;
@@ -979,9 +988,9 @@ function updateConfig()
             
         }
         //if stuff here changed
-        realModeVal=UI.GetValue(aa_path.concat("Real Mode"))
-        fakeModeVal=UI.GetValue(aa_path.concat("Fake Mode"))
-        LBYModeVal=UI.GetValue(aa_path.concat("LBY Mode"))
+        realModeVal=UI.GetValue(aa_path.concat("Real Mode"));
+        fakeModeVal=UI.GetValue(aa_path.concat("Fake Mode"));
+        LBYModeVal=UI.GetValue(aa_path.concat("LBY Mode"));
 
 
 
@@ -992,67 +1001,82 @@ function updateConfig()
             {
                 case 0:
                     //static
-                    UI.SetEnabled(aa_path.concat("Real Switch Phase"),0)
-                    UI.SetEnabled(aa_path.concat("Number Of Real Switch Phases"),0)
-                    UI.SetEnabled(aa_path.concat("Real Offset"),1)
-                    UI.SetEnabled(aa_path.concat("Real Delta"),0)
-                    UI.SetEnabled(aa_path.concat("Real Delay"),0)
-                    UI.SetEnabled(aa_path.concat("Varying Real Delay"),0)
-                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),0)
+                    UI.SetEnabled(aa_path.concat("Real Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of Real Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("Real Offset"),1);
+                    UI.SetEnabled(aa_path.concat("Real Delta"),0);
+                    UI.SetEnabled(aa_path.concat("Real Delay"),0);
+                    UI.SetEnabled(aa_path.concat("Randomized Real Delay"),0);
+                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),0);
 
-                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][0][0])
+                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][0][0]);
                     break;
                 case 1:
                     //jitter
-                    UI.SetEnabled(aa_path.concat("Real Switch Phase"),0)
-                    UI.SetEnabled(aa_path.concat("Number Of Real Switch Phases"),0)
-                    UI.SetEnabled(aa_path.concat("Real Offset"),1)
-                    UI.SetEnabled(aa_path.concat("Real Delta"),1)
-                    UI.SetEnabled(aa_path.concat("Real Delay"),1)
-                    UI.SetEnabled(aa_path.concat("Varying Real Delay"),1)
-                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),1)
+                    UI.SetEnabled(aa_path.concat("Real Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of Real Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("Real Offset"),1);
+                    UI.SetEnabled(aa_path.concat("Real Delta"),1);
+                    UI.SetEnabled(aa_path.concat("Real Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized Real Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),1);
 
-                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][1][0])
-                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal][1][3])
-                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][1][9])
-                    UI.SetValue(aa_path.concat("Varying Real Delay"),AA[presetVal][1][6])
-                    UI.SetValue(aa_path.concat("Real Delay MaxDelta"),AA[presetVal][1][12])
+                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][1][0]);
+                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal][1][3]);
+                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][1][9]);
+                    UI.SetValue(aa_path.concat("Randomized Real Delay"),AA[presetVal][1][6]);
+                    UI.SetValue(aa_path.concat("Real Delay MaxDelta"),AA[presetVal][1][12]);
                     break;
                 case 2:
                     //switch
 
                     //TODO: ADD A SWITCH CACHE SOMEWHERE ELSE
-                    UI.SetEnabled(aa_path.concat("Real Switch Phase"),1)
-                    UI.SetEnabled(aa_path.concat("Number Of Real Switch Phases"),1)
-                    UI.SetEnabled(aa_path.concat("Real Offset"),1)
-                    UI.SetEnabled(aa_path.concat("Real Delta"),0)
-                    UI.SetEnabled(aa_path.concat("Real Delay"),1)
-                    UI.SetEnabled(aa_path.concat("Varying Real Delay"),0)
-                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),0)
+                    UI.SetEnabled(aa_path.concat("Real Switch Phase"),1);
+                    UI.SetEnabled(aa_path.concat("Number Of Real Switch Phases"),1);
+                    UI.SetEnabled(aa_path.concat("Real Offset"),1);
+                    UI.SetEnabled(aa_path.concat("Real Delta"),0);
+                    UI.SetEnabled(aa_path.concat("Real Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized Real Delay"),0);
+                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),0);
 
-                    UI.SetValue()
+                    //CHECK IF THIS WORKS
+                    UI.SetValue(aa_path.concat("Real Switch Phase"),0);
+                    UI.SetValue(aa_path.concat("Number Of Real Switch Phases"),AA[presetVal][2][3][0]+1);
+                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][2][0][0]);
+                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][2][4][0]);
                     break;
                 
                 case 3:
                     //sway
-                    UI.SetEnabled(aa_path.concat("Real Switch Phase"),0)
-                    UI.SetEnabled(aa_path.concat("Number Of Real Switch Phases"),0)
-                    UI.SetEnabled(aa_path.concat("Real Offset"),1)
-                    UI.SetEnabled(aa_path.concat("Real Delta"),0)
-                    UI.SetEnabled(aa_path.concat("Real Delay"),1)
-                    UI.SetEnabled(aa_path.concat("Varying Real Delay"),0)
-                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),0)
+                    UI.SetEnabled(aa_path.concat("Real Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of Real Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("Real Offset"),1);
+                    UI.SetEnabled(aa_path.concat("Real Delta"),1);
+                    UI.SetEnabled(aa_path.concat("Real Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized Real Delay"),0);
+                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),0);
+
+                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][3][0]);
+                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal][3][1]);
+                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][3][9]);
                     break;
                 case 4:
                     //random
-                    UI.SetEnabled(aa_path.concat("Real Switch Phase"),0)
-                    UI.SetEnabled(aa_path.concat("Number Of Real Switch Phases"),0)
-                    UI.SetEnabled(aa_path.concat("Real Offset"),1)
-                    UI.SetEnabled(aa_path.concat("Real Delta"),1)
-                    UI.SetEnabled(aa_path.concat("Real Delay"),1)
-                    UI.SetEnabled(aa_path.concat("Varying Real Delay"),1)
-                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),1)
-                    
+                    UI.SetEnabled(aa_path.concat("Real Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of Real Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("Real Offset"),1);
+                    UI.SetEnabled(aa_path.concat("Real Delta"),1);
+                    UI.SetEnabled(aa_path.concat("Real Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized Real Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),1);
+
+                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][4][0]);
+                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal][4][3]);
+                    UI.SetValue(aa_path.concat("Randomized Real Delay"),AA[presetVal][4][6]);
+                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][4][9]);
+                    UI.SetValue(aa_path.concat("Real Delay MaxDelta"),AA[presetVal][4][12]);
+                    break;
+
             }
                 
 
@@ -1061,19 +1085,244 @@ function updateConfig()
         if(fakeModeVal!=fakeModeCache)
         {
             fakeModeCache=fakeModeVal;
+            switch(AA[presetVal][5][1])
+            {
+                case 0:
+                    //static
+                    UI.SetEnabled(aa_path.concat("Fake Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of Fake Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Offset"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delta"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Delay"),0);
+                    UI.SetEnabled(aa_path.concat("Randomized Fake Delay"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Delay MaxDelta"),0);
+
+                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][0][1]);
+                    break;
+                case 1:
+                    //jitter
+                    UI.SetEnabled(aa_path.concat("Fake Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of Fake Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Offset"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delta"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized Fake Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delay MaxDelta"),1);
+
+                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][1][1]);
+                    UI.SetValue(aa_path.concat("Fake Delta"),AA[presetVal][1][4]);
+                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][1][10]);
+                    UI.SetValue(aa_path.concat("Randomized Fake Delay"),AA[presetVal][1][7]);
+                    UI.SetValue(aa_path.concat("Fake Delay MaxDelta"),AA[presetVal][1][13]);
+                    break;
+                case 2:
+                    //switch
+
+                    //TODO: ADD A SWITCH CACHE SOMEWHERE ELSE
+                    UI.SetEnabled(aa_path.concat("Fake Switch Phase"),1);
+                    UI.SetEnabled(aa_path.concat("Number Of Fake Switch Phases"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Offset"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delta"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized Fake Delay"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Delay MaxDelta"),0);
+
+                    //CHECK IF THIS WORKS
+                    UI.SetValue(aa_path.concat("Fake Switch Phase"),0);
+                    UI.SetValue(aa_path.concat("Number Of Fake Switch Phases"),AA[presetVal][2][3][1]+1);
+                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][2][1][0]);
+                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][2][5][0]);
+                    break;
+                
+                case 3:
+                    //sway
+                    UI.SetEnabled(aa_path.concat("Fake Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of Fake Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Offset"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delta"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized Fake Delay"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Delay MaxDelta"),0);
+
+                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][3][2]);
+                    UI.SetValue(aa_path.concat("Fake Delta"),AA[presetVal][3][3]);
+                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][3][10]);
+                    break;
+                case 4:
+                    //random
+                    UI.SetEnabled(aa_path.concat("Fake Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of Fake Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Offset"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delta"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized Fake Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delay MaxDelta"),1);
+
+                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][4][1]);
+                    UI.SetValue(aa_path.concat("Fake Delta"),AA[presetVal][4][4]);
+                    UI.SetValue(aa_path.concat("Randomized Fake Delay"),AA[presetVal][4][7]);
+                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][4][10]);
+                    UI.SetValue(aa_path.concat("Fake Delay MaxDelta"),AA[presetVal][4][13]);
+                    break;
+                    
+            }
 
             uiUpdate=true;
         }
         if(LBYModeVal!=LBYModeCache)
         {
             LBYModeCache=LBYModeVal;
+            AA[presetVal][5][2]=LBYModeVal
+            switch(AA[presetVal][5][2])
+            {
+                case 0:
+                    //static
+                    UI.SetEnabled(aa_path.concat("LBY Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of LBY Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Offset"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delta"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Delay"),0);
+                    UI.SetEnabled(aa_path.concat("Randomized LBY Delay"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Delay MaxDelta"),0);
+
+                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][0][2]);
+                    break;
+                case 1:
+                    //jitter
+                    UI.SetEnabled(aa_path.concat("LBY Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of LBY Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Offset"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delta"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized LBY Delay"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delay MaxDelta"),1);
+
+                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][1][2]);
+                    UI.SetValue(aa_path.concat("LBY Delta"),AA[presetVal][1][5]);
+                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][1][11]);
+                    UI.SetValue(aa_path.concat("Randomized LBY Delay"),AA[presetVal][1][8]);
+                    UI.SetValue(aa_path.concat("LBY Delay MaxDelta"),AA[presetVal][1][14]);
+                    break;
+                case 2:
+                    //switch
+
+                    //TODO: ADD A SWITCH CACHE SOMEWHERE ELSE
+                    UI.SetEnabled(aa_path.concat("LBY Switch Phase"),1);
+                    UI.SetEnabled(aa_path.concat("Number Of LBY Switch Phases"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Offset"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delta"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized LBY Delay"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Delay MaxDelta"),0);
+
+                    //CHECK IF THIS WORKS
+                    UI.SetValue(aa_path.concat("LBY Switch Phase"),0);
+                    UI.SetValue(aa_path.concat("Number Of LBY Switch Phases"),AA[presetVal][2][3][2]+1);
+                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][2][2][0]);
+                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][2][6][0]);
+                    break;
+                
+                case 3:
+                    //sway
+                    UI.SetEnabled(aa_path.concat("LBY Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of LBY Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Offset"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delta"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized LBY Delay"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Delay MaxDelta"),0);
+
+                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][3][4]);
+                    UI.SetValue(aa_path.concat("LBY Delta"),AA[presetVal][3][5]);
+                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][3][11]);
+                    break;
+                case 4:
+                    //random
+                    UI.SetEnabled(aa_path.concat("LBY Switch Phase"),0);
+                    UI.SetEnabled(aa_path.concat("Number Of LBY Switch Phases"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Offset"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delta"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delay"),1);
+                    UI.SetEnabled(aa_path.concat("Randomized LBY Delay"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delay MaxDelta"),1);
+
+                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][4][2]);
+                    UI.SetValue(aa_path.concat("LBY Delta"),AA[presetVal][4][5]);
+                    UI.SetValue(aa_path.concat("Randomized LBY Delay"),AA[presetVal][4][8]);
+                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][4][11]);
+                    UI.SetValue(aa_path.concat("LBY Delay MaxDelta"),AA[presetVal][4][14]);
+                    break;
+                    
+            }
 
             uiUpdate=true;
         }
-        //update aa values
+        //update switch ui
+        //real
+        if(AA[presetVal][5][0]==2)
+        {
+
+            realSwitchVal=UI.GetValue(aa_path.concat("Real Switch Phase"))
+            if(realSwitchVal!=realSwitchCache)
+            {
+                UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][2][0][realSwitchVal]);
+                UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][2][4][realSwitchVal]);
+                uiUpdate=false
+            }
+        }
+        //fake
+        if(AA[presetVal][5][1]==2)
+        {
+
+            realSwitchVal=UI.GetValue(aa_path.concat("Fake Switch Phase"))
+            if(realSwitchVal!=realSwitchCache)
+            {
+                UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][2][1][realSwitchVal]);
+                UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][2][5][realSwitchVal]);
+                uiUpdate=false
+            }
+        }
+        //lby
+        if(AA[presetVal][5][2]==2)
+        {
+
+            realSwitchVal=UI.GetValue(aa_path.concat("LBY Switch Phase"))
+            if(LBYSwitchVal!=LBYSwitchCache)
+            {
+                UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][2][2][realSwitchVal]);
+                UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][2][6][realSwitchVal]);
+                uiUpdate=false
+            }
+        }
+
+
+        //update aa values if ui isnt updating
+        //TODO: ADD 
         if(uiUpdate==false)
         {
             //do stuff
+
+            //real
+            switch(AA[presetVal][5][0])
+            {
+                //static
+                case 0:
+                    AA[presetVal][0][0]=UI.GetValue(aa_path.concat("Real Offset"));
+                //jitter
+                case 1:
+                    AA[presetVal][1][0]=UI.GetValue(aa_path.concat("Real Offset"));
+                    AA[presetVal][1][3]=UI.GetValue(aa_path.concat("Real Delta"));
+                    AA[presetVal][1][9]=UI.GetValue(aa_path.concat("Real Delay"))
+                    AA[presetVal][1][6]=UI.GetValue(aa_path.concat("Randomized Real Delay"))
+                    AA[presetVal][1][12]=UI.GetValue(aa_path.concat("Real Delay MaxDelta"))
+                //switch
+                case 2:
+                    AA[presetVal][1][0]=UI.GetValue(aa_path.concat("Real Offset"));
+                    AA[presetVal][1][3]=UI.GetValue(aa_path.concat("Real Delta"));
+                    AA[presetVal][1][9]=UI.GetValue(aa_path.concat("Real Delay"))
+
+                    
+            }
         }
 
 
