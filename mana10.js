@@ -495,6 +495,7 @@ var jitterTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()]
 var switchTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()]
 var swayTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()]
 var randomTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()]
+var swayCycleTimer=[0.15625,0.15625,0.15625]
 
 var currentTime=Globals.Realtime()
 var jitterTimeOffset=[0.0,0.0,0.0]
@@ -583,7 +584,7 @@ function updateAA(preset)
             case 1:
 
                 //if time to change phase
-                if(currentTime>=clampTo(jitterTimer[i]+AA[preset][1][i+9]+jitterTimeOffset[i],0.01,0))
+                if(currentTime>=clampTo(jitterTimer[i]+AA[preset][1][i+9]+jitterTimeOffset[i],0.015625,0))
                 {
                     
                     jitterTimer[i]=currentTime;
@@ -615,7 +616,7 @@ function updateAA(preset)
                 
                 
                 //if phase completed
-                if(currentTime>=clampTo(switchTimer[i]+AA[preset][2][i+4][i],0.01,0))
+                if(currentTime>=clampTo(switchTimer[i]+AA[preset][2][i+4][i],0.015625,0))
                 {
                     //if phase index maxed out
                     if(switchPhaseCounter[i]>=AA[preset][2][3][i])
@@ -636,13 +637,13 @@ function updateAA(preset)
 
             //sway
             case 3:
-                swayCycleTimer=clampTo(swayTimer[i]+AA[preset][3][i+9],0.01,0);
+                swayCycleTimer[i]=clampTo(swayTimer[i]+AA[preset][3][i+6],0.015625,0);
                 if(currentTime<=swayCycleTimer)
                 {
                     //delta=(finish-start)
                     //percentage=(fullCycleTime-currentTime)/timePerCycle
 
-                    SetOffset(round(AA[preset][3][i]+(AA[preset][3][i+9]*(swayCycleTimer/AA[preset][3][i+9]))),i);
+                    SetOffset(round(AA[preset][3][i]+(AA[preset][3][i+3]*(swayCycleTimer[i]/AA[preset][3][i+6]))),i);
                 }
                 else
                 {
@@ -653,7 +654,7 @@ function updateAA(preset)
 
             //random
             case 4:
-                if(currentTime>=clampTo(jitterTimer[i]+AA[preset][1][i+6]+randomTimeOffset[i],0.01,0))
+                if(currentTime>=clampTo(jitterTimer[i]+AA[preset][1][i+6]+randomTimeOffset[i],0.015625,0))
                 {
                     randomTimer[i]=currentTime;
                     //generates offsets if randomized set to true
@@ -1057,8 +1058,8 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),0);
 
                     UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][3][0]);
-                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal][3][1]);
-                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][3][9]);
+                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal][3][3]);
+                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][3][6]);
                     break;
                 case 4:
                     //random
@@ -1145,8 +1146,8 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Fake Delay MaxDelta"),0);
 
                     UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][3][2]);
-                    UI.SetValue(aa_path.concat("Fake Delta"),AA[presetVal][3][3]);
-                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][3][10]);
+                    UI.SetValue(aa_path.concat("Fake Delta"),AA[presetVal][3][4]);
+                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][3][7]);
                     break;
                 case 4:
                     //random
@@ -1232,9 +1233,9 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Randomized LBY Delay"),0);
                     UI.SetEnabled(aa_path.concat("LBY Delay MaxDelta"),0);
 
-                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][3][4]);
+                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][3][2]);
                     UI.SetValue(aa_path.concat("LBY Delta"),AA[presetVal][3][5]);
-                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][3][11]);
+                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][3][8]);
                     break;
                 case 4:
                     //random
@@ -1322,9 +1323,90 @@ function updateConfig()
                     AA[presetVal][2][0][realSwitchVal]=UI.GetValue(aa_path.concat("Real Offset"));
                     AA[presetVal][2][4][realSwitchVal]=UI.GetValue(aa_path.concat("Real Delay"));
                     break;
+                //sway
                 case 3:
-                    AA[presetVal][3][0]=UI.GetValue(aa_path.concat("Real Offset"))
-                    AA[presetVal][3][1]=UI.GetValue(aa_path.concat("Real Delta"))
+                    AA[presetVal][3][0]=UI.GetValue(aa_path.concat("Real Offset"));
+                    AA[presetVal][3][3]=UI.GetValue(aa_path.concat("Real Delta"));
+                    AA[presetVal][3][6]=UI.GetValue(aa_path.concat("Real Delay"));
+                    break;
+                //random
+                case 4:
+                    AA[presetVal][4][0]=UI.GetValue(aa_path.concat("Real Offset"));
+                    AA[presetVal][4][3]=UI.GetValue(aa_path.concat("Real Delta"));
+                    AA[presetVal][4][9]=UI.GetValue(aa_path.concat("Real Delay"));
+                    AA[presetVal][4][6]=UI.GetValue(aa_path.concat("Randomized Real Delay"));
+                    AA[presetVal][4][12]=UI.GetValue(aa_path.concat("Real Delay MaxDelta"))
+                    break;
+            }
+            //fake
+            switch(AA[presetVal][5][1])
+            {
+                //static
+                case 0:
+                    AA[presetVal][0][1]=UI.GetValue(aa_path.concat("Fake Offset"));
+                    break;
+                //jitter
+                case 1:
+                    AA[presetVal][1][1]=UI.GetValue(aa_path.concat("Fake Offset"));
+                    AA[presetVal][1][4]=UI.GetValue(aa_path.concat("Fake Delta"));
+                    AA[presetVal][1][10]=UI.GetValue(aa_path.concat("Fake Delay"));
+                    AA[presetVal][1][7]=UI.GetValue(aa_path.concat("Randomized Fake Delay"));
+                    AA[presetVal][1][13]=UI.GetValue(aa_path.concat("Fake Delay MaxDelta"));
+                    break;
+                //switch
+                case 2:
+                    AA[presetVal][2][1][realSwitchVal]=UI.GetValue(aa_path.concat("Fake Offset"));
+                    AA[presetVal][2][5][realSwitchVal]=UI.GetValue(aa_path.concat("Fake Delay"));
+                    break;
+                //sway
+                case 3:
+                    AA[presetVal][3][1]=UI.GetValue(aa_path.concat("Fake Offset"));
+                    AA[presetVal][3][4]=UI.GetValue(aa_path.concat("Fake Delta"));
+                    AA[presetVal][3][7]=UI.GetValue(aa_path.concat("Fake Delay"));
+                    break;
+                //random
+                case 4:
+                    AA[presetVal][4][1]=UI.GetValue(aa_path.concat("Fake Offset"));
+                    AA[presetVal][4][4]=UI.GetValue(aa_path.concat("Fake Delta"));
+                    AA[presetVal][4][10]=UI.GetValue(aa_path.concat("Fake Delay"));
+                    AA[presetVal][4][7]=UI.GetValue(aa_path.concat("Randomized Fake Delay"));
+                    AA[presetVal][4][13]=UI.GetValue(aa_path.concat("Fake Delay MaxDelta"))
+                    break;
+            }
+            //lby
+            switch(AA[presetVal][5][2])
+            {
+                //static
+                case 0:
+                    AA[presetVal][0][2]=UI.GetValue(aa_path.concat("LBY Offset"));
+                    break;
+                //jitter
+                case 1:
+                    AA[presetVal][1][2]=UI.GetValue(aa_path.concat("LBY Offset"));
+                    AA[presetVal][1][5]=UI.GetValue(aa_path.concat("LBY Delta"));
+                    AA[presetVal][1][11]=UI.GetValue(aa_path.concat("LBY Delay"));
+                    AA[presetVal][1][8]=UI.GetValue(aa_path.concat("Randomized LBY Delay"));
+                    AA[presetVal][1][14]=UI.GetValue(aa_path.concat("LBY Delay MaxDelta"));
+                    break;
+                //switch
+                case 2:
+                    AA[presetVal][2][2][realSwitchVal]=UI.GetValue(aa_path.concat("LBY Offset"));
+                    AA[presetVal][2][6][realSwitchVal]=UI.GetValue(aa_path.concat("LBY Delay"));
+                    break;
+                //sway
+                case 3:
+                    AA[presetVal][3][2]=UI.GetValue(aa_path.concat("LBY Offset"));
+                    AA[presetVal][3][5]=UI.GetValue(aa_path.concat("LBY Delta"));
+                    AA[presetVal][3][8]=UI.GetValue(aa_path.concat("LBY Delay"));
+                    break;
+                //random
+                case 4:
+                    AA[presetVal][4][2]=UI.GetValue(aa_path.concat("LBY Offset"));
+                    AA[presetVal][4][5]=UI.GetValue(aa_path.concat("LBY Delta"));
+                    AA[presetVal][4][11]=UI.GetValue(aa_path.concat("LBY Delay"));
+                    AA[presetVal][4][8]=UI.GetValue(aa_path.concat("Randomized LBY Delay"));
+                    AA[presetVal][4][14]=UI.GetValue(aa_path.concat("LBY Delay MaxDelta"))
+                    break;
             }
         }
 
