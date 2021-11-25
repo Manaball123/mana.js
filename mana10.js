@@ -1,9 +1,10 @@
 //TODO:
 //antibruteforce(bullet_impact event)
 
+//TODO: check for slowwalk keybind name
+
 
 //TODO: ui updates
-        //save data from ui to aa array
         //verify auth intergity with password
 
 //POTENTIAL FL+RAGE SOLUTION
@@ -34,11 +35,6 @@ UI.AddSubTab([ "Rage","SUBTAB_MGR",],"AA Preset Manager")
 //handles save file to usable data
 
 
-/*
-    0=antiaim data
-    
-    
-*/
 
 
 /*Index explanations:
@@ -136,6 +132,49 @@ UI.AddSubTab([ "Rage","SUBTAB_MGR",],"AA Preset Manager")
 
         AA[i][6]: name of aa preset
 */
+
+/*
+ALSO ADD FORCE SWITCH KEY
+
+AA_MANAGER index explanations
+
+0=Standing 
+1=Running 
+2=Slow-Walking
+3=Crouching 
+4=In Air 
+5=On Peek 
+6=Fake-Ducking
+7:HS Active
+8:DT Active
+9:On Use
+10:Knifing
+11:Zeusing
+12:Override Key 1 
+13:Override Key 2     
+14:Override Key 3
+15:Override Key 4
+
+
+[i][0]: General Settings:
+    0: no/conditional switch(only when antibruteforce)
+    1: sequenced switch
+    2: random switch
+
+[i][1]:
+    0: no antibruteforce
+    1: simple antibruteforce(aa invert)
+    2: complex antibruteforce(forces an aa switch,if switch enabled)
+
+[i][2]:
+    [every preset that's present in the loop]
+    EG:[1,2,4,6,7]
+
+[i][3]: Switch Delay
+
+[i][4]: Switch Delta
+
+*/
 var presetTemplate=
 [
     [0,0,0], //static
@@ -155,10 +194,38 @@ var presetTemplate=
     [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //random
     [0,0,0],
     "Mana Default AA"
-]
-var AA=[presetTemplate]
+];
+var AA=[presetTemplate];
+var conditionTemplate=
+[
+    0,
+    0,
+    [0,1],
+    0.0,
+    0.0
+];
+var AA_MANAGER=
+[
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate,
+    conditionTemplate
+];
 
-var RAGEBOT=[]
+
+var RAGEBOT=[];
 
 function keyToData(type)
 {
@@ -268,6 +335,17 @@ function keyToData(type)
                 
             }
             break;
+
+        //preset manager
+        case 1: 
+            var indStr1="MANAGER_"
+            for(i=0;i<AA_MANAGER.length;i++)
+            {   
+                var indStr2=toString(i)+"_"
+                AA_MANAGER[i][0]
+            }
+            break;
+
         
     }
 }
@@ -463,6 +541,7 @@ function VectorDistance(a, b)
 const main_path=["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"];
 const aa_path=["Rage","SUBTAB_MGR","Custom Anti-Aim","Custom Anti-Aim"];
 const aa_control_path=["Rage","SUBTAB_MGR","AA Preset Manager","AA Preset Manager"];
+const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "Key assignment"]
 //UI Elements
 //password
 
@@ -480,9 +559,9 @@ UI.AddDropdown(aa_path,"Real Switch Phase",["1","2"],0);
 UI.AddSliderInt(aa_path,"Number Of Real Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"Real Offset",-180,180);
 UI.AddSliderInt(aa_path,"Real Delta",-180,180);
-UI.AddSliderFloat(aa_path,"Real Delay",0.01,3.0);
+UI.AddSliderFloat(aa_path,"Real Delay",0.01,4.0);
 UI.AddCheckbox(aa_path,"Randomized Real Delay");
-UI.AddSliderFloat(aa_path,"Real Delay MaxDelta",0.01,1.0);
+UI.AddSliderFloat(aa_path,"Real Delay MaxDelta",0.01,2.0);
 
 //fake
 UI.AddDropdown(aa_path,"Fake Mode",["Static","Jitter","Switch","Sway","Random"],0);
@@ -490,9 +569,9 @@ UI.AddDropdown(aa_path,"Fake Switch Phase",["1","2"],0);
 UI.AddSliderInt(aa_path,"Number Of Fake Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"Fake Offset",-60,60);
 UI.AddSliderInt(aa_path,"Fake Delta",-60,60);
-UI.AddSliderFloat(aa_path,"Fake Delay",0.01,3.0);
+UI.AddSliderFloat(aa_path,"Fake Delay",0.01,4.0);
 UI.AddCheckbox(aa_path,"Randomized Fake Delay");
-UI.AddSliderFloat(aa_path,"Fake Delay MaxDelta",0.01,1.0);
+UI.AddSliderFloat(aa_path,"Fake Delay MaxDelta",0.01,2.0);
 
 //lby
 UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"],0);
@@ -500,16 +579,21 @@ UI.AddDropdown(aa_path,"LBY Switch Phase",["1","2"],0);
 UI.AddSliderInt(aa_path,"Number Of LBY Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"LBY Offset",-30,30);
 UI.AddSliderInt(aa_path,"LBY Delta",-30,30);
-UI.AddSliderFloat(aa_path,"LBY Delay",0.01,3.0);
+UI.AddSliderFloat(aa_path,"LBY Delay",0.01,4.0);
 UI.AddCheckbox(aa_path,"Randomized LBY Delay");
-UI.AddSliderFloat(aa_path,"LBY Delay MaxDelta",0.01,1.0);
+UI.AddSliderFloat(aa_path,"LBY Delay MaxDelta",0.01,2.0);
 
 //preset interface
 UI.AddTextbox(main_path,"New Preset Name:");
 UI.AddCheckbox(main_path,"Create New Preset");
 
 //preset management interface
-UI.AddDropdown(aa_control_path,"Conditions",["Standing","Running","Slow-Walking","Crouching","In Air","On Peek","Fake-Ducking","Override Key 1","Override Key 2","Override Key 3"]);
+UI.AddDropdown(aa_control_path,"Conditions",["Standing","Running","Slow-Walking","Crouching","In Air","On Peek","Fake-Ducking","HS Active","DT Active","On Use","Knifing","Zeusing","Override Key 1","Override Key 2","Override Key 3","Override Key 4"],0);
+UI.AddDropdown(aa_control_path,"Switch",["Conditional","Sequenced","Random"],0);
+UI.AddDropdown(aa_control_path,"Bruteforce",["None","Simple","Complex"],0);
+UI.AddMultiDropdown(aa_control_path,"Presets",["1","2"]);
+UI.AddSliderFloat(aa_control_path,"Switch Delay",0.01,4.0);
+UI.AddSliderFloat(aa_control_path,"Switch Delta",0.01,4.0);
 
 
 
@@ -537,7 +621,9 @@ var LBYSwitchVal=0;
 
 var uiUpdate=false;
 
-//test file writing
+var currentAAMode=0;
+
+var presetNames=["1","2"]
 var configName="Mana1";
 //timers:
 //0=real,1=fake,2=lby
@@ -580,7 +666,7 @@ function modeToString(variable)
 //converts internal index to user-named aa presets
 function findIndex(variable)
 {
-    indexLen=length(AA)
+    indexLen=AA.length
     i=0;
     while(i<indexLen)
     {
@@ -645,6 +731,7 @@ function updateAA(preset)
                     }
                     else
                     {
+                        
                         jitterTimeOffset[i]=0.0;
                     }
                     jitterPhaseCounter[i]=NOT(jitterPhaseCounter);
@@ -967,7 +1054,8 @@ function updateConfig()
             UI.SetValue(main_path.concat("Create New Preset"),0)
             currentLength=length(AA)
             AA[currentLength]=presetTemplate
-            AA[currentLength][6]=UI.GetValue(main_path,"New Preset Name:")
+            AA[currentLength][6]=UI.GetValue(main_path.concat("New Preset Name:"));
+
         }
 
         //TODO: ui updates(half done)
@@ -1421,7 +1509,82 @@ function updateConfig()
 //handles presets ig
 function switchAA()
 {
+    //if overriding(highest priority)
+    if(UI.GetHotkeyState(rage_keybinds.concat("Override Key 4")==1))
+    {
+        currentAAMode=15;
+    }
+    else if(UI.GetHotkeyState(rage_keybinds.concat("Override Key 3")==1))
+    {
+        currentAAMode=14;
+    }
+    else if(UI.GetHotkeyState(rage_keybinds.concat("Override Key 2")==1))
+    {
+        currentAAMode=13;
+    }
+    else if(UI.GetHotkeyState(rage_keybinds.concat("Override Key 1")==1))
+    {
+        currentAAMode=12;
+    }
+    //if legit aa(second highest prio)
+    /*
+    else if(epeeking)
+    {
+        currentAAMode=9;
+    }
+    */
+    else if(UI.GetHotkeyState(rage_keybinds.concat("Slow walk")==1))
+    {
+        currentAAMode=2;
+    }
+    /*
+    else if(fakeduck)
+    {
+        currentAAMode=6;
+    }
+    else if(knifing)
+    {
+        currentAAMode=10;
+    }
+    else if(zeusing)
+    {
+        currentAAMode=11;
+    }
+    else if(hideshot)
+    {
+        currentAAMode=7;
+    }
+    
+    else if(dt)
+    {
+        currentAAMode=8;
+    }
+    else if(inAir)
+    {
+        currentAAMode=4;
+    }
+    else if(onpeek)
+    {
+        currentAAMode=5;
+    }
+    else if(crouching)
+    {
+        currentAAMode=3;
+    }
+    else if(running)
+    {
+        currentAAMode=1;
+    }
+    */
+    //dormant
+    else
+    {
+        currentAAMode=0;
+    }
+    
 
+    
+    
 }
 
   
