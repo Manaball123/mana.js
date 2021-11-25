@@ -6,7 +6,8 @@
         //save data from ui to aa array
         //verify auth intergity with password
 
-
+//POTENTIAL FL+RAGE SOLUTION
+//Hiding the ui elements of said items but tewaking their values might work...?
 
 //UI Subtabs
 //Config Password
@@ -92,21 +93,18 @@ UI.AddSubTab([ "Rage","SUBTAB_MGR",],"AA Preset Manager")
 
         AA[i][3][x]: values for sway
             0: real start
-            1: real end
-            2: fake start
-            3: fake end
-            4: lby start
-            5: lby end
+            1: fake start
+            2: lby start
 
             //calculated internally
-            6: real delta
-            7: fake delta
-            8: lby delta
+            3: real delta
+            4: fake delta
+            5: lby delta
         
            
-            9: real sway time
-            10: fake sway time
-            11: lby sway time
+            6: real sway time
+            7: fake sway time
+            8: lby sway time
             
 
             
@@ -138,7 +136,7 @@ UI.AddSubTab([ "Rage","SUBTAB_MGR",],"AA Preset Manager")
 
         AA[i][6]: name of aa preset
 */
-var presetTemplate
+var presetTemplate=
 [
     [0,0,0], //static
     [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //jitter
@@ -153,7 +151,7 @@ var presetTemplate
         [1.0,1.0]//lby delay
         
     ],
-    [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0], //sway
+    [0,0,0,0,0,0,1.0,1.0,1.0], //sway
     [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //random
     [0,0,0],
     "Mana Default AA"
@@ -481,6 +479,8 @@ var LBYSwitchCache=0;
 var realSwitchVal=0;
 var fakeSwitchVal=0;
 var LBYSwitchVal=0;
+
+
 
 
 
@@ -1267,7 +1267,7 @@ function updateConfig()
             {
                 UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][2][0][realSwitchVal]);
                 UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][2][4][realSwitchVal]);
-                uiUpdate=false
+                uiUpdate=false;
             }
         }
         //fake
@@ -1279,7 +1279,7 @@ function updateConfig()
             {
                 UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][2][1][realSwitchVal]);
                 UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][2][5][realSwitchVal]);
-                uiUpdate=false
+                uiUpdate=false;
             }
         }
         //lby
@@ -1291,7 +1291,7 @@ function updateConfig()
             {
                 UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][2][2][realSwitchVal]);
                 UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][2][6][realSwitchVal]);
-                uiUpdate=false
+                uiUpdate=false;
             }
         }
 
@@ -1308,20 +1308,23 @@ function updateConfig()
                 //static
                 case 0:
                     AA[presetVal][0][0]=UI.GetValue(aa_path.concat("Real Offset"));
+                    break;
                 //jitter
                 case 1:
                     AA[presetVal][1][0]=UI.GetValue(aa_path.concat("Real Offset"));
                     AA[presetVal][1][3]=UI.GetValue(aa_path.concat("Real Delta"));
-                    AA[presetVal][1][9]=UI.GetValue(aa_path.concat("Real Delay"))
-                    AA[presetVal][1][6]=UI.GetValue(aa_path.concat("Randomized Real Delay"))
-                    AA[presetVal][1][12]=UI.GetValue(aa_path.concat("Real Delay MaxDelta"))
+                    AA[presetVal][1][9]=UI.GetValue(aa_path.concat("Real Delay"));
+                    AA[presetVal][1][6]=UI.GetValue(aa_path.concat("Randomized Real Delay"));
+                    AA[presetVal][1][12]=UI.GetValue(aa_path.concat("Real Delay MaxDelta"));
+                    break;
                 //switch
                 case 2:
-                    AA[presetVal][1][0]=UI.GetValue(aa_path.concat("Real Offset"));
-                    AA[presetVal][1][3]=UI.GetValue(aa_path.concat("Real Delta"));
-                    AA[presetVal][1][9]=UI.GetValue(aa_path.concat("Real Delay"))
-
-                    
+                    AA[presetVal][2][0][realSwitchVal]=UI.GetValue(aa_path.concat("Real Offset"));
+                    AA[presetVal][2][4][realSwitchVal]=UI.GetValue(aa_path.concat("Real Delay"));
+                    break;
+                case 3:
+                    AA[presetVal][3][0]=UI.GetValue(aa_path.concat("Real Offset"))
+                    AA[presetVal][3][1]=UI.GetValue(aa_path.concat("Real Delta"))
             }
         }
 
