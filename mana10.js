@@ -228,7 +228,7 @@ function keyToData(type)
                 {
                     var indStr4=toString(j)
 
-                    if(j<=8)
+                    if(j<=5)
                     {
                         AA[i][3][j]=parseInt(DataFile.GetKey(configName,indStr1+indStr2+indStr3+indStr4));
                     }
@@ -403,6 +403,61 @@ function clampTo(variable,to,mode)
     }
 }
 
+//deg2rad function
+
+function radian(degree)
+{
+    return degree * Math.PI / 180.0;
+}
+function ExtendVector(vector, angle, extension)
+{
+    //get angle in radians
+    var radianAngle = radian(angle);
+    
+    return [extension * Math.cos(radianAngle) + vector[0], extension * Math.sin(radianAngle) + vector[1], vector[2]];
+}
+
+//vector calc functions
+function VectorAdd(a, b)
+{
+    return [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+}
+function VectorSubtract(a, b)
+{
+    return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+}
+function VectorMultiply(a, b)
+{
+    return [a[0] * b[0], a[1] * b[1], a[2] * b[2]];
+}
+
+//get abseloute vector magnitude
+function VectorLength(x, y, z)
+{
+    return Math.sqrt(x * x + y * y + z * z);
+}
+
+
+//dont know what exactly this is, but it is somewhat related to getting the "abseloute direction" of a given vector(for example[1,2]returns the same value of[2,4])
+function VectorNormalize(vec)
+{
+    var length = VectorLength(vec[0], vec[1], vec[2]);
+    return [vec[0] / length, vec[1] / length, vec[2] / length];
+}
+//damn i need to get better at vectors tbh
+
+//OK I KNOW WHAT THIS IS
+//DOT PRODUCT: PROJECTION OF A VECTOR TO ANOTHER * OTHER VECTOR
+
+function VectorDot(a, b)
+{
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+function VectorDistance(a, b)
+{
+    return VectorLength(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+}
+
 //Paths
 
 const main_path=["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"];
@@ -479,11 +534,6 @@ var LBYSwitchCache=0;
 var realSwitchVal=0;
 var fakeSwitchVal=0;
 var LBYSwitchVal=0;
-
-
-
-
-
 
 var uiUpdate=false;
 
@@ -686,60 +736,7 @@ function updateAA(preset)
 UI.AddSubTab(["Rage", "SUBTAB_MGR"], "MIXO-YAW");
 UI.AddCheckbox(["Rage", "MIXO-YAW", "MIXO-YAW"], "Anti bruteforce");
 
-//deg2rad function
 
-function radian(degree)
-{
-    return degree * Math.PI / 180.0;
-}
-function ExtendVector(vector, angle, extension)
-{
-    //get angle in radians
-    var radianAngle = radian(angle);
-    
-    return [extension * Math.cos(radianAngle) + vector[0], extension * Math.sin(radianAngle) + vector[1], vector[2]];
-}
-
-//vector calc functions
-function VectorAdd(a, b)
-{
-    return [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
-}
-function VectorSubtract(a, b)
-{
-    return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-}
-function VectorMultiply(a, b)
-{
-    return [a[0] * b[0], a[1] * b[1], a[2] * b[2]];
-}
-
-//get abseloute vector magnitude
-function VectorLength(x, y, z)
-{
-    return Math.sqrt(x * x + y * y + z * z);
-}
-
-
-//dont know what exactly this is, but it is somewhat related to getting the "abseloute direction" of a given vector(for example[1,2]returns the same value of[2,4])
-function VectorNormalize(vec)
-{
-    var length = VectorLength(vec[0], vec[1], vec[2]);
-    return [vec[0] / length, vec[1] / length, vec[2] / length];
-}
-//damn i need to get better at vectors tbh
-
-//OK I KNOW WHAT THIS IS
-//DOT PRODUCT: PROJECTION OF A VECTOR TO ANOTHER * OTHER VECTOR
-
-function VectorDot(a, b)
-{
-    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-}
-function VectorDistance(a, b)
-{
-    return VectorLength(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-}
 
 //REAL SHIT
 
