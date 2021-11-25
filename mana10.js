@@ -461,8 +461,8 @@ function VectorDistance(a, b)
 //Paths
 
 const main_path=["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"];
-const aa_path=["Rage","SUBTAB_MGR","Custom Anti-Aim","Custom Anti-Aim"]
-const aa_control_path=["Rage","SUBTAB_MGR","AA Preset Manager","AA Preset Manager"]
+const aa_path=["Rage","SUBTAB_MGR","Custom Anti-Aim","Custom Anti-Aim"];
+const aa_control_path=["Rage","SUBTAB_MGR","AA Preset Manager","AA Preset Manager"];
 //UI Elements
 //password
 
@@ -471,45 +471,45 @@ UI.AddTextbox([ "Config","SUBTAB_MGR","Password","SHEET_MGR","Password" ], "Conf
 UI.AddCheckbox(main_path,"UPDATE CONFIG(Tick this only if you're configuring)");
 
 //aa settings(presets and stuff)
-UI.AddDropdown(aa_path,"Presets",["Mana Default AA"],0)
-UI.AddTextbox(aa_path,"Rename Selected Preset")
-UI.AddCheckbox(aa_path,"Confirm")
+UI.AddDropdown(aa_path,"Presets",["Mana Default AA"],0);
+UI.AddTextbox(aa_path,"Rename Selected Preset");
+UI.AddCheckbox(aa_path,"Confirm");
 //real
-UI.AddDropdown(aa_path,"Real Mode",["Static","Jitter","Switch","Sway","Random"],0)
-UI.AddDropdown(aa_path,"Real Switch Phase",["1","2"],0)
-UI.AddSliderInt(aa_path,"Number Of Real Switch Phases",1,16)
-UI.AddSliderInt(aa_path,"Real Offset",-180,180)
-UI.AddSliderInt(aa_path,"Real Delta",-180,180)
-UI.AddSliderFloat(aa_path,"Real Delay",0.01,3.0)
-UI.AddCheckbox(aa_path,"Randomized Real Delay")
-UI.AddSliderFloat(aa_path,"Real Delay MaxDelta",0.01,1.0)
+UI.AddDropdown(aa_path,"Real Mode",["Static","Jitter","Switch","Sway","Random"],0);
+UI.AddDropdown(aa_path,"Real Switch Phase",["1","2"],0);
+UI.AddSliderInt(aa_path,"Number Of Real Switch Phases",1,16);
+UI.AddSliderInt(aa_path,"Real Offset",-180,180);
+UI.AddSliderInt(aa_path,"Real Delta",-180,180);
+UI.AddSliderFloat(aa_path,"Real Delay",0.01,3.0);
+UI.AddCheckbox(aa_path,"Randomized Real Delay");
+UI.AddSliderFloat(aa_path,"Real Delay MaxDelta",0.01,1.0);
 
 //fake
-UI.AddDropdown(aa_path,"Fake Mode",["Static","Jitter","Switch","Sway","Random"],0)
-UI.AddDropdown(aa_path,"Fake Switch Phase",["1","2"],0)
-UI.AddSliderInt(aa_path,"Number Of Fake Switch Phases",1,16)
-UI.AddSliderInt(aa_path,"Fake Offset",-60,60)
-UI.AddSliderInt(aa_path,"Fake Delta",-60,60)
-UI.AddSliderFloat(aa_path,"Fake Delay",0.01,3.0)
-UI.AddCheckbox(aa_path,"Randomized Fake Delay")
-UI.AddSliderFloat(aa_path,"Fake Delay MaxDelta",0.01,1.0)
+UI.AddDropdown(aa_path,"Fake Mode",["Static","Jitter","Switch","Sway","Random"],0);
+UI.AddDropdown(aa_path,"Fake Switch Phase",["1","2"],0);
+UI.AddSliderInt(aa_path,"Number Of Fake Switch Phases",1,16);
+UI.AddSliderInt(aa_path,"Fake Offset",-60,60);
+UI.AddSliderInt(aa_path,"Fake Delta",-60,60);
+UI.AddSliderFloat(aa_path,"Fake Delay",0.01,3.0);
+UI.AddCheckbox(aa_path,"Randomized Fake Delay");
+UI.AddSliderFloat(aa_path,"Fake Delay MaxDelta",0.01,1.0);
 
 //lby
-UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"],0)
-UI.AddDropdown(aa_path,"LBY Switch Phase",["1","2"],0)
-UI.AddSliderInt(aa_path,"Number Of LBY Switch Phases",1,16)
-UI.AddSliderInt(aa_path,"LBY Offset",-30,30)
-UI.AddSliderInt(aa_path,"LBY Delta",-30,30)
-UI.AddSliderFloat(aa_path,"LBY Delay",0.01,3.0)
-UI.AddCheckbox(aa_path,"Randomized LBY Delay")
-UI.AddSliderFloat(aa_path,"LBY Delay MaxDelta",0.01,1.0)
+UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"],0);
+UI.AddDropdown(aa_path,"LBY Switch Phase",["1","2"],0);
+UI.AddSliderInt(aa_path,"Number Of LBY Switch Phases",1,16);
+UI.AddSliderInt(aa_path,"LBY Offset",-30,30);
+UI.AddSliderInt(aa_path,"LBY Delta",-30,30);
+UI.AddSliderFloat(aa_path,"LBY Delay",0.01,3.0);
+UI.AddCheckbox(aa_path,"Randomized LBY Delay");
+UI.AddSliderFloat(aa_path,"LBY Delay MaxDelta",0.01,1.0);
 
 //preset interface
-UI.AddTextbox(main_path,"New Preset Name:")
-UI.AddCheckbox(main_path,"Create New Preset")
+UI.AddTextbox(main_path,"New Preset Name:");
+UI.AddCheckbox(main_path,"Create New Preset");
 
 //preset management interface
-UI.AddDropdown(aa_control_path,"Behaviors")
+UI.AddDropdown(aa_control_path,"Conditions",["Standing","Running","Slow-Walking","Crouching","In Air","On Peek","Fake-Ducking","Override Key 1","Override Key 2","Override Key 3"]);
 
 
 
@@ -517,15 +517,15 @@ UI.AddDropdown(aa_control_path,"Behaviors")
 UI.AddSubTab(["Config", "SUBTAB_MGR"], "Config Subtab");
 UI.AddDropdown(["Config", "SUBTAB_MGR", "Config Subtab", "Config Subtab"], "Dropdown", ["element 1", "element 2"], 0);
 */
-var presetCache=UI.GetValue(aa_path.concat("Presets"))
-var realModeCache=UI.GetValue(aa_path.concat("Real Mode"))
-var fakeModeCache=UI.GetValue(aa_path.concat("Fake Mode"))
-var LBYModeCache=UI.GetValue(aa_path.concat("LBY Mode"))
+var presetCache=UI.GetValue(aa_path.concat("Presets"));
+var realModeCache=UI.GetValue(aa_path.concat("Real Mode"));
+var fakeModeCache=UI.GetValue(aa_path.concat("Fake Mode"));
+var LBYModeCache=UI.GetValue(aa_path.concat("LBY Mode"));
 
-var presetVal=UI.GetValue(aa_path.concat("Presets"))
-var realModeVal=UI.GetValue(aa_path.concat("Real Mode"))
-var fakeModeVal=UI.GetValue(aa_path.concat("Fake Mode"))
-var LBYModeVal=UI.GetValue(aa_path.concat("LBY Mode"))
+var presetVal=UI.GetValue(aa_path.concat("Presets"));
+var realModeVal=UI.GetValue(aa_path.concat("Real Mode"));
+var fakeModeVal=UI.GetValue(aa_path.concat("Fake Mode"));
+var LBYModeVal=UI.GetValue(aa_path.concat("LBY Mode"));
 
 var realSwitchCache=0;
 var fakeSwitchCache=0;
@@ -541,20 +541,20 @@ var uiUpdate=false;
 var configName="Mana1";
 //timers:
 //0=real,1=fake,2=lby
-var jitterTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()]
-var switchTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()]
-var swayTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()]
-var randomTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()]
-var swayCycleTimer=[0.15625,0.15625,0.15625]
+var jitterTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()];
+var switchTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()];
+var swayTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()];
+var randomTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()];
+var swayCycleTimer=[0.15625,0.15625,0.15625];
 
-var currentTime=Globals.Realtime()
-var jitterTimeOffset=[0.0,0.0,0.0]
-var jitterPhaseCounter=[0,0,0]
-var switchPhaseCounter=[0,0,0]
-var randomTimeOffset=[0.0,0.0,0.0]
-var randomOffsetHolder=[0,0,0]
+var currentTime=Globals.Realtime();
+var jitterTimeOffset=[0.0,0.0,0.0];
+var jitterPhaseCounter=[0,0,0];
+var switchPhaseCounter=[0,0,0];
+var randomTimeOffset=[0.0,0.0,0.0];
+var randomOffsetHolder=[0,0,0];
 var swayCycleTimer=0.0;
-var bruteforceActive=false
+var bruteforceActive=false;
 
 function modeToString(variable)
 {
@@ -1344,7 +1344,7 @@ function updateConfig()
                     break;
                 //jitter
                 case 1:
-                    AA[presetVal][1][1]=UI.GetValue(aa_path.concat("Fake Offset"));
+                    AA[presetVal][1][1]=UI.GetValue(aa_path.concat("Fake Offset"));``
                     AA[presetVal][1][4]=UI.GetValue(aa_path.concat("Fake Delta"));
                     AA[presetVal][1][10]=UI.GetValue(aa_path.concat("Fake Delay"));
                     AA[presetVal][1][7]=UI.GetValue(aa_path.concat("Randomized Fake Delay"));
@@ -1418,7 +1418,7 @@ function updateConfig()
     
 }
 
-
+//handles presets ig
 function switchAA()
 {
 
@@ -1427,6 +1427,7 @@ function switchAA()
   
 
 Cheat.RegisterCallback("Draw","updateConfig");
+Cheat.RegisterCallback("CreateMove","switchAA")
 //the antibruteforce i pasted
 Cheat.RegisterCallback("player_hurt", "OnHurt");
 Cheat.RegisterCallback("bullet_impact", "OnBulletImpact");
