@@ -204,6 +204,7 @@ var conditionTemplate=
     0.0,
     0.0
 ];
+
 var AA_MANAGER=
 [
     conditionTemplate,
@@ -607,13 +608,15 @@ var fakeModeCache=UI.GetValue(aa_path.concat("Fake Mode"));
 var LBYModeCache=UI.GetValue(aa_path.concat("LBY Mode"));
 
 var presetVal=UI.GetValue(aa_path.concat("Presets"));
-var realModeVal=UI.GetValue(aa_path.concat("Real Mode"));
-var fakeModeVal=UI.GetValue(aa_path.concat("Fake Mode"));
-var LBYModeVal=UI.GetValue(aa_path.concat("LBY Mode"));
+//forces an update
+var realModeVal=99;
+var fakeModeVal=99;
+var LBYModeVal=99;
 
-var realSwitchCache=0;
-var fakeSwitchCache=0;
-var LBYSwitchCache=0;
+//forces an update
+var realSwitchCache=99;
+var fakeSwitchCache=99;
+var LBYSwitchCache=99;
 
 var realSwitchVal=0;
 var fakeSwitchVal=0;
@@ -627,6 +630,8 @@ var cachedAAMode=0;
 var modeCounter=0;
 var modeTimer=0.0;
 var modeOffset=0.0;
+
+var initializePresets=true;
 
 var presetNames=["1","2"]
 var configName="Mana1";
@@ -1036,29 +1041,54 @@ function OnBulletImpact()
 }
 
 
-function updateConfig()
+
+function updatePresetNames()
 {
     
-    const DoUpdate = UI.GetValue(main_path.concat("UPDATE CONFIG(Tick this only if you're configuring)"))
+    for(i=0;i<AA.length;i++)
+    {
+        presetNames[i]=AA[i][6]
+        Cheat.Print(presetNames[i]+"\n")
+    }
     
-    if(DoUpdate==1)
+
+    UI.UpdateList(aa_path.concat("Presets"),presetNames)
+
+
+}
+
+
+function updateConfig()
+{
+    Cheat.Print(toString(UI.GetValue(aa_path.concat("Presets"))))
+     
+    
+    if(UI.GetValue(main_path.concat("UPDATE CONFIG(Tick this only if you're configuring)"))==1)
     {
         // do magic here
 
-
+        Cheat.Print(toString(UI.GetValue(aa_path.concat("Presets"))))
+        Cheat.Print("helo")
         presetVal=UI.GetValue(aa_path.concat("Presets"))
+        if(presetVal==null)
+        {
+            return;
+        }
         
         uiUpdate=false;
         //updating aa tab
-        if(UI.GetValue(main_path.concat("Create New Preset"))==1)
+        if(UI.GetValue(main_path.concat("Create New Preset"))==1 || initializePresets==true)
         {
+            initializePresets=false;
             UI.SetValue(main_path.concat("Create New Preset"),0)
-            currentLength=length(AA)
+            currentLength=AA.length-1
             AA[currentLength]=presetTemplate
-            AA[currentLength][6]=UI.GetValue(main_path.concat("New Preset Name:"));
+            AA[currentLength][6]=UI.GetString(main_path.concat("New Preset Name:"));
+            //Cheat.Print(UI.GetValue(main_path.concat("New Preset Name:")));
+            updatePresetNames();
 
         }
-
+        //if(UI.GetValue(aa_path.concat("")))
         //TODO: ui updates(half done)
         //save data from ui to aa array
         //verify auth intergity with password
@@ -1069,9 +1099,9 @@ function updateConfig()
             presetCache=presetVal;
             uiUpdate=true;
             presetIndex=findIndex(presetVal);
-            UI.SetValue(aa_path,"Real Mode",modeToString(AA[presetIndex][5][0]));
-            UI.SetValue(aa_path,"Fake Mode",modeToString(AA[presetIndex][5][1]));
-            UI.SetValue(aa_path,"LBY Mode",modeToString(AA[presetIndex][5][2]));
+            UI.SetValue(aa_path,"Real Mode",AA[presetIndex][5][0]);
+            UI.SetValue(aa_path,"Fake Mode",AA[presetIndex][5][1]);
+            UI.SetValue(aa_path,"LBY Mode",AA[presetIndex][5][2]);
             
         }
         //if stuff here changed
@@ -1084,6 +1114,7 @@ function updateConfig()
         if(realModeVal!=realModeCache)
         {
             realModeCache=realModeVal;
+            AA[presetVal][5][0]=realModeVal;
             switch(AA[presetVal][5][0])
             {
                 case 0:
@@ -1171,7 +1202,9 @@ function updateConfig()
         }
         if(fakeModeVal!=fakeModeCache)
         {
+
             fakeModeCache=fakeModeVal;
+            AA[presetVal][5][1]=fakeModeVal;
             switch(AA[presetVal][5][1])
             {
                 case 0:
@@ -1259,7 +1292,7 @@ function updateConfig()
         if(LBYModeVal!=LBYModeCache)
         {
             LBYModeCache=LBYModeVal;
-            AA[presetVal][5][2]=LBYModeVal
+            AA[presetVal][5][2]=LBYModeVal;
             switch(AA[presetVal][5][2])
             {
                 case 0:
@@ -1352,6 +1385,7 @@ function updateConfig()
             realSwitchVal=UI.GetValue(aa_path.concat("Real Switch Phase"))
             if(realSwitchVal!=realSwitchCache)
             {
+                realSwitchCache=realSwitchVal;
                 UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][2][0][realSwitchVal]);
                 UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][2][4][realSwitchVal]);
                 uiUpdate=false;
@@ -1360,10 +1394,12 @@ function updateConfig()
         //fake
         if(AA[presetVal][5][1]==2)
         {
+            
 
-            realSwitchVal=UI.GetValue(aa_path.concat("Fake Switch Phase"))
-            if(realSwitchVal!=realSwitchCache)
+            fakeSwitchVal=UI.GetValue(aa_path.concat("Fake Switch Phase"))
+            if(fakeSwitchVal!=fakeSwitchCache)
             {
+                fakeSwitchCache=fakeSwitchVal;
                 UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][2][1][realSwitchVal]);
                 UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][2][5][realSwitchVal]);
                 uiUpdate=false;
@@ -1373,9 +1409,10 @@ function updateConfig()
         if(AA[presetVal][5][2]==2)
         {
 
-            realSwitchVal=UI.GetValue(aa_path.concat("LBY Switch Phase"))
+            LBYSwitchVal=UI.GetValue(aa_path.concat("LBY Switch Phase"))
             if(LBYSwitchVal!=LBYSwitchCache)
             {
+                LBYSwitchCache=LBYSwitchVal;
                 UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][2][2][realSwitchVal]);
                 UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][2][6][realSwitchVal]);
                 uiUpdate=false;
