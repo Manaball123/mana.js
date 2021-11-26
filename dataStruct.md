@@ -124,8 +124,7 @@ AA_MANAGER index explanations
 
 [i][1]:
     0: no antibruteforce
-    1: simple antibruteforce(aa invert)
-    2: complex antibruteforce(forces an aa switch,if switch enabled)
+    1: complex antibruteforce(forces an aa switch,if switch enabled)
 
 [i][2]:
     [every preset that's present in the loop]

@@ -3,6 +3,7 @@
 
 //TODO: check for slowwalk keybind name
 
+//TODO: check if aa inverter inverts overridden aa
 
 //TODO: ui updates
         //verify auth intergity with password
@@ -163,8 +164,7 @@ AA_MANAGER index explanations
 
 [i][1]:
     0: no antibruteforce
-    1: simple antibruteforce(aa invert)
-    2: complex antibruteforce(forces an aa switch,if switch enabled)
+    1: complex antibruteforce(forces an aa switch,if switch enabled)
 
 [i][2]:
     [every preset that's present in the loop]
@@ -590,7 +590,7 @@ UI.AddCheckbox(main_path,"Create New Preset");
 //preset management interface
 UI.AddDropdown(aa_control_path,"Conditions",["Standing","Running","Slow-Walking","Crouching","In Air","On Peek","Fake-Ducking","HS Active","DT Active","On Use","Knifing","Zeusing","Override Key 1","Override Key 2","Override Key 3","Override Key 4"],0);
 UI.AddDropdown(aa_control_path,"Switch",["Conditional","Sequenced","Random"],0);
-UI.AddDropdown(aa_control_path,"Bruteforce",["None","Simple","Complex"],0);
+UI.AddCheckbox(aa_control_path,"Anti Bruteforce");
 UI.AddMultiDropdown(aa_control_path,"Presets",["1","2"]);
 UI.AddSliderFloat(aa_control_path,"Switch Delay",0.01,4.0);
 UI.AddSliderFloat(aa_control_path,"Switch Delta",0.01,4.0);
@@ -645,8 +645,7 @@ var switchPhaseCounter=[0,0,0];
 var randomTimeOffset=[0.0,0.0,0.0];
 var randomOffsetHolder=[0,0,0];
 var swayCycleTimer=0.0;
-var bruteforceActive=false;
-
+var forceSwitch=false;
 function modeToString(variable)
 {
     switch(variable)
@@ -819,6 +818,7 @@ function updateAA(preset)
     }
     
 }
+
 //COURTESY TO MIXOLOGIST
 //REMEMBER TO EDIT
 //each time this activates, settings in menu gets updated
@@ -906,7 +906,7 @@ function OnHurt()
 
 
                 //change this to whatever ur using to switch directions/mode(maybe add a counter)
-                bruteforceActive=true;
+                forceSwitch=true;
 
 
 
@@ -1027,11 +1027,7 @@ function OnBulletImpact()
             {
                 lastHitTime = curtime;
 
-                
-
-
-                bruteforceActive=true
-                //Cheat.PrintChat("\x04 [MIXO-YAW Anti brute] 子弹与头部距离 "+headDist+"\n")
+                forceSwitch=true;
             }
         }
         lastImpacts[entity] = impact;
@@ -1437,7 +1433,7 @@ function updateConfig()
                     break;
                 //jitter
                 case 1:
-                    AA[presetVal][1][1]=UI.GetValue(aa_path.concat("Fake Offset"));``
+                    AA[presetVal][1][1]=UI.GetValue(aa_path.concat("Fake Offset"));
                     AA[presetVal][1][4]=UI.GetValue(aa_path.concat("Fake Delta"));
                     AA[presetVal][1][10]=UI.GetValue(aa_path.concat("Fake Delay"));
                     AA[presetVal][1][7]=UI.GetValue(aa_path.concat("Randomized Fake Delay"));
@@ -1460,7 +1456,7 @@ function updateConfig()
                     AA[presetVal][4][4]=UI.GetValue(aa_path.concat("Fake Delta"));
                     AA[presetVal][4][10]=UI.GetValue(aa_path.concat("Fake Delay"));
                     AA[presetVal][4][7]=UI.GetValue(aa_path.concat("Randomized Fake Delay"));
-                    AA[presetVal][4][13]=UI.GetValue(aa_path.concat("Fake Delay MaxDelta"))
+                    AA[presetVal][4][13]=UI.GetValue(aa_path.concat("Fake Delay MaxDelta"));
                     break;
             }
             //lby
@@ -1587,39 +1583,62 @@ function switchAA()
         currentAAMode=0;
     }
     //if aa loop should continue(hasnt changed mode yet)
+    //TODO: CHECK FOR SWITHC LOGIC
     if(currentAAMode==cachedAAMode)
     {
         currentTime=Globals.Realtime();
 
-        //if current phase finished
-        if(currentTime>=clampTo(modeTimer+modeDelay+modeDelta,0.015625,0))
+        //if current phase finished/forced a switch
+        if(AA_MANAGER[currentAAMode][0]!=0)
         {
-
-            
-            modeTimer=Globals.Realtime();
-            //possible optmization, but im lazy
-            //calculate and save length internally
-            if(modeCounter<AA_MANAGER[modeOffset][2].length)
-            {    
-                modeCounter++;
-            }
-            else
+            if(currentTime>=clampTo(modeTimer+modeDelay+modeDelta,0.015625,0) || forceSwitch==true)
             {
-                modeCounter=0;
-            }
+
+                
+                modeTimer=Globals.Realtime();
+                forceSwitch=false
+                //possible optmization, but im lazy
+                //calculate and save length internally
+                if(modeCounter<AA_MANAGER[currentAAMode][2].length)
+                {    
+                    modeCounter++;
+                }
+                else 
+                {
+                    modeCounter=0;
+                }
 
 
-            updateAA(AA[AA_MANAGER[currentAAMode][2][modeCounter]]);
-            //generate random offsets if enabled
-            if(AA_MANAGER[currentAAMode][0]==2)
-            {
-                modeOffset=zeroToNegOne(Math.round(Math.random()))*Math.random()*AA_MANAGER[modeOffset][4];
-            }
-            else
-            {
-                modeOffset=0;
+                updateAA(AA_MANAGER[currentAAMode][2][modeCounter]);
+                //generate random offsets if enabled
+                if(AA_MANAGER[currentAAMode][0]==2)
+                {
+                    modeOffset=zeroToNegOne(Math.round(Math.random()))*Math.random()*AA_MANAGER[currentAAMode][4];
+                }
+                else
+                {
+                    modeOffset=0;
+                }
             }
         }
+        else
+        {
+            if(forceSwitch==true)
+            {
+                forceSwitch==false;
+                if(modeCounter<AA_MANAGER[currentAAMode][2].length)
+                {    
+                    modeCounter++;
+                }
+                else
+                {
+                    modeCounter=0;
+                }
+                updateAA(AA_MANAGER[currentAAMode][2][modeCounter]);
+
+            }
+        }
+        
 
     }
     //restart loop if not
@@ -1637,7 +1656,7 @@ function switchAA()
     
 }
 
-  
+
 
 Cheat.RegisterCallback("Draw","updateConfig");
 Cheat.RegisterCallback("CreateMove","switchAA");
