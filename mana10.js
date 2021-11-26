@@ -622,6 +622,11 @@ var LBYSwitchVal=0;
 var uiUpdate=false;
 
 var currentAAMode=0;
+var cachedAAMode=0;
+
+var modeCounter=0;
+var modeTimer=0.0;
+var modeOffset=0.0;
 
 var presetNames=["1","2"]
 var configName="Mana1";
@@ -703,7 +708,7 @@ function SetOffset(value,mode)
 function updateAA(preset) 
 {
     AntiAim.SetOverride(1)
-    currentTime=Globals.Realtime()
+    currentTime=Globals.Realtime();
     //iterate through 3 angle types
     for(i=0;i<3;i++)
     {
@@ -775,7 +780,7 @@ function updateAA(preset)
             //sway
             case 3:
                 swayCycleTimer[i]=clampTo(swayTimer[i]+AA[preset][3][i+6],0.015625,0);
-                if(currentTime<=swayCycleTimer)
+                if(currentTime<=swayCycleTimer[i])
                 {
                     //delta=(finish-start)
                     //percentage=(fullCycleTime-currentTime)/timePerCycle
@@ -1581,6 +1586,51 @@ function switchAA()
     {
         currentAAMode=0;
     }
+    //if aa loop should continue(hasnt changed mode yet)
+    if(currentAAMode==cachedAAMode)
+    {
+        currentTime=Globals.Realtime();
+
+        //if current phase finished
+        if(currentTime>=clampTo(modeTimer+modeDelay+modeDelta,0.015625,0))
+        {
+
+            
+            modeTimer=Globals.Realtime();
+            //possible optmization, but im lazy
+            //calculate and save length internally
+            if(modeCounter<AA_MANAGER[modeOffset][2].length)
+            {    
+                modeCounter++;
+            }
+            else
+            {
+                modeCounter=0;
+            }
+
+
+            updateAA(AA[AA_MANAGER[currentAAMode][2][modeCounter]]);
+            //generate random offsets if enabled
+            if(AA_MANAGER[currentAAMode][0]==2)
+            {
+                modeOffset=zeroToNegOne(Math.round(Math.random()))*Math.random()*AA_MANAGER[modeOffset][4];
+            }
+            else
+            {
+                modeOffset=0;
+            }
+        }
+
+    }
+    //restart loop if not
+    else
+    {
+        updateAA(AA[AA_MANAGER[currentAAMode][2][0]])
+        cachedAAMode=currentAAMode;
+        modeCounter=0;
+        modeTimer=Globals.Realtime();
+        modeOffset=0;
+    }
     
 
     
@@ -1590,7 +1640,7 @@ function switchAA()
   
 
 Cheat.RegisterCallback("Draw","updateConfig");
-Cheat.RegisterCallback("CreateMove","switchAA")
+Cheat.RegisterCallback("CreateMove","switchAA");
 //the antibruteforce i pasted
 Cheat.RegisterCallback("player_hurt", "OnHurt");
 Cheat.RegisterCallback("bullet_impact", "OnBulletImpact");
