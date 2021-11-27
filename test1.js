@@ -1,31 +1,25 @@
+UI.AddSubTab( [ "Config","SUBTAB_MGR" ], "Password");
+//js subtab
+UI.AddSubTab([ "Config","SUBTAB_MGR" ],"mana.js 1.0")
+//aa subtab
+UI.AddSubTab([ "Rage","SUBTAB_MGR" ],"Custom Anti-Aim")
+UI.AddSubTab([ "Rage","SUBTAB_MGR",],"AA Preset Manager")
 
-var template=
-[
-    [0,0,0], //static
-    [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //jitter
-    [
-        //arrays for switch, can potentially be changed
-        [0,0],//real
-        [0,0],//fake
-        [0,0],//lby
-        [1,1,1],//real,fake,lby max index of phase
-        [1.0,1.0],//real delay
-        [1.0,1.0],//fake delay
-        [1.0,1.0]//lby delay
-        
-    ],
-    [0,0,0,0,0,0,1.0,1.0,1.0], //sway
-    [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //random
-    [0,0,0],//modes
-    "Mana Default AA",//name
-];
+const main_path=["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"];
+const aa_path=["Rage","SUBTAB_MGR","Custom Anti-Aim","Custom Anti-Aim"];
+const aa_control_path=["Rage","SUBTAB_MGR","AA Preset Manager","AA Preset Manager"];
+const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "Key assignment"]
+
+
+UI.AddMultiDropdown(aa_control_path,"Presets",["1","2","3"]);
 
 var testArray=[template]
 function main()
 {
     //Cheat.Print(toString(testArray[0]));
-    Cheat.Print("value of arr is "+testArray.toString()+"\n")
-    Cheat.Print("value of 6eth eleemnt is"+testArray[0][6]+"\n")
+    var variable1=UI.GetValue(aa_control_path.concat("Presets"))
+    Cheat.Print("value of var is "+variable1.toString()+"\n")
+
 }
 
 
