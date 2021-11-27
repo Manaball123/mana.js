@@ -548,10 +548,10 @@ const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "K
 
 UI.AddTextbox([ "Config","SUBTAB_MGR","Password","SHEET_MGR","Password" ], "Config Password:");
 //update config settings
-UI.AddCheckbox(main_path,"UPDATE CONFIG(Tick this only if you're configuring)");
+UI.AddCheckbox(main_path,"UPDATE CONFIG");
 
 //aa settings(presets and stuff)
-UI.AddDropdown(aa_path,"Presets",["Mana Default AA"],0);
+UI.AddDropdown(aa_path,"Presets",presetNames,0);
 UI.AddTextbox(aa_path,"Rename Selected Preset");
 UI.AddCheckbox(aa_path,"Confirm");
 //real
@@ -560,9 +560,9 @@ UI.AddDropdown(aa_path,"Real Switch Phase",["1","2"],0);
 UI.AddSliderInt(aa_path,"Number Of Real Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"Real Offset",-180,180);
 UI.AddSliderInt(aa_path,"Real Delta",-180,180);
-UI.AddSliderFloat(aa_path,"Real Delay",0.01,4.0);
+UI.AddSliderInt(aa_path,"Real Delay",1,256);
 UI.AddCheckbox(aa_path,"Randomized Real Delay");
-UI.AddSliderFloat(aa_path,"Real Delay MaxDelta",0.01,2.0);
+UI.AddSliderInt(aa_path,"Real Delay MaxDelta",1,128);
 
 //fake
 UI.AddDropdown(aa_path,"Fake Mode",["Static","Jitter","Switch","Sway","Random"],0);
@@ -570,9 +570,9 @@ UI.AddDropdown(aa_path,"Fake Switch Phase",["1","2"],0);
 UI.AddSliderInt(aa_path,"Number Of Fake Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"Fake Offset",-60,60);
 UI.AddSliderInt(aa_path,"Fake Delta",-60,60);
-UI.AddSliderFloat(aa_path,"Fake Delay",0.01,4.0);
+UI.AddSliderInt(aa_path,"Fake Delay",1,256);
 UI.AddCheckbox(aa_path,"Randomized Fake Delay");
-UI.AddSliderFloat(aa_path,"Fake Delay MaxDelta",0.01,2.0);
+UI.AddSliderInt(aa_path,"Fake Delay MaxDelta",1,128);
 
 //lby
 UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"],0);
@@ -580,9 +580,9 @@ UI.AddDropdown(aa_path,"LBY Switch Phase",["1","2"],0);
 UI.AddSliderInt(aa_path,"Number Of LBY Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"LBY Offset",-30,30);
 UI.AddSliderInt(aa_path,"LBY Delta",-30,30);
-UI.AddSliderFloat(aa_path,"LBY Delay",0.01,4.0);
+UI.AddSliderInt(aa_path,"LBY Delay",1,256);
 UI.AddCheckbox(aa_path,"Randomized LBY Delay");
-UI.AddSliderFloat(aa_path,"LBY Delay MaxDelta",0.01,2.0);
+UI.AddSliderInt(aa_path,"LBY Delay MaxDelta",1,128);
 
 //preset interface
 UI.AddTextbox(main_path,"New Preset Name:");
@@ -596,22 +596,31 @@ UI.AddMultiDropdown(aa_control_path,"Presets",["1","2"]);
 UI.AddSliderFloat(aa_control_path,"Switch Delay",0.01,4.0);
 UI.AddSliderFloat(aa_control_path,"Switch Delta",0.01,4.0);
 
+//keybinds
+UI.AddHotkey(rage_keybinds,"AA Override Key 1","AA 1");
+UI.AddHotkey(rage_keybinds,"AA Override Key 2","AA 2");
+UI.AddHotkey(rage_keybinds,"AA Override Key 3","AA 3");
+UI.AddHotkey(rage_keybinds,"AA Override Key 4","AA 4");
+
+
+
 
 
 /*
 UI.AddSubTab(["Config", "SUBTAB_MGR"], "Config Subtab");
 UI.AddDropdown(["Config", "SUBTAB_MGR", "Config Subtab", "Config Subtab"], "Dropdown", ["element 1", "element 2"], 0);
 */
-var presetCache=UI.GetValue(aa_path.concat("Presets"));
-var realModeCache=UI.GetValue(aa_path.concat("Real Mode"));
-var fakeModeCache=UI.GetValue(aa_path.concat("Fake Mode"));
-var LBYModeCache=UI.GetValue(aa_path.concat("LBY Mode"));
+var presetCache=99;
 
-var presetVal=UI.GetValue(aa_path.concat("Presets"));
+var realModeCache=99;
+var fakeModeCache=99;
+var LBYModeCache=99;
+
+var presetVal=0;
 //forces an update
-var realModeVal=99;
-var fakeModeVal=99;
-var LBYModeVal=99;
+var realModeVal=0;
+var fakeModeVal=0;
+var LBYModeVal=0;
 
 //forces an update
 var realSwitchCache=99;
@@ -633,24 +642,26 @@ var modeOffset=0.0;
 
 var initializePresets=true;
 
-var presetNames=["1","2"]
+var presetNames=["1","2"];
 var configName="Mana1";
 //timers:
 //0=real,1=fake,2=lby
-var jitterTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()];
-var switchTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()];
-var swayTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()];
-var randomTimer=[Globals.Realtime(),Globals.Realtime(),Globals.Realtime()];
-var swayCycleTimer=[0.15625,0.15625,0.15625];
+var jitterTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
+var switchTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
+var swayTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
+var randomTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
+var swayCycleTimer=[0,0,0];
 
-var currentTime=Globals.Realtime();
-var jitterTimeOffset=[0.0,0.0,0.0];
+var currentTime=Globals.Tickcount();
+var jitterTimeOffset=[0,0,0];
 var jitterPhaseCounter=[0,0,0];
 var switchPhaseCounter=[0,0,0];
-var randomTimeOffset=[0.0,0.0,0.0];
+var randomTimeOffset=[0,0,0];
 var randomOffsetHolder=[0,0,0];
-var swayCycleTimer=0.0;
+
 var forceSwitch=false;
+
+//not needed?
 function modeToString(variable)
 {
     switch(variable)
@@ -673,6 +684,7 @@ function modeToString(variable)
 }
 
 //converts internal index to user-named aa presets
+//GODDAMN THIS FUNCTION
 function findIndex(variable)
 {
     indexLen=AA.length
@@ -690,356 +702,6 @@ function findIndex(variable)
     }
 }
 
-//mode: 0=real, 1=fake, 2=lby
-function SetOffset(value,mode)
-{
-    
-    switch(mode)
-    {
-        case 0:
-            AntiAim.SetRealOffset(value);
-            break;
-        case 1:
-            AntiAim.SetFakeOffset(value);
-            break;
-        case 2:
-            AntiAim.SetLBYOffset(value);
-            break;
-    }
-}
-
-//aa
-function updateAA(preset) 
-{
-    AntiAim.SetOverride(1)
-    currentTime=Globals.Realtime();
-    //iterate through 3 angle types
-    for(i=0;i<3;i++)
-    {
-
-    
-        switch(AA[preset][5][i])
-        {
-            //static
-            case 0:
-                SetOffset(AA[preset][0][i],i);
-                break;
-
-            //jitter
-            case 1:
-
-                //if time to change phase
-                if(currentTime>=clampTo(jitterTimer[i]+AA[preset][1][i+9]+jitterTimeOffset[i],0.015625,0))
-                {
-                    
-                    jitterTimer[i]=currentTime;
-                    //generates offsets if randomized set to true
-                    if(AA[preset][1][i+6]==1)
-                    {
-                        jitterTimeOffset[i]=zeroToNegOne(Math.round(Math.random()))*Math.random()*AA[preset][1][i+12];
-                    }
-                    else
-                    {
-                        
-                        jitterTimeOffset[i]=0.0;
-                    }
-                    jitterPhaseCounter[i]=NOT(jitterPhaseCounter);
-                 
-                }        
-                if(jitterPhaseCounter[i]==0)
-                {
-                    SetOffset(AA[preset][1][i],i);
-                }
-                else
-                {
-                    SetOffset(AA[preset][1][i]+AA[preset][1][i+3],i);
-                }
-                break;
-                
-
-            //switch
-            case 2:
-                
-                
-                //if phase completed
-                if(currentTime>=clampTo(switchTimer[i]+AA[preset][2][i+4][i],0.015625,0))
-                {
-                    //if phase index maxed out
-                    if(switchPhaseCounter[i]>=AA[preset][2][3][i])
-                    {
-                        switchPhaseCounter[i]=0;
-                    }
-                    else
-                    {
-                        switchPhaseCounter[i]++;
-                    }
-                    //set offset from phase
-                    SetOffset(AA[preset][2][i][switchPhaseCounter],i);
-                    
-                }
-                break;
-
-
-
-            //sway
-            case 3:
-                swayCycleTimer[i]=clampTo(swayTimer[i]+AA[preset][3][i+6],0.015625,0);
-                if(currentTime<=swayCycleTimer[i])
-                {
-                    //delta=(finish-start)
-                    //percentage=(fullCycleTime-currentTime)/timePerCycle
-
-                    SetOffset(round(AA[preset][3][i]+(AA[preset][3][i+3]*(swayCycleTimer[i]/AA[preset][3][i+6]))),i);
-                }
-                else
-                {
-                    swayTimer[i]=currentTime;
-                    SetOffset(AA[preset][3][i]);
-                }
-                break;
-
-            //random
-            case 4:
-                if(currentTime>=clampTo(jitterTimer[i]+AA[preset][1][i+6]+randomTimeOffset[i],0.015625,0))
-                {
-                    randomTimer[i]=currentTime;
-                    //generates offsets if randomized set to true
-                    if(AA[preset][1][9+i]==1)
-                    {
-                        RandomTimeOffset[i]=zeroToNegOne(Math.round(Math.random()))*Math.random()*AA[preset][4][i+12];
-                    }
-                    else
-                    {
-                        RandomTimeOffset[i]=0.0;                      
-                    }
-                    SetOffset(zeroToNegOne(Math.round(Math.random()))*Math.random()*AA[preset][4][i+3],i);
-                
-                }
-                break;
-                
-              
-               
-        }
-    }
-    
-}
-
-//COURTESY TO MIXOLOGIST
-//REMEMBER TO EDIT
-//each time this activates, settings in menu gets updated
-//IMPORTANT
-//the reason this is a thing is due to how resource intensive it is to read a ton of sliders every single tick
-//so sliders are essentially just an interface and youd actually have to update a config for it to work
-UI.AddSubTab(["Rage", "SUBTAB_MGR"], "MIXO-YAW");
-UI.AddCheckbox(["Rage", "MIXO-YAW", "MIXO-YAW"], "Anti bruteforce");
-
-
-
-//REAL SHIT
-
-function ClosestPointOnRay(target, rayStart, rayEnd)
-{
-    //delta of the vectors(range that bullet travels)
-    
-    var to = VectorSubtract(target, rayStart);
-    var dir = VectorSubtract(rayEnd, rayStart);
-    //length of bullet beam
-    var length = VectorLength(dir[0], dir[1], dir[2]);
-    
-    //proving my theory that this is some sort of "abseloute direction"
-    dir = VectorNormalize(dir);
-
-    //dot product of the enemy bullet beam to enemy--> player
-    var rangeAlong = VectorDot(dir, to);
-
-
-    //these check for if angle between 2 rays >90
-    if (rangeAlong < 0.0)
-    {
-        return rayStart;
-    }
-    if (rangeAlong > length)
-    {
-        return rayEnd;
-    }
-
-    //WHAT. IS. THIS. 
-    //Seriously, what the fuck is this???
-    //goddamn fucking chink, confuses me on the VERY FUCKING LAST PART OF THIS SHIT REEEEEEEEEEEEEEEEEEEEEEEE
-    
-    //ok....? I kinda know what this, but shouldnt it be vector subtract or something?
-    return VectorAdd(rayStart, VectorMultiply(dir, [rangeAlong, rangeAlong, rangeAlong]));
-}
-
-
-
-//retard var decls
-var lastHitTime = 0.0;
-
-//HAHAHA look at this shit, tfw u indent a single fucking array lmfao
-var lastImpactTimes =
-[
-    0.0
-];
-var lastImpacts =
-[
-    [0.0, 0.0, 0.0]
-];
-
-//function gets called when ANY player gets hurt
-function OnHurt()
-{
-    //break if antibrute not enabled(lol)
-    if (!UI.GetValue(["Rage", "MIXO-YAW", "MIXO-YAW", "Anti bruteforce"])) return;
-
-    //if the player that got hurt isnt local player
-    if (Entity.GetEntityFromUserID(Event.GetInt("userid")) !== Entity.GetLocalPlayer()) return;
-
-        //from player_hurt event
-        var hitbox = Event.GetInt('hitgroup');
-        //if hit head or legs(kek)
-        if (hitbox == 1 || hitbox == 6 || hitbox == 7)
-        {
-            var curtime = Global.Curtime();
-            // if didnt switch in the last .5 secs ig
-            if (Math.abs(lastHitTime - curtime) > 0.5)
-            {
-                lastHitTime = curtime;
-                //OUTPUT OF THIS WHOLE THING IS HERE:::
-
-
-
-
-                //change this to whatever ur using to switch directions/mode(maybe add a counter)
-                forceSwitch=true;
-
-
-
-
-                //Cheat.PrintChat("\x04 [MIXO-YAW] \x02On Hit Anti MIXO-YAW\n")
-            }
-        }
-  
-  
-}
-function OnBulletImpact()
-{
-
-    //again, break if not enabled
-    if (!UI.GetValue(["Rage", "MIXO-YAW", "MIXO-YAW", "Anti bruteforce"])) return;
-
-    var curtime = Global.Curtime();
-
-    //doesnt switch again if switched in the last .5 secs
-    if (Math.abs(lastHitTime - curtime) < 0.5) return;
-
-    var entity = Entity.GetEntityFromUserID(Event.GetInt("userid"));
-    var impact = [Event.GetFloat("x"), Event.GetFloat("y"), Event.GetFloat("z"), curtime];
-
-    //whats this
-    var source;
-    
-    //if bullet comes from enemy
-    if (Entity.IsValid(entity) && Entity.IsEnemy(entity))
-    {
-        //if enemy isnt dormant
-        if (!Entity.IsDormant(entity))
-        {
-            //get the source of the bullet(enemy eye pos)
-            source = Entity.GetEyePosition(entity);
-        }
-        //
-        else if (Math.abs(lastImpactTimes[entity] - curtime) < 0.1)
-        {
-            //whats this?
-            //why is the index "entity" when the array contains coordinate values?
-            source = lastImpacts[entity];
-        }
-        else
-        {
-            lastImpacts[entity] = impact;
-            lastImpactTimes[entity] = curtime;
-            return;
-        }
-        //variable stuff ig, no idea what some of them are
-        //NVM, THIS SHIT IS SO FUNNY HAHHAHA
-        //only bodydist is actually used, everything else is basically placeholders rofll
-        var local = Entity.GetLocalPlayer();
-        var localEye = Entity.GetEyePosition(local);
-        var localOrigin = Entity.GetProp(local, "CBaseEntity", "m_vecOrigin");
-        var localBody = VectorMultiply(VectorAdd(localEye, localOrigin), [0.5, 0.5, 0.5]);
-        
-        
-        var bodyVec = ClosestPointOnRay(localBody, source, impact);
-        var bodyDist = VectorDistance(localBody, bodyVec);
-      
-        //if bullet went close to the player BODY
-        if (bodyDist < 85.0)
-        {
-            var realAngle = Local.GetRealYaw();
-            var fakeAngle = Local.GetFakeYaw();
-            //get bullet dist from head
-            var headVec = ClosestPointOnRay(localEye, source, impact);
-            var headDist = VectorDistance(localEye, headVec);
-
-            //get bullet dist from feet(lmao)
-            var feetVec = ClosestPointOnRay(localOrigin, source, impact);
-            var feetDist = VectorDistance(localOrigin, feetVec);
-            var closestRayPoint;
-            var realPos;
-            var fakePos;
-            //no idea what this is
-            if (bodyDist < headDist && bodyDist < feetDist)
-            {            
-                closestRayPoint = bodyVec;
-                realPos = ExtendVector(bodyVec, realAngle + 180.0, 10.0);
-                fakePos = ExtendVector(bodyVec, fakeAngle + 180.0, 10.0);
-            }
-            else if (feetDist < headDist)
-            {                         
-                closestRayPoint = feetVec;
-                var realPos1 = ExtendVector(bodyVec, realAngle - 30.0 + 60.0, 10.0);
-                var realPos2 = ExtendVector(bodyVec, realAngle - 30.0 - 60.0, 10.0);
-                var fakePos1 = ExtendVector(bodyVec, fakeAngle - 30.0 + 60.0, 10.0);
-                var fakePos2 = ExtendVector(bodyVec, fakeAngle - 30.0 - 60.0, 10.0);
-                if (VectorDistance(feetVec, realPos1) < VectorDistance(feetVec, realPos2))
-                {
-                    realPos = realPos1;
-                }
-                else
-                {
-                    realPos = realPos2;
-                }
-                if (VectorDistance(feetVec, fakePos1) < VectorDistance(feetVec, fakePos2))
-                {
-                    fakePos = fakePos1;
-                }
-                else
-                {
-                    fakePos = fakePos2;
-                }
-            }
-            else                         
-            {
-                closestRayPoint = headVec;
-                realPos = ExtendVector(bodyVec, realAngle, 10.0);
-                fakePos = ExtendVector(bodyVec, fakeAngle, 10.0);
-            }
-            headDist = headDist.toFixed(1);
-
-            //if bullet shot closer to fake
-            if (VectorDistance(closestRayPoint, fakePos) < VectorDistance(closestRayPoint, realPos))
-            {
-                lastHitTime = curtime;
-
-                forceSwitch=true;
-            }
-        }
-        lastImpacts[entity] = impact;
-        lastImpactTimes[entity] = curtime;
-    }
-}
-
 
 
 function updatePresetNames()
@@ -1053,39 +715,41 @@ function updatePresetNames()
     
 
     UI.UpdateList(aa_path.concat("Presets"),presetNames)
+    UI.UpdateList(aa_control_path.concat("Presets"),presetNames)
 
 
 }
 
-
+//the reason this is a thing is due to how resource intensive it is to read a ton of sliders every single tick
+//so sliders are essentially just an interface and youd actually have to update a config for it to work
 function updateConfig()
 {
-    Cheat.Print(toString(UI.GetValue(aa_path.concat("Presets"))))
+    Cheat.Print(toString(UI.GetValue(aa_path.concat("Presets"))));
      
     
-    if(UI.GetValue(main_path.concat("UPDATE CONFIG(Tick this only if you're configuring)"))==1)
+    if(UI.GetValue(main_path.concat("UPDATE CONFIG"))==1)
     {
         // do magic here
 
-        Cheat.Print(toString(UI.GetValue(aa_path.concat("Presets"))))
-        Cheat.Print("helo")
-        presetVal=UI.GetValue(aa_path.concat("Presets"))
+        Cheat.Print(toString(UI.GetValue(aa_path.concat("Presets"))));
+        Cheat.Print(AA[0][6]);
+        presetVal=UI.GetValue(aa_path.concat("Presets"));
         if(presetVal==null)
         {
-            return;
+            UI.SetValue(aa_path.concat("Presets"),0);
+            presetVal=0;
         }
-        
-        uiUpdate=false;
+
         //updating aa tab
         if(UI.GetValue(main_path.concat("Create New Preset"))==1 || initializePresets==true)
         {
             initializePresets=false;
-            UI.SetValue(main_path.concat("Create New Preset"),0)
-            currentLength=AA.length-1
-            AA[currentLength]=presetTemplate
+            UI.SetValue(main_path.concat("Create New Preset"),0);
+            currentLength=AA.length-1;
+            AA[currentLength]=presetTemplate;
             AA[currentLength][6]=UI.GetString(main_path.concat("New Preset Name:"));
-            //Cheat.Print(UI.GetValue(main_path.concat("New Preset Name:")));
             updatePresetNames();
+
 
         }
         //if(UI.GetValue(aa_path.concat("")))
@@ -1098,15 +762,14 @@ function updateConfig()
         {
             presetCache=presetVal;
             uiUpdate=true;
-            presetIndex=findIndex(presetVal);
-            UI.SetValue(aa_path,"Real Mode",AA[presetIndex][5][0]);
-            UI.SetValue(aa_path,"Fake Mode",AA[presetIndex][5][1]);
-            UI.SetValue(aa_path,"LBY Mode",AA[presetIndex][5][2]);
+            UI.SetValue(aa_path.concat("Real Mode"),AA[presetVal][5][0]);
+            UI.SetValue(aa_path.concat("Fake Mode"),AA[presetVal][5][1]);
+            UI.SetValue(aa_path.concat("LBY Mode"),AA[presetIndex][5][2]);
             
         }
         //if stuff here changed
         realModeVal=UI.GetValue(aa_path.concat("Real Mode"));
-        fakeModeVal=UI.GetValue(aa_path.concat("Fake Mode"));
+        fakeModeVal=UI.GetValue(aa_path.concat("Fake Mode")); 
         LBYModeVal=UI.GetValue(aa_path.concat("LBY Mode"));
 
 
@@ -1532,6 +1195,8 @@ function updateConfig()
                     break;
             }
         }
+        //AA Manager UI
+
 
 
         
@@ -1544,23 +1209,373 @@ function updateConfig()
     
 }
 
+//mode: 0=real, 1=fake, 2=lby
+function SetOffset(value,mode)
+{
+    
+    switch(mode)
+    {
+        case 0:
+            AntiAim.SetRealOffset(value);
+            break;
+        case 1:
+            AntiAim.SetFakeOffset(value);
+            break;
+        case 2:
+            AntiAim.SetLBYOffset(value);
+            break;
+    }
+}
+
+//aa
+function updateAA(preset) 
+{
+    AntiAim.SetOverride(1);
+    currentTime=Globals.Tickcount();
+    //iterate through 3 angle types
+    for(i=0;i<3;i++)
+    {
+
+    
+        switch(AA[preset][5][i])
+        {
+            //static
+            case 0:
+                SetOffset(AA[preset][0][i],i);
+                break;
+
+            //jitter
+            case 1:
+
+                //if time to change phase
+                if(currentTime>=clampTo(jitterTimer[i]+AA[preset][1][i+9]+jitterTimeOffset[i],1,0))
+                {
+                    
+                    jitterTimer[i]=currentTime;
+                    //generates offsets if randomized set to true
+                    if(AA[preset][1][i+6]==1)
+                    {
+                        jitterTimeOffset[i]=Math.round(zeroToNegOne(Math.round(Math.random()))*Math.random()*AA[preset][1][i+12]);
+                    }
+                    else
+                    {
+                        jitterTimeOffset[i]=0;
+                    }
+                    
+                    
+                    jitterPhaseCounter[i]=NOT(jitterPhaseCounter[i]);
+                    
+                }        
+                if(jitterPhaseCounter[i]==0)
+                {
+                    SetOffset(AA[preset][1][i],i);
+                }
+                else
+                {
+                    SetOffset(AA[preset][1][i]+AA[preset][1][i+3],i);
+                } 
+                
+
+            //switch
+            case 2:
+                
+                
+                //if phase completed
+                if(currentTime>=clampTo(switchTimer[i]+AA[preset][2][i+4][i],1,0))
+                {
+                    //if phase index maxed out
+                    if(switchPhaseCounter[i]>=AA[preset][2][3][i])
+                    {
+                        switchPhaseCounter[i]=0;
+                    }
+                    else
+                    {
+                        switchPhaseCounter[i]++;
+                    }
+                    //set offset from phase
+                    SetOffset(AA[preset][2][i][switchPhaseCounter],i);
+                    
+                }
+                break;
+
+
+
+            //sway
+            case 3:
+                swayCycleTimer[i]=clampTo(swayTimer[i]+AA[preset][3][i+6],1,0);
+                if(currentTime<=swayCycleTimer[i])
+                {
+                    //delta=(finish-start)
+                    //percentage=(fullCycleTime-currentTime)/timePerCycle
+
+                    SetOffset(Math.round(AA[preset][3][i]+(AA[preset][3][i+3]*(swayCycleTimer[i]/AA[preset][3][i+6]))),i);
+                }
+                else
+                {
+                    swayTimer[i]=currentTime;
+                    SetOffset(AA[preset][3][i]);
+                }
+                break;
+
+            //random
+            case 4:
+                if(currentTime>=clampTo(jitterTimer[i]+AA[preset][1][i+6]+randomTimeOffset[i],1,0))
+                {
+                    randomTimer[i]=currentTime;
+                    //generates offsets if randomized set to true
+                    if(AA[preset][1][9+i]==1)
+                    {
+                        RandomTimeOffset[i]=Math.round(zeroToNegOne(Math.round(Math.random()))*Math.random()*AA[preset][4][i+12]);
+                    }
+                    else
+                    {
+                        RandomTimeOffset[i]=0;                      
+                    }
+                    SetOffset(Math.round(zeroToNegOne(Math.round(Math.random()))*Math.random()*AA[preset][4][i+3],i));
+                
+                }
+                break;
+                
+              
+               
+        }
+    }
+    
+}
+
+//COURTESY TO MIXOLOGIST
+//REMEMBER TO EDIT
+//each time this activates, settings in menu gets updated
+//IMPORTANT
+
+UI.AddSubTab(["Rage", "SUBTAB_MGR"], "MIXO-YAW");
+UI.AddCheckbox(["Rage", "MIXO-YAW", "MIXO-YAW"], "Anti bruteforce");
+
+
+
+//REAL SHIT
+
+function ClosestPointOnRay(target, rayStart, rayEnd)
+{
+    //delta of the vectors(range that bullet travels)
+    
+    var to = VectorSubtract(target, rayStart);
+    var dir = VectorSubtract(rayEnd, rayStart);
+    //length of bullet beam
+    var length = VectorLength(dir[0], dir[1], dir[2]);
+    
+    //proving my theory that this is some sort of "abseloute direction"
+    dir = VectorNormalize(dir);
+
+    //dot product of the enemy bullet beam to enemy--> player
+    var rangeAlong = VectorDot(dir, to);
+
+
+    //these check for if angle between 2 rays >90
+    if (rangeAlong < 0.0)
+    {
+        return rayStart;
+    }
+    if (rangeAlong > length)
+    {
+        return rayEnd;
+    }
+
+    //WHAT. IS. THIS. 
+    //Seriously, what the fuck is this???
+    //goddamn fucking chink, confuses me on the VERY FUCKING LAST PART OF THIS SHIT REEEEEEEEEEEEEEEEEEEEEEEE
+    
+    //ok....? I kinda know what this, but shouldnt it be vector subtract or something?
+    return VectorAdd(rayStart, VectorMultiply(dir, [rangeAlong, rangeAlong, rangeAlong]));
+}
+
+
+
+//retard var decls
+var lastHitTime = 0.0;
+
+//HAHAHA look at this shit, tfw u indent a single fucking array lmfao
+var lastImpactTimes =
+[
+    0.0
+];
+var lastImpacts =
+[
+    [0.0, 0.0, 0.0]
+];
+
+//function gets called when ANY player gets hurt
+function OnHurt()
+{
+    //break if antibrute not enabled(lol)
+    if (!UI.GetValue(["Rage", "MIXO-YAW", "MIXO-YAW", "Anti bruteforce"])) return;
+
+    //if the player that got hurt isnt local player
+    if (Entity.GetEntityFromUserID(Event.GetInt("userid")) !== Entity.GetLocalPlayer()) return;
+
+        //from player_hurt event
+        var hitbox = Event.GetInt('hitgroup');
+        //if hit head or legs(kek)
+        if (hitbox == 1 || hitbox == 6 || hitbox == 7)
+        {
+            var curtime = Global.Curtime();
+            // if didnt switch in the last .5 secs ig
+            if (Math.abs(lastHitTime - curtime) > 0.5)
+            {
+                lastHitTime = curtime;
+                //OUTPUT OF THIS WHOLE THING IS HERE:::
+
+
+
+
+                //change this to whatever ur using to switch directions/mode(maybe add a counter)
+                forceSwitch=true;
+
+
+
+
+                //Cheat.PrintChat("\x04 [MIXO-YAW] \x02On Hit Anti MIXO-YAW\n")
+            }
+        }
+  
+  
+}
+function OnBulletImpact()
+{
+
+    //again, break if not enabled
+    if (!UI.GetValue(["Rage", "MIXO-YAW", "MIXO-YAW", "Anti bruteforce"])) return;
+
+    var curtime = Global.Curtime();
+
+    //doesnt switch again if switched in the last .5 secs
+    if (Math.abs(lastHitTime - curtime) < 0.5) return;
+
+    var entity = Entity.GetEntityFromUserID(Event.GetInt("userid"));
+    var impact = [Event.GetFloat("x"), Event.GetFloat("y"), Event.GetFloat("z"), curtime];
+
+    //whats this
+    var source;
+    
+    //if bullet comes from enemy
+    if (Entity.IsValid(entity) && Entity.IsEnemy(entity))
+    {
+        //if enemy isnt dormant
+        if (!Entity.IsDormant(entity))
+        {
+            //get the source of the bullet(enemy eye pos)
+            source = Entity.GetEyePosition(entity);
+        }
+        //
+        else if (Math.abs(lastImpactTimes[entity] - curtime) < 0.1)
+        {
+            //whats this?
+            //why is the index "entity" when the array contains coordinate values?
+            source = lastImpacts[entity];
+        }
+        else
+        {
+            lastImpacts[entity] = impact;
+            lastImpactTimes[entity] = curtime;
+            return;
+        }
+        //variable stuff ig, no idea what some of them are
+        //NVM, THIS SHIT IS SO FUNNY HAHHAHA
+        //only bodydist is actually used, everything else is basically placeholders rofll
+        var local = Entity.GetLocalPlayer();
+        var localEye = Entity.GetEyePosition(local);
+        var localOrigin = Entity.GetProp(local, "CBaseEntity", "m_vecOrigin");
+        var localBody = VectorMultiply(VectorAdd(localEye, localOrigin), [0.5, 0.5, 0.5]);
+        
+        
+        var bodyVec = ClosestPointOnRay(localBody, source, impact);
+        var bodyDist = VectorDistance(localBody, bodyVec);
+      
+        //if bullet went close to the player BODY
+        if (bodyDist < 85.0)
+        {
+            var realAngle = Local.GetRealYaw();
+            var fakeAngle = Local.GetFakeYaw();
+            //get bullet dist from head
+            var headVec = ClosestPointOnRay(localEye, source, impact);
+            var headDist = VectorDistance(localEye, headVec);
+
+            //get bullet dist from feet(lmao)
+            var feetVec = ClosestPointOnRay(localOrigin, source, impact);
+            var feetDist = VectorDistance(localOrigin, feetVec);
+            var closestRayPoint;
+            var realPos;
+            var fakePos;
+            //no idea what this is
+            if (bodyDist < headDist && bodyDist < feetDist)
+            {            
+                closestRayPoint = bodyVec;
+                realPos = ExtendVector(bodyVec, realAngle + 180.0, 10.0);
+                fakePos = ExtendVector(bodyVec, fakeAngle + 180.0, 10.0);
+            }
+            else if (feetDist < headDist)
+            {                         
+                closestRayPoint = feetVec;
+                var realPos1 = ExtendVector(bodyVec, realAngle - 30.0 + 60.0, 10.0);
+                var realPos2 = ExtendVector(bodyVec, realAngle - 30.0 - 60.0, 10.0);
+                var fakePos1 = ExtendVector(bodyVec, fakeAngle - 30.0 + 60.0, 10.0);
+                var fakePos2 = ExtendVector(bodyVec, fakeAngle - 30.0 - 60.0, 10.0);
+                if (VectorDistance(feetVec, realPos1) < VectorDistance(feetVec, realPos2))
+                {
+                    realPos = realPos1;
+                }
+                else
+                {
+                    realPos = realPos2;
+                }
+                if (VectorDistance(feetVec, fakePos1) < VectorDistance(feetVec, fakePos2))
+                {
+                    fakePos = fakePos1;
+                }
+                else
+                {
+                    fakePos = fakePos2;
+                }
+            }
+            else                         
+            {
+                closestRayPoint = headVec;
+                realPos = ExtendVector(bodyVec, realAngle, 10.0);
+                fakePos = ExtendVector(bodyVec, fakeAngle, 10.0);
+            }
+            headDist = headDist.toFixed(1);
+
+            //if bullet shot closer to fake
+            if (VectorDistance(closestRayPoint, fakePos) < VectorDistance(closestRayPoint, realPos))
+            {
+                lastHitTime = curtime;
+
+                forceSwitch=true;
+            }
+        }
+        lastImpacts[entity] = impact;
+        lastImpactTimes[entity] = curtime;
+    }
+}
+
+
 //handles presets ig
 function switchAA()
 {
     //if overriding(highest priority)
-    if(UI.GetHotkeyState(rage_keybinds.concat("Override Key 4")==1))
+    if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 4")==1))
     {
         currentAAMode=15;
     }
-    else if(UI.GetHotkeyState(rage_keybinds.concat("Override Key 3")==1))
+    else if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 3")==1))
     {
         currentAAMode=14;
     }
-    else if(UI.GetHotkeyState(rage_keybinds.concat("Override Key 2")==1))
+    else if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 2")==1))
     {
         currentAAMode=13;
     }
-    else if(UI.GetHotkeyState(rage_keybinds.concat("Override Key 1")==1))
+    else if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 1")==1))
     {
         currentAAMode=12;
     }
@@ -1623,7 +1638,7 @@ function switchAA()
     //TODO: CHECK FOR SWITHC LOGIC
     if(currentAAMode==cachedAAMode)
     {
-        currentTime=Globals.Realtime();
+        currentTime=Globals.Tickcount();
 
         //if current phase finished/forced a switch
         if(AA_MANAGER[currentAAMode][0]!=0)
@@ -1632,7 +1647,7 @@ function switchAA()
             {
 
                 
-                modeTimer=Globals.Realtime();
+                modeTimer=Globals.Tickcount();
                 forceSwitch=false
                 //possible optmization, but im lazy
                 //calculate and save length internally
@@ -1684,7 +1699,7 @@ function switchAA()
         updateAA(AA[AA_MANAGER[currentAAMode][2][0]])
         cachedAAMode=currentAAMode;
         modeCounter=0;
-        modeTimer=Globals.Realtime();
+        modeTimer=Globals.Tickcount();
         modeOffset=0;
     }
     
