@@ -593,8 +593,8 @@ UI.AddDropdown(aa_control_path,"Conditions",["Standing","Running","Slow-Walking"
 UI.AddDropdown(aa_control_path,"Switch",["Conditional","Sequenced","Random"],0);
 UI.AddCheckbox(aa_control_path,"Anti Bruteforce");
 UI.AddMultiDropdown(aa_control_path,"Presets",["1","2"]);
-UI.AddSliderFloat(aa_control_path,"Switch Delay",0.01,4.0);
-UI.AddSliderFloat(aa_control_path,"Switch Delta",0.01,4.0);
+UI.AddSliderFloat(aa_control_path,"Switch Delay",1,256);
+UI.AddSliderFloat(aa_control_path,"Switch Delta",1,256);
 
 //keybinds
 UI.AddHotkey(rage_keybinds,"AA Override Key 1","AA 1");
@@ -1407,9 +1407,6 @@ var lastImpacts =
 //function gets called when ANY player gets hurt
 function OnHurt()
 {
-    //break if antibrute not enabled(lol)
-    if (!UI.GetValue(["Rage", "MIXO-YAW", "MIXO-YAW", "Anti bruteforce"])) return;
-
     //if the player that got hurt isnt local player
     if (Entity.GetEntityFromUserID(Event.GetInt("userid")) !== Entity.GetLocalPlayer()) return;
 
@@ -1423,18 +1420,7 @@ function OnHurt()
             if (Math.abs(lastHitTime - curtime) > 0.5)
             {
                 lastHitTime = curtime;
-                //OUTPUT OF THIS WHOLE THING IS HERE:::
-
-
-
-
-                //change this to whatever ur using to switch directions/mode(maybe add a counter)
                 forceSwitch=true;
-
-
-
-
-                //Cheat.PrintChat("\x04 [MIXO-YAW] \x02On Hit Anti MIXO-YAW\n")
             }
         }
   
@@ -1443,11 +1429,7 @@ function OnHurt()
 function OnBulletImpact()
 {
 
-    //again, break if not enabled
-    if (!UI.GetValue(["Rage", "MIXO-YAW", "MIXO-YAW", "Anti bruteforce"])) return;
-
     var curtime = Global.Curtime();
-
     //doesnt switch again if switched in the last .5 secs
     if (Math.abs(lastHitTime - curtime) < 0.5) return;
 
