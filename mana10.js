@@ -636,9 +636,11 @@ var modeVal=0;
 var modeCache=0;
 
 var uiUpdate=false;
+var presetUpdate=false;
 
 var currentAAMode=0;
 var cachedAAMode=0;
+
 
 
 var modeCounter=0;
@@ -755,6 +757,8 @@ function updateConfig()
     if(UI.GetValue(main_path.concat("UPDATE CONFIG"))==1)
     {
         // do magic here
+        uiUpdate=false;
+        presetUpdate=false;
 
         Cheat.Print(toString(UI.GetValue(aa_path.concat("Presets"))));
         Cheat.Print(AA[0][6]);
@@ -1077,7 +1081,7 @@ function updateConfig()
                 realSwitchCache=realSwitchVal;
                 UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][2][0][realSwitchVal]);
                 UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][2][4][realSwitchVal]);
-                uiUpdate=false;
+                uiUpdate=true;
             }
         }
         //fake
@@ -1091,7 +1095,7 @@ function updateConfig()
                 fakeSwitchCache=fakeSwitchVal;
                 UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][2][1][realSwitchVal]);
                 UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][2][5][realSwitchVal]);
-                uiUpdate=false;
+                uiUpdate=true;
             }
         }
         //lby
@@ -1104,7 +1108,7 @@ function updateConfig()
                 LBYSwitchCache=LBYSwitchVal;
                 UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][2][2][realSwitchVal]);
                 UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][2][6][realSwitchVal]);
-                uiUpdate=false;
+                uiUpdate=true;
             }
         }
 
@@ -1225,23 +1229,38 @@ function updateConfig()
         if(modeVal!=modeCache)
         {
             modeCache=modeVal;
+            UI.SetValue(aa_control_path.concat("Switch"),AA_MANAGER[modeVal][0]);
+            UI.SetValue(aa_control_path.concat("Anti Bruteforce"),AA_MANAGER[modeVal][1]);
+            UI.SetValue(aa_control_path.concat("Presets"),AA_MANAGER[modeVal][2])
+            presetUpdate=true;
             switch(AA_MANAGER[modeVal][0])
             {
                 case 0:
                     UI.SetEnabled(aa_control_path.concat("Switch Delay"),0);
                     UI.SetEnabled(aa_control_path.concat("Switch Delta"),0);
-
-                    
                     break;
                 case 1:
                     UI.SetEnabled(aa_control_path.concat("Switch Delay"),1);
                     UI.SetEnabled(aa_control_path.concat("Switch Delta"),0);
+             
+                    UI.SetValue(aa_control_path.concat("Switch Delay"),AA_MANAGER[modeVal][3]);
                     break;
                 case 2:
                     UI.SetEnabled(aa_control_path.concat("Switch Delay"),1);
                     UI.SetEnabled(aa_control_path.concat("Switch Delta"),1);
+
+                    UI.SetValue(aa_control_path.concat("Switch Delay"),AA_MANAGER[modeVal][3]);
+                    UI.SetValue(aa_control_path.concat("Switch Delta"),AA_MANAGER[modeVal][3]);
                     break;
             }
+        }
+        if(presetUpdate==false)
+        {
+            AA_MANAGER[modeVal][0]=UI.GetValue(aa_control_path.concat("Switch"));
+            AA_MANAGER[modeVal][1]=UI.GetValue(aa_control_path.concat("Anti Bruteforce"));
+            AA_MANAGER[modeVal][2]=UI.GetValue(aa_control_path.concat("Presets"));
+            AA_MANAGER[modeVal][3]=UI.GetValue(aa_control_path.concat("Switch Delay"));
+            AA_MANAGER[modeVal][4]=UI.GetValue(aa_control_path.concat("Switch Delta"));
         }
 
 
