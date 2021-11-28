@@ -194,7 +194,8 @@ var presetTemplate=
     [0,0,0],
     "Mana Default AA"
 ];
-var AA=[presetTemplate];
+var AA=[];
+
 var conditionTemplate=
 [
     0,
@@ -583,9 +584,10 @@ var modeCounter=0;
 var modeTimer=0.0;
 var modeOffset=0.0;
 
+var initAA=true;
 var initializePresets=true;
 
-var presetNames=["1","2"];
+var presetNames=["1"];
 var configName="Mana1";
 //timers:
 //0=real,1=fake,2=lby
@@ -653,7 +655,7 @@ UI.AddCheckbox(main_path,"Create New Preset");
 UI.AddDropdown(aa_control_path,"Conditions",["Standing","Running","Slow-Walking","Crouching","In Air","On Peek","Fake-Ducking","HS Active","DT Active","On Use","Knifing","Zeusing","Override Key 1","Override Key 2","Override Key 3","Override Key 4"],0);
 UI.AddDropdown(aa_control_path,"Switch",["Conditional","Sequenced","Random"],0);
 UI.AddCheckbox(aa_control_path,"Anti Bruteforce");
-UI.AddMultiDropdown(aa_control_path,"Presets",["1","2"]);
+UI.AddMultiDropdown(aa_control_path,"Presets",["1"]);
 UI.AddSliderInt(aa_control_path,"Switch Delay",1,256);
 UI.AddSliderInt(aa_control_path,"Switch Delta",1,256);
 
@@ -731,18 +733,21 @@ function updatePresetManager(index)
 
 function updatePresetNames()
 {
-    
+    presetNames=[]
+    Cheat.Print("Preset names are currently "+presetNames.toString()+"\n")
     for(i=0;i<AA.length;i++)
     {
+        Cheat.Print("aa i 6 is currently "+AA[i][6]+"\n")
         presetNames[i]=AA[i][6]
-        //Cheat.Print(presetNames[i]+"\n")
-        //Cheat.Print(presetTemplate.toString())
-        //Cheat.Print(AA.toString())
+        Cheat.Print("i is "+i.toString()+"\n")
+        Cheat.Print("Preset names are currently "+presetNames.toString()+"\n")
+        Cheat.Print("processing current perset name which is "+presetNames[i]+"\n")
+        
     }
     
 
-    UI.UpdateList(aa_path.concat("Presets"),presetNames)
-    UI.UpdateList(aa_control_path.concat("Presets"),presetNames)
+    UI.UpdateList(aa_path.concat("Presets"),presetNames);
+    UI.UpdateList(aa_control_path.concat("Presets"),presetNames);
 
 
 }
@@ -759,6 +764,12 @@ function updateConfig()
         // do magic here
         uiUpdate=false;
         presetUpdate=false;
+        if(initAA==true)
+        {
+            AA[0]=presetTemplate;
+            initAA=false;
+            updatePresetNames();
+        }
 
         //Cheat.Print(AA[0][6]);
         presetVal=UI.GetValue(aa_path.concat("Presets"));
@@ -769,14 +780,19 @@ function updateConfig()
         }
 
         //updating aa tab
-        if(UI.GetValue(main_path.concat("Create New Preset"))==1 || initializePresets==true)
+        if(UI.GetValue(main_path.concat("Create New Preset"))==1)
         {
-            initializePresets=false;
             UI.SetValue(main_path.concat("Create New Preset"),0);
-            currentLength=AA.length-1;
+            currentLength=AA.length;
+            Cheat.Print("appending template to index:  "+currentLength.toString()+"\n")
+            Cheat.Print("AA0 6 array before append: "+AA[0][6].toString()+"\n");
             AA[currentLength]=presetTemplate;
+            Cheat.Print("AA0 6 array after append: "+AA[0][6].toString()+"\n");
+            Cheat.Print("AA1 6 array after append: "+AA[1][6].toString()+"\n");
             AA[currentLength][6]=UI.GetString(main_path.concat("New Preset Name:"));
-            updatePresetNames();
+            Cheat.Print("AA0 6 array after rename: "+AA[0][6].toString()+"\n");
+            Cheat.Print("AA1 6 array after rename: "+AA[1][6].toString()+"\n");
+            //updatePresetNames();
 
 
         }
@@ -784,6 +800,8 @@ function updateConfig()
         //TODO: ui updates(half done)
         //save data from ui to aa array
         //verify auth intergity with password
+
+        
 
 
         if(presetVal!=presetCache)
@@ -1261,12 +1279,14 @@ function updateConfig()
             AA_MANAGER[modeVal][3]=UI.GetValue(aa_control_path.concat("Switch Delay"));
             AA_MANAGER[modeVal][4]=UI.GetValue(aa_control_path.concat("Switch Delta"));
         }
+        
 
 
         
         
         
     }
+    
     
 
     //Cheat.Print( UI.GetChildren(["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"]) + '\n')
@@ -1744,16 +1764,9 @@ function switchAA()
     
 }
 
-function main()
-{
-    Cheat.Print(presetTemplate.toString()+"\n");
-}
-
-Cheat.RegisterCallback("Draw","main");
 
 Cheat.RegisterCallback("Draw","updateConfig");
 Cheat.RegisterCallback("CreateMove","switchAA");
 //the antibruteforce i pasted
 Cheat.RegisterCallback("player_hurt", "OnHurt");
 Cheat.RegisterCallback("bullet_impact", "OnBulletImpact");
-
