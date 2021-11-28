@@ -542,6 +542,68 @@ const main_path=["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"];
 const aa_path=["Rage","SUBTAB_MGR","Custom Anti-Aim","Custom Anti-Aim"];
 const aa_control_path=["Rage","SUBTAB_MGR","AA Preset Manager","AA Preset Manager"];
 const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "Key assignment"]
+
+
+//vars
+var presetCache=99;
+
+var realModeCache=99;
+var fakeModeCache=99;
+var LBYModeCache=99;
+
+var presetVal=0;
+//forces an update
+var realModeVal=0;
+var fakeModeVal=0;
+var LBYModeVal=0;
+
+
+
+//forces an update
+var realSwitchCache=99;
+var fakeSwitchCache=99;
+var LBYSwitchCache=99;
+
+var realSwitchVal=0;
+var fakeSwitchVal=0;
+var LBYSwitchVal=0;
+
+var modeVal=0;
+var modeCache=0;
+
+var uiUpdate=false;
+var presetUpdate=false;
+
+var currentAAMode=0;
+var cachedAAMode=0;
+
+
+
+var modeCounter=0;
+var modeTimer=0.0;
+var modeOffset=0.0;
+
+var initializePresets=true;
+
+var presetNames=["1","2"];
+var configName="Mana1";
+//timers:
+//0=real,1=fake,2=lby
+var jitterTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
+var switchTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
+var swayTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
+var randomTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
+var swayCycleTimer=[0,0,0];
+
+var currentTime=Globals.Tickcount();
+var jitterTimeOffset=[0,0,0];
+var jitterPhaseCounter=[0,0,0];
+var switchPhaseCounter=[0,0,0];
+var randomTimeOffset=[0,0,0];
+var randomOffsetHolder=[0,0,0];
+
+var doSwitch=false;
+
 //UI Elements
 //password
 
@@ -603,70 +665,6 @@ UI.AddHotkey(rage_keybinds,"AA Override Key 4","AA 4");
 
 
 
-
-
-/*
-UI.AddSubTab(["Config", "SUBTAB_MGR"], "Config Subtab");
-UI.AddDropdown(["Config", "SUBTAB_MGR", "Config Subtab", "Config Subtab"], "Dropdown", ["element 1", "element 2"], 0);
-*/
-var presetCache=99;
-
-var realModeCache=99;
-var fakeModeCache=99;
-var LBYModeCache=99;
-
-var presetVal=0;
-//forces an update
-var realModeVal=0;
-var fakeModeVal=0;
-var LBYModeVal=0;
-
-
-
-//forces an update
-var realSwitchCache=99;
-var fakeSwitchCache=99;
-var LBYSwitchCache=99;
-
-var realSwitchVal=0;
-var fakeSwitchVal=0;
-var LBYSwitchVal=0;
-
-var modeVal=0;
-var modeCache=0;
-
-var uiUpdate=false;
-var presetUpdate=false;
-
-var currentAAMode=0;
-var cachedAAMode=0;
-
-
-
-var modeCounter=0;
-var modeTimer=0.0;
-var modeOffset=0.0;
-
-var initializePresets=true;
-
-var presetNames=["1","2"];
-var configName="Mana1";
-//timers:
-//0=real,1=fake,2=lby
-var jitterTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
-var switchTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
-var swayTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
-var randomTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
-var swayCycleTimer=[0,0,0];
-
-var currentTime=Globals.Tickcount();
-var jitterTimeOffset=[0,0,0];
-var jitterPhaseCounter=[0,0,0];
-var switchPhaseCounter=[0,0,0];
-var randomTimeOffset=[0,0,0];
-var randomOffsetHolder=[0,0,0];
-
-var doSwitch=false;
 
 //not needed?
 function modeToString(variable)
@@ -737,7 +735,9 @@ function updatePresetNames()
     for(i=0;i<AA.length;i++)
     {
         presetNames[i]=AA[i][6]
-        Cheat.Print(presetNames[i]+"\n")
+        //Cheat.Print(presetNames[i]+"\n")
+        //Cheat.Print(presetTemplate.toString())
+        //Cheat.Print(AA.toString())
     }
     
 
@@ -751,7 +751,7 @@ function updatePresetNames()
 //so sliders are essentially just an interface and youd actually have to update a config for it to work
 function updateConfig()
 {
-    Cheat.Print(toString(UI.GetValue(aa_path.concat("Presets"))));
+    //Cheat.Print(UI.GetValue(aa_path.concat("Presets")).toString());
      
     
     if(UI.GetValue(main_path.concat("UPDATE CONFIG"))==1)
@@ -760,8 +760,7 @@ function updateConfig()
         uiUpdate=false;
         presetUpdate=false;
 
-        Cheat.Print(toString(UI.GetValue(aa_path.concat("Presets"))));
-        Cheat.Print(AA[0][6]);
+        //Cheat.Print(AA[0][6]);
         presetVal=UI.GetValue(aa_path.concat("Presets"));
         if(presetVal==null)
         {
@@ -793,7 +792,7 @@ function updateConfig()
             uiUpdate=true;
             UI.SetValue(aa_path.concat("Real Mode"),AA[presetVal][5][0]);
             UI.SetValue(aa_path.concat("Fake Mode"),AA[presetVal][5][1]);
-            UI.SetValue(aa_path.concat("LBY Mode"),AA[presetIndex][5][2]);
+            UI.SetValue(aa_path.concat("LBY Mode"),AA[presetVal][5][2]);
             
         }
         //if stuff here changed
@@ -1745,7 +1744,12 @@ function switchAA()
     
 }
 
+function main()
+{
+    Cheat.Print(presetTemplate.toString()+"\n");
+}
 
+Cheat.RegisterCallback("Draw","main");
 
 Cheat.RegisterCallback("Draw","updateConfig");
 Cheat.RegisterCallback("CreateMove","switchAA");
