@@ -167,8 +167,7 @@ AA_MANAGER index explanations
     1: complex antibruteforce(forces an aa switch,if switch enabled)
 
 [i][2]:
-    [every preset that's present in the loop]
-    EG:[1,2,4,6,7]
+    INT representing active multidropdown options
 
 [i][3]: Switch Delay
 
@@ -200,9 +199,9 @@ var conditionTemplate=
 [
     0,
     0,
-    [0,1],
-    0.0,
-    0.0
+    0,
+    0,
+    0
 ];
 
 var AA_MANAGER=

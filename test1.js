@@ -12,13 +12,28 @@ const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "K
 
 
 UI.AddMultiDropdown(aa_control_path,"Presets",["1","2","3"]);
+function setDropdownValue( value, index, enable ) 
+{ // credits ed
+    var mask = 1 << index;
+  
+    return enable ? ( value | mask ) : ( value & ~mask );
+}
 
-var testArray=[template]
+function getDropdownValue(value, index)
+{
+    var mask = 1 << index;
+    return value & mask ? true : false;
+}
+
+
 function main()
 {
     //Cheat.Print(toString(testArray[0]));
     var variable1=UI.GetValue(aa_control_path.concat("Presets"))
     Cheat.Print("value of var is "+variable1.toString()+"\n")
+    //THIS IS HOW U DO GET AND SET DROPDOWNS. PERIOD.
+    UI.SetValue(aa_control_path.concat("Presets"),setDropdownValue(UI.GetValue(aa_control_path.concat("Presets")),2,true))
+    
 
 }
 
