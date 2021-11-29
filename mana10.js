@@ -186,209 +186,7 @@ var AA_MANAGER=[];
 
 var RAGEBOT=[];
 
-function keyToData(type)
-{
-    switch(type)
-    {
-        //aa settings
-        case 0:
-            var indStr1="AA_";
-
-            //iterate through every preset
-            for(i=0;i<AA.length;i++)
-            {
-
-                var indStr2=toString(i)+"_"
-                
-                //static
-                var indStr3="0_"
-                for(j=0;j<AA[i][0].length;j++)
-                {
-                    var indStr4=toString(j)
-
-                    AA[i][0][j]=parseInt(DataFile.GetKey(configName,indStr1+indStr2+indStr3+indStr4));
-                }
-
-                //jitter
-                var indStr3="1_"
-                for(j=0;j<AA[i][1].length;j++)
-                {
-                    var indStr4=toString(j)
-                    
-                    if(j<=8)
-                    {
-                        AA[i][1][j]=parseInt(DataFile.GetKey(configName,indStr1+indStr2+indStr3+indStr4));
-                    }
-                    else
-                    {
-                        AA[i][1][j]=parseFloat(DataFile.GetKey(configName,indStr1+indStr2+indStr3+indStr4));
-                    }
-                }
-
-                //switch
-                var indStr3="2_"
-                for(j=0;j<AA[i][2].length;j++)
-                {
-                    var indStr4=toString(j)+"_"
-                    
-                    if(j<=3)
-                    {
-                        for(k=0;k<AA[i][2][l];k++)
-                        {
-                        var indStr5=toString(k)
-                        AA[i][4][j]=parseInt(DataFile.GetKey(configName,indStr1+indStr2+indStr3+indStr4+indStr5));
-                        }   
-                    }
-                    else
-                    {
-                        for(k=0;k<AA[i][2][l];k++)
-                        {
-                        var indStr5=toString(k)
-                        AA[i][4][j]=parseFloat(DataFile.GetKey(configName,indStr1+indStr2+indStr3+indStr4+indStr5));
-                        }   
-                    }    
-                }
-                //sway
-                var indStr3="3_"
-                for(j=0;j<AA[i][3].length;j++)
-                {
-                    var indStr4=toString(j)
-
-                    if(j<=5)
-                    {
-                        AA[i][3][j]=parseInt(DataFile.GetKey(configName,indStr1+indStr2+indStr3+indStr4));
-                    }
-                    else
-                    {
-                        AA[i][3][j]=parseFloat(DataFile.GetKey(configName,indStr1+indStr2+indStr3+indStr4));
-                    }
-                }
-
-                //random
-                var indStr3="4_"
-                for(j=0;j<AA[i][4].length;j++)
-                {
-                    var indStr4=toString(j)
-                    if(j<=8)
-                    {
-                        AA[i][4][j]=parseInt(DataFile.GetKey(configName,indStr1+indStr2+indStr3+indStr4));
-                    }
-                    else
-                    {
-                        AA[i][4][j]=parseFloat(DataFile.GetKey(configName,indStr1+indStr2+indStr3+indStr4));
-                    }
-                    
-                }
-                //modes
-                var indStr3="5_"
-                for(j=0;j<AA[i][5].length;j++)
-                {
-                    var indStr4=toString(j)
-
-                    AA[i][5][j]=parseInt(DataFile.GetKey(configName,indStr1+indStr2+indStr3+indStr4));
-                }
-                //name
-                var indStr3="6"
-
-                AA[i][6][0]=DataFile.GetKey(configName,indStr1+indStr2+indStr3)
-                
-            }
-            break;
-
-        //preset manager
-        case 1: 
-            var indStr1="MANAGER_"
-            for(i=0;i<AA_MANAGER.length;i++)
-            {   
-                var indStr2=toString(i)+"_"
-                AA_MANAGER[i][0]
-            }
-            break;
-
-        
-    }
-}
-
-function dataToKey(type)
-{
-    switch(type)
-    {
-        //aa settings
-        case 0:
-            var indStr1="AA_";
-
-            //iterate through every preset
-            for(i=0;i<AA.length;i++)
-            {
-
-                var indStr2=toString(i)+"_"
-                
-                //static
-                var indStr3="0_"
-                for(j=0;j<AA[i][0].length;j++)
-                {
-                    var indStr4=toString(j)
-
-                    DataFile.SetKey(configName,indStr1+indStr2+indStr3+indStr4,toString(AA[i][0][j]));
-                }
-
-                //jitter
-                var indStr3="1_"
-                for(j=0;j<AA[i][1].length;j++)
-                {
-                    var indStr4=toString(j)
-
-                    DataFile.SetKey(configName,indStr1+indStr2+indStr3+indStr4,toString(AA[i][1][j]));
-                }
-
-                //switch
-                var indStr3="2_"
-                for(j=0;j<AA[i][2].length;j++)
-                {
-                    var indStr4=toString(j)+"_"
-                    for(k=0;k<AA[i][2][l];k++)
-                    {
-                        var indStr5=toString(k)
-                        DataFile.SetKey(configName,indStr1+indStr2+indStr3+indStr4+indStr5,toString(AA[i][2][j][k]));
-                    }       
-                }
-                //sway
-                var indStr3="3_"
-                for(j=0;j<AA[i][3].length;j++)
-                {
-                    var indStr4=toString(j)
-
-                    DataFile.SetKey(configName,indStr1+indStr2+indStr3+indStr4,toString(AA[i][3][j]));
-                }
-
-                //random
-                var indStr3="4_"
-                for(j=0;j<AA[i][4].length;j++)
-                {
-                    var indStr4=toString(j)
-
-                    DataFile.SetKey(configName,indStr1+indStr2+indStr3+indStr4,toString(AA[i][4][j]));
-                }
-                //modes
-                var indStr3="5_"
-                for(j=0;j<AA[i][5].length;j++)
-                {
-                    var indStr4=toString(j)
-
-                    DataFile.SetKey(configName,indStr1+indStr2+indStr3+indStr4,toString(AA[i][5][j]));
-                }
-                //name
-                var indStr3="6"
-
-                DataFile.SetKey(configName,indStr1+indStr2+indStr3,AA[i][6][0])
-                
-            }
-            break;
-        
-    }
-}
-
-
+//USE JSON.PARSE AND STRINGTIFY
 function NOT(variable)
 {
     if(variable==0)
@@ -573,7 +371,7 @@ UI.AddCheckbox(main_path,"UPDATE CONFIG");
 
 //aa settings(presets and stuff)
 UI.AddDropdown(aa_path,"Presets",presetNames,0);
-UI.AddTextbox(aa_path,"Rename Selected Preset");
+UI.AddTextbox(aa_path,"Rename Selected Preset:");
 UI.AddCheckbox(aa_path,"Confirm");
 //real
 UI.AddDropdown(aa_path,"Real Mode",["Static","Jitter","Switch","Sway","Random"],0);
@@ -679,25 +477,56 @@ function getDropdownValue(value, index)
     return value & mask ? true : false;
 }
 
+function getValueFromCounter(value,varConter,maxIndex)
+{
+    if(value==0)
+    {
+        return 0;
+    }
+    var i=0
+    var found=0
+    //there are 2 seperate parameters
+    //1. i must be less or equal to maxIndex
+    //2. a "true" must be found varCounter times before returning the index counter
+    while(true)
+    {
+        //should not be called, but in case something goes wrong
+        if(i>maxIndex)
+        {
+            i=0;
+        }
+        if(getDropdownValue(value,i))
+        {
+            found++;
+            if(found>varConter)
+            {
+                return i;
+            }
+        }
+        i++;
+    }
+
+}
+
 function addAAPreset(index,name)
 {
     AA[index]=
     [
         [0,0,0], //static
-        [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //jitter
+        [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1], //jitter
         [
             //arrays for switch, can potentially be changed
             [0,0],//real
             [0,0],//fake
             [0,0],//lby
             [1,1,1],//real,fake,lby max index of phase
-            [1.0,1.0],//real delay
-            [1.0,1.0],//fake delay
-            [1.0,1.0]//lby delay
+            [1,1],//real delay
+            [1,1],//fake delay
+            [1,1]//lby delay
             
         ],
-        [0,0,0,0,0,0,1.0,1.0,1.0], //sway
-        [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //random
+        [0,0,0,0,0,0,1,1,1], //sway
+        [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1], //random
         [0,0,0],
         "Mana Default AA"
     ];
@@ -765,16 +594,16 @@ function updateConfig()
             currentLength=AA.length;
             addAAPreset(currentLength,UI.GetString(main_path.concat("New Preset Name:")))
             updatePresetNames();
-
-
         }
-        //if(UI.GetValue(aa_path.concat("")))
+        if(UI.GetValue(aa_path.concat("Confirm")))
+        {
+            UI.GetValue(aa_path.concat("Confirm"),0);
+            AA[presetVal][6]=UI.GetString(aa_path.concat("Rename Selected Preset:"))
+        }
+        
         //TODO: ui updates(half done)
         //save data from ui to aa array
         //verify auth intergity with password
-
-        
-
 
         if(presetVal!=presetCache)
         {
@@ -1463,7 +1292,29 @@ function OnBulletImpact()
         lastImpactTimes[entity] = curtime;
     }
 }
+
+//again, courtesy to mixologist
+//check for in air
+function isInAir()
+{
+	var fv = Entity.GetProp(Entity.GetLocalPlayer(), "CBasePlayer", "m_flFallVelocity");
+	if(fv < -1 || fv > 1){
+        //in_air = true;
+		return true;
+    }
+    //in_air = false;
+	return false;
+}
+//check velocity
+function getVelocity(player)
+{
+	var velocity = Entity.GetProp(player, "CBasePlayer", "m_vecVelocity[0]");
+	return Math.sqrt(velocity[0] * velocity[0] + velocity[1] * velocity[1]);
+}
+
+
 //mode: 0=real, 1=fake, 2=lby
+//MAKE THIS ADJUST SLIDERS INSTEAD  
 function SetOffset(value,mode)
 {
     
@@ -1642,7 +1493,7 @@ function switchAA()
     {
         currentAAMode=11;
     }
-    else if(hideshot)
+    else if(hideshots)
     {
         currentAAMode=7;
     }
@@ -1651,23 +1502,30 @@ function switchAA()
     {
         currentAAMode=8;
     }
-    else if(inAir)
+    */
+    //in air
+    else if(isInAir())
     {
         currentAAMode=4;
     }
+    /*
     else if(onpeek)
     {
         currentAAMode=5;
     }
+    */
+    /*
     else if(crouching)
     {
         currentAAMode=3;
     }
-    else if(running)
+    */
+    //if running
+    else if(getVelocity(Entity.GetLocalPlayer())>1)
     {
         currentAAMode=1;
     }
-    */
+    
     //dormant
     else
     {
@@ -1678,8 +1536,8 @@ function switchAA()
     {
         currentTime=Globals.Tickcount();
 
-        //if current phase finished/forced a switch
-        if(AA_MANAGER[currentAAMode][0]!=0 )
+        //if current phase finished
+        if(AA_MANAGER[currentAAMode][0]!=0)
         {
             if(currentTime>=clampTo(modeTimer+modeDelay+modeDelta,1,0))
             {
@@ -1698,6 +1556,7 @@ function switchAA()
         
         
         }
+        //if either forced a switch or reached time
         if(doSwitch==true)
         {
             doSwitch=false
@@ -1708,12 +1567,12 @@ function switchAA()
             {    
                 modeCounter++;
             }
-
             else 
             {
                 modeCounter=0;
             }
-            updateAA(AA_MANAGER[currentAAMode][2][modeCounter]);
+            
+            updateAA(getValueFromCounter(AA_MANAGER[currentAAMode][2],modeCounter,AA.length-1))
                 
         }
         
@@ -1723,11 +1582,10 @@ function switchAA()
     //restart loop if not
     else
     {
-        updateAA(AA[AA_MANAGER[currentAAMode][2][0]])
+        updateAA(getValueFromCounter(AA_MANAGER[currentAAMode][2],0,AA.length-1))
         cachedAAMode=currentAAMode;
         modeCounter=0;
         modeTimer=Globals.Tickcount();
-        
         modeOffset=0;
     }
     
