@@ -186,6 +186,8 @@ var AA_MANAGER=[];
 
 var RAGEBOT=[];
 
+var configName="Mana"
+
 //USE JSON.PARSE AND STRINGTIFY
 function NOT(variable)
 {
@@ -198,7 +200,18 @@ function NOT(variable)
         return 0;
     }
 }
+function saveConfig()
+{
+    Datafile.SetKey("Mana","AA",JSON.stringify(AA));
+    Datafile.SetKey("Mana","AA_MANAGER",JSON,stringify(AA_MANAGER));
 
+}
+function loadConfig()
+{
+
+    AA=JSON.parse(Datafile.GetKey("Mana","AA"));
+    AA_MANAGER=JSON.parse(Datafile.GetKey("Mana","AA_MANAGER"));
+}
 
 function zeroToNegOne(variable)
 {
@@ -344,7 +357,7 @@ var initAA=true;
 var initializePresets=true;
 
 var presetNames=["1"];
-var configName="Mana1";
+
 //timers:
 //0=real,1=fake,2=lby
 var jitterTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
