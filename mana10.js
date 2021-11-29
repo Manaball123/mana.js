@@ -3,10 +3,15 @@
 
 //TODO: check for slowwalk keybind name
 
-//TODO: check if aa inverter inverts overridden aa
+//TODO: check if aa inverter inverts overridden aa DONE. IT DOESNT.
+
+
 
 //TODO: ui updates
         //verify auth intergity with password
+
+//POTENTIAL FIX FOR ARRAYS: make function that populates AA[index] with THE ARRAY, not the template array variable
+//same goes with aa preset manager(use for loop)
 
 //POTENTIAL FL+RAGE SOLUTION
 //Hiding the ui elements of said items but tewaking their values might work...?
@@ -174,57 +179,10 @@ AA_MANAGER index explanations
 [i][4]: Switch Delta
 
 */
-var presetTemplate=
-[
-    [0,0,0], //static
-    [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //jitter
-    [
-        //arrays for switch, can potentially be changed
-        [0,0],//real
-        [0,0],//fake
-        [0,0],//lby
-        [1,1,1],//real,fake,lby max index of phase
-        [1.0,1.0],//real delay
-        [1.0,1.0],//fake delay
-        [1.0,1.0]//lby delay
-        
-    ],
-    [0,0,0,0,0,0,1.0,1.0,1.0], //sway
-    [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //random
-    [0,0,0],
-    "Mana Default AA"
-];
+
 var AA=[];
 
-var conditionTemplate=
-[
-    0,
-    0,
-    0,
-    0,
-    0
-];
-
-var AA_MANAGER=
-[
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate,
-    conditionTemplate
-];
-
+var AA_MANAGER=[];
 
 var RAGEBOT=[];
 
@@ -721,12 +679,29 @@ function getDropdownValue(value, index)
     return value & mask ? true : false;
 }
 
-function updatePresetManager(index)
+function addAAPreset(index,name)
 {
-    for(i=0;i<presetNames.length;i++)
-    {
-        AA_MANAGER[index][2]
-    }
+    AA[index]=
+    [
+        [0,0,0], //static
+        [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //jitter
+        [
+            //arrays for switch, can potentially be changed
+            [0,0],//real
+            [0,0],//fake
+            [0,0],//lby
+            [1,1,1],//real,fake,lby max index of phase
+            [1.0,1.0],//real delay
+            [1.0,1.0],//fake delay
+            [1.0,1.0]//lby delay
+            
+        ],
+        [0,0,0,0,0,0,1.0,1.0,1.0], //sway
+        [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //random
+        [0,0,0],
+        "Mana Default AA"
+    ];
+    AA[index][6]=name;
 }
 
 
@@ -766,12 +741,16 @@ function updateConfig()
         presetUpdate=false;
         if(initAA==true)
         {
-            AA[0]=presetTemplate;
+            addAAPreset(0,"Mana Default AA")
             initAA=false;
             updatePresetNames();
+            for(i=0;i<16;i++)
+            {
+                AA_MANAGER[i]=[0,0,0,0,0];
+            }
         }
 
-        //Cheat.Print(AA[0][6]);
+        
         presetVal=UI.GetValue(aa_path.concat("Presets"));
         if(presetVal==null)
         {
@@ -784,15 +763,8 @@ function updateConfig()
         {
             UI.SetValue(main_path.concat("Create New Preset"),0);
             currentLength=AA.length;
-            Cheat.Print("appending template to index:  "+currentLength.toString()+"\n")
-            Cheat.Print("AA0 6 array before append: "+AA[0][6].toString()+"\n");
-            AA[currentLength]=presetTemplate;
-            Cheat.Print("AA0 6 array after append: "+AA[0][6].toString()+"\n");
-            Cheat.Print("AA1 6 array after append: "+AA[1][6].toString()+"\n");
-            AA[currentLength][6]=UI.GetString(main_path.concat("New Preset Name:"));
-            Cheat.Print("AA0 6 array after rename: "+AA[0][6].toString()+"\n");
-            Cheat.Print("AA1 6 array after rename: "+AA[1][6].toString()+"\n");
-            //updatePresetNames();
+            addAAPreset(currentLength,UI.GetString(main_path.concat("New Preset Name:")))
+            updatePresetNames();
 
 
         }
