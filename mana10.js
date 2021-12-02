@@ -179,9 +179,50 @@ AA_MANAGER index explanations
 
 */
 
-var AA=[];
+var AA=
+[
+    [
+        [0],//general
+        [0,0,0], //static
+        [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1], //jitter
+        [
+            //arrays for switch, can potentially be changed
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//fake
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//lby
+            [1,1,1],//real,fake,lby max index of phase
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//fake delay
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]//lby delay
+            
+        ],
+        [0,0,0,0,0,0,1,1,1], //sway
+        [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1], //random
+        [0,0,0],//active modes
 
-var AA_MANAGER=[];
+        "Mana Default AA"
+    ]
+];
+
+var AA_MANAGER=
+[
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0]
+];
 
 var RAGEBOT=[];
 //config owner, password
@@ -333,7 +374,7 @@ var modeOffset=0.0;
 var initAA=true;
 var initializePresets=true;
 
-var presetNames=["1"];
+var presetNames=["Mana Default AA"];
 
 //timers:
 //0=real,1=fake,2=lby
@@ -368,8 +409,8 @@ UI.AddCheckbox(aa_path,"Confirm");
 UI.AddDropdown(aa_path,"Real Mode",["Static","Jitter","Switch","Sway","Random"],0);
 UI.AddDropdown(aa_path,"Real Switch Phase",["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],0);
 UI.AddSliderInt(aa_path,"Active Real Switch Phases",1,16);
-UI.AddSliderInt(aa_path,"Real Offset",-180,180);
-UI.AddSliderInt(aa_path,"Real Delta",-180,180);
+UI.AddSliderInt(aa_path,"Real Offset",-60,60);
+UI.AddSliderInt(aa_path,"Real Delta",-60,60);
 UI.AddSliderInt(aa_path,"Real Delay",1,256);
 UI.AddCheckbox(aa_path,"Randomized Real Delay");
 UI.AddSliderInt(aa_path,"Real Delay MaxDelta",1,128);
@@ -378,8 +419,8 @@ UI.AddSliderInt(aa_path,"Real Delay MaxDelta",1,128);
 UI.AddDropdown(aa_path,"Fake Mode",["Static","Jitter","Switch","Sway","Random"],0);
 UI.AddDropdown(aa_path,"Fake Switch Phase",["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],0);
 UI.AddSliderInt(aa_path,"Active Fake Switch Phases",1,16);
-UI.AddSliderInt(aa_path,"Fake Offset",-60,60);
-UI.AddSliderInt(aa_path,"Fake Delta",-60,60);
+UI.AddSliderInt(aa_path,"Fake Offset",-180,180);
+UI.AddSliderInt(aa_path,"Fake Delta",-180,180);
 UI.AddSliderInt(aa_path,"Fake Delay",1,256);
 UI.AddCheckbox(aa_path,"Randomized Fake Delay");
 UI.AddSliderInt(aa_path,"Fake Delay MaxDelta",1,128);
@@ -388,8 +429,8 @@ UI.AddSliderInt(aa_path,"Fake Delay MaxDelta",1,128);
 UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"],0);
 UI.AddDropdown(aa_path,"LBY Switch Phase",["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],0);
 UI.AddSliderInt(aa_path,"Active LBY Switch Phases",1,16);
-UI.AddSliderInt(aa_path,"LBY Offset",-30,30);
-UI.AddSliderInt(aa_path,"LBY Delta",-30,30);
+UI.AddSliderInt(aa_path,"LBY Offset",-60,60);
+UI.AddSliderInt(aa_path,"LBY Delta",-60,60);
 UI.AddSliderInt(aa_path,"LBY Delay",1,256);
 UI.AddCheckbox(aa_path,"Randomized LBY Delay");
 UI.AddSliderInt(aa_path,"LBY Delay MaxDelta",1,128);
@@ -404,7 +445,7 @@ UI.AddCheckbox(main_path,"Config Name:")
 UI.AddDropdown(aa_control_path,"Conditions",["Standing","Running","Slow-Walking","Crouching","In Air","On Peek","Fake-Ducking","HS Active","DT Active","On Use","Knifing","Zeusing","Override Key 1","Override Key 2","Override Key 3","Override Key 4"],0);
 UI.AddDropdown(aa_control_path,"Switch",["Conditional","Sequenced","Random"],0);
 UI.AddCheckbox(aa_control_path,"Anti Bruteforce");
-UI.AddMultiDropdown(aa_control_path,"Presets",["1"]);
+UI.AddMultiDropdown(aa_control_path,"Presets",presetNames);
 UI.AddSliderInt(aa_control_path,"Switch Delay",1,256);
 UI.AddSliderInt(aa_control_path,"Switch Delta",1,256);
 
@@ -416,28 +457,6 @@ UI.AddHotkey(rage_keybinds,"AA Override Key 4","AA 4");
 
 
 
-
-//not needed?
-function modeToString(variable)
-{
-    switch(variable)
-    {
-        case 0:
-            return "Static";
-        
-        case 1:
-            return "Jitter";
-            
-        case 2:
-            return "Switch";
-        
-        case 3:
-            return "Sway";
-        
-        case 4:
-            return "Random";
-    }
-}
 
 //converts internal index to user-named aa presets
 //GODDAMN THIS FUNCTION
@@ -508,7 +527,7 @@ function addAAPreset(index,name)
         [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1], //random
         [0,0,0],//active modes
 
-        "Mana Default AA"
+        ""
     ];
     AA[index][7]=name;
 }
@@ -518,15 +537,9 @@ function addAAPreset(index,name)
 function updatePresetNames()
 {
     presetNames=[]
-    Cheat.Print("Preset names are currently "+presetNames.toString()+"\n")
     for(i=0;i<AA.length;i++)
     {
-        Cheat.Print("aa i 7 is currently "+AA[i][7]+"\n")
-        presetNames[i]=AA[i][7]
-        Cheat.Print("i is "+i.toString()+"\n")
-        Cheat.Print("Preset names are currently "+presetNames.toString()+"\n")
-        Cheat.Print("processing current perset name which is "+presetNames[i]+"\n")
-        
+        presetNames[i]=AA[i][7]       
     }
     
 
@@ -556,13 +569,8 @@ function updateConfig()
         presetUpdate=false;
         if(initAA==true)
         {
-            addAAPreset(0,"Mana Default AA")
             initAA=false;
             updatePresetNames();
-            for(i=0;i<16;i++)
-            {
-                AA_MANAGER[i]=[0,0,0,0,0];
-            }
         }
 
         
@@ -1307,10 +1315,11 @@ function getVelocity(player)
 
 
 //mode: 0=real, 1=fake, 2=lby
-//MAKE THIS ADJUST SLIDERS INSTEAD  
+
 function SetOffset(value,mode)
 {
-    
+    //Cheat.Print("set mode "+mode.toString()+" with value"+value.toString()+"\n");
+    AntiAim.SetOverride(1)
     switch(mode)
     {
         case 0:
@@ -1329,6 +1338,7 @@ function SetOffset(value,mode)
 function updateAA(preset) 
 {
     currentTime=Globals.Tickcount();
+    //Cheat.Print("UPDATED AA WITH PRESET"+preset.toString()+"\n")
     //iterate through 3 angle types
     for(i=0;i<3;i++)
     {
@@ -1444,6 +1454,7 @@ function updateAA(preset)
 //handles presets ig
 function switchAA()
 {
+    //Cheat.Print("switch aa called\n");
     //if overriding(highest priority)
     if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 4")==1))
     {
@@ -1524,8 +1535,10 @@ function switchAA()
         currentAAMode=0;
     }
     //if aa loop should continue(hasnt changed mode yet)
+    //Cheat.Print("current aa mode: "+currentAAMode.toString()+"\n")
     if(currentAAMode==cachedAAMode)
     {
+        //Cheat.Print("CONTINUING LOOP\n");
         currentTime=Globals.Tickcount();
 
         //if current phase finished
@@ -1563,10 +1576,9 @@ function switchAA()
             {
                 modeCounter=0;
             }
-            
-            updateAA(getValueFromCounter(AA_MANAGER[currentAAMode][2],modeCounter,AA.length-1))
-                
+     
         }
+        updateAA(getValueFromCounter(AA_MANAGER[currentAAMode][2],modeCounter,AA.length-1))
         
         
 
