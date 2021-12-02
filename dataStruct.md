@@ -1,4 +1,6 @@
 
+
+
 /*Index explanations:
     AA[i]:preset number
 
@@ -90,9 +92,11 @@
 
         AA[i][5][x]: active mode(0=static,1=jitter,2=switch,3=sway,4=random) for real(0),fake(1), and lby(2)
 
+        AA[i][6]: Misc settings(at targets, auto dir, etc)
 
 
-        AA[i][6]: name of aa preset
+
+        AA[i][7]: name of aa preset
 */
 
 /*
@@ -135,32 +139,3 @@ AA_MANAGER index explanations
 [i][4]: Switch Delta
 
 */
-var presetTemplate=
-[
-    [0,0,0], //static
-    [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //jitter
-    [
-        //arrays for switch, can potentially be changed
-        [0,0],//real
-        [0,0],//fake
-        [0,0],//lby
-        [1,1,1],//real,fake,lby max index of phase
-        [1.0,1.0],//real delay
-        [1.0,1.0],//fake delay
-        [1.0,1.0]//lby delay
-        
-    ],
-    [0,0,0,0,0,0,1.0,1.0,1.0], //sway
-    [0,0,0,0,0,0,0,0,0,1.0,1.0,1.0,1.0,1.0,1.0], //random
-    [0,0,0],
-    "Mana Default AA"
-];
-var AA=[presetTemplate];
-var conditionTemplate=
-[
-    0,
-    0,
-    0,
-    0,
-    0
-];
