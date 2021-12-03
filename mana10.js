@@ -1327,8 +1327,8 @@ function getVelocity(player)
 function SetOffset(value,mode)
 {
     
-    Cheat.Print("set mode "+mode.toString());
-    Cheat.Print(" with value"+value.toString()+"\n");
+    //Cheat.Print("set mode "+mode.toString());
+    //Cheat.Print(" with value"+value.toString()+"\n");
     
     AntiAim.SetOverride(1)
     switch(mode)
