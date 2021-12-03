@@ -1564,8 +1564,7 @@ function switchAA()
         //if either forced a switch or reached time
         if(doSwitch==true)
         {
-            doSwitch=false
-
+            doSwitch=false;
             //possible optmization, but im lazy
             //calculate and save length internally
             if(modeCounter<AA_MANAGER[currentAAMode][2].length)
@@ -1578,15 +1577,15 @@ function switchAA()
             }
      
         }
-        updateAA(getValueFromCounter(AA_MANAGER[currentAAMode][2],modeCounter,AA.length-1))
-        
+        updateAA(getValueFromCounter(AA_MANAGER[currentAAMode][2],modeCounter,AA.length-1));
+         
         
 
     }
     //restart loop if not
     else
     {
-        updateAA(getValueFromCounter(AA_MANAGER[currentAAMode][2],0,AA.length-1))
+        updateAA(getValueFromCounter(AA_MANAGER[currentAAMode][2],0,AA.length-1));
         cachedAAMode=currentAAMode;
         modeCounter=0;
         modeTimer=Globals.Tickcount();
