@@ -237,17 +237,49 @@ function NOT(variable)
 }
 function saveConfig()
 {
-    Datafile.SetKey(configName,"AA",JSON.stringify(AA));
-    Datafile.SetKey(configName,"AA_MANAGER",JSON.stringify(AA_MANAGER));
-    Datafile.SetKey(configName,"SECRETS",JSON.stringify(SECRETS))
+    DataFile.Save(configName);
+    for(i=0;i<AA.length;i++)
+    {
+        for(j=0;j<AA[i].length;j++)
+        {
+            DataFile.SetKey(configName,"AA_"+i.toString()+"_"+j.toString(),JSON.stringify(AA[i][j]));
+        }
+        
+    }
+    for(i=0;i<AA_MANAGER.length;i++)
+    {
+        DataFile.SetKey(configName,"AA_MANAGER_"+i.toString(),JSON.stringify(AA_MANAGER[i]));
+    }
+    
+    DataFile.SetKey(configName,"SECRETS",JSON.stringify(SECRETS))
 
 }
 function loadConfig()
 {
+    DataFile.Load(configName);
+    for(i=0;i<AA.length;i++)
+    {
+        for(j=0;j<AA[i].length;j++)
+        {
+            AA[i][j]=JSON.parse(DataFile.GetKey(configName,"AA_"+i.toString()+"_"+j.toString()));
+        }
+        
+    }
+    for(i=0;i<AA_MANAGER.length;i++)
+    {
+        AA_MANAGER[i]=JSON.parse(DataFile.GetKey(configName,"AA_MANAGER_"+i.toString()));
+    }
+    
+    SECRETS=JSON.parse(DataFile.GetKey(configName,"SECRETS"));
+    presetCache=420;
+    realModeCache=420;
+    fakeModeCache=420;
+    LBYModeCache=420;
+    realSwitchCache=420;
+    fakeSwitchCache=420;
+    LBYSwitchCache=420;
 
-    AA=JSON.parse(Datafile.GetKey(configName,"AA"));
-    AA_MANAGER=JSON.parse(Datafile.GetKey(configName,"AA_MANAGER"));
-    SECRETS=JSON.parse(Datafile.GetKey(configName,"SECRETS"));
+    
 }
 
 function zeroToNegOne(variable)
@@ -335,13 +367,12 @@ const secrets_path=[ "Config","SUBTAB_MGR","Secrets","SHEET_MGR","Secrets" ];
 
 //vars
 var presetCache=99;
-
 var realModeCache=99;
 var fakeModeCache=99;
 var LBYModeCache=99;
 
-var presetVal=0;
 //forces an update
+var presetVal=0;
 var realModeVal=0;
 var fakeModeVal=0;
 var LBYModeVal=0;
@@ -374,6 +405,8 @@ var modeOffset=0.0;
 
 var initAA=true;
 var initializePresets=true;
+
+var antiBruteSwitch=false;
 
 var presetNames=["Mana Default AA"];
 
@@ -410,8 +443,8 @@ UI.AddCheckbox(aa_path,"Confirm");
 UI.AddDropdown(aa_path,"Real Mode",["Static","Jitter","Switch","Sway","Random"],0);
 UI.AddDropdown(aa_path,"Real Switch Phase",["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],0);
 UI.AddSliderInt(aa_path,"Active Real Switch Phases",1,16);
-UI.AddSliderInt(aa_path,"Real Offset",-60,60);
-UI.AddSliderInt(aa_path,"Real Delta",-60,60);
+UI.AddSliderInt(aa_path,"Real Offset",-180,180);
+UI.AddSliderInt(aa_path,"Real Delta",-180,180);
 UI.AddSliderInt(aa_path,"Real Delay",1,256);
 UI.AddCheckbox(aa_path,"Randomized Real Delay");
 UI.AddSliderInt(aa_path,"Real Delay MaxDelta",1,128);
@@ -430,8 +463,8 @@ UI.AddSliderInt(aa_path,"Fake Delay MaxDelta",1,128);
 UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"],0);
 UI.AddDropdown(aa_path,"LBY Switch Phase",["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],0);
 UI.AddSliderInt(aa_path,"Active LBY Switch Phases",1,16);
-UI.AddSliderInt(aa_path,"LBY Offset",-60,60);
-UI.AddSliderInt(aa_path,"LBY Delta",-60,60);
+UI.AddSliderInt(aa_path,"LBY Offset",-180,180);
+UI.AddSliderInt(aa_path,"LBY Delta",-180,180);
 UI.AddSliderInt(aa_path,"LBY Delay",1,256);
 UI.AddCheckbox(aa_path,"Randomized LBY Delay");
 UI.AddSliderInt(aa_path,"LBY Delay MaxDelta",1,128);
@@ -440,7 +473,8 @@ UI.AddSliderInt(aa_path,"LBY Delay MaxDelta",1,128);
 UI.AddTextbox(main_path,"New Preset Name:");
 UI.AddCheckbox(main_path,"Create New Preset");
 UI.AddCheckbox(main_path,"SAVE CONFIG")
-UI.AddCheckbox(main_path,"Config Name:")
+UI.AddCheckbox(main_path,"LOAD CONFIG")
+UI.AddTextbox(main_path,"Config Name:")
 
 //preset management interface
 UI.AddDropdown(aa_control_path,"Conditions",["Standing","Running","Slow-Walking","Crouching","In Air","On Peek","Fake-Ducking","HS Active","DT Active","On Use","Knifing","Zeusing","Override Key 1","Override Key 2","Override Key 3","Override Key 4"],0);
@@ -555,7 +589,7 @@ function updatePresetNames()
 function updateConfig()
 {
     //Cheat.Print(UI.GetValue(aa_path.concat("Presets")).toString());
-     
+    
     
     if(UI.GetValue(main_path.concat("UPDATE CONFIG"))==1)
     {
@@ -564,6 +598,19 @@ function updateConfig()
         {
                                                                                                                                                                                                                       
             
+        }
+        if(UI.GetValue(main_path.concat("SAVE CONFIG"))==1)
+        {
+            UI.SetValue(main_path.concat("SAVE CONFIG"),0);
+            configName=UI.GetString(main_path.concat("Config Name:"));
+            saveConfig();
+        }
+        if(UI.GetValue(main_path.concat("LOAD CONFIG"))==1)
+        {
+            configName=UI.GetString(main_path.concat("Config Name:"));
+            UI.SetValue(main_path.concat("LOAD CONFIG"),0);
+            loadConfig();
+            updatePresetNames();
         }
 
         uiUpdate=false;
@@ -596,8 +643,10 @@ function updateConfig()
         }
         if(UI.GetValue(aa_path.concat("Confirm")))
         {
-            UI.GetValue(aa_path.concat("Confirm"),0);
+            UI.SetValue(aa_path.concat("Confirm"),0);
             AA[presetVal][7]=UI.GetString(aa_path.concat("Rename Selected Preset:"))
+            Cheat.Print("renamed aa to"+AA[presetVal][7].toString()+"\n")
+            updatePresetNames();
         }
         
         //TODO: ui updates(half done)
@@ -626,6 +675,7 @@ function updateConfig()
 
         if(realModeVal!=realModeCache)
         {
+            //Cheat.Print("updated this thing");
             realModeCache=realModeVal;
             AA[presetVal][6][0]=realModeVal;
             switch(realModeVal)
@@ -1110,10 +1160,6 @@ function updateConfig()
 //each time this activates, settings in menu gets updated
 //IMPORTANT
 
-UI.AddSubTab(["Rage", "SUBTAB_MGR"], "MIXO-YAW");
-UI.AddCheckbox(["Rage", "MIXO-YAW", "MIXO-YAW"], "Anti bruteforce");
-
-
 
 //REAL SHIT
 
@@ -1182,7 +1228,7 @@ function OnHurt()
             if (Math.abs(lastHitTime - curtime) > 0.5)
             {
                 lastHitTime = curtime;
-                doSwitch=true;
+                antiBrurteSwitch=true;
             }
         }
   
@@ -1294,7 +1340,7 @@ function OnBulletImpact()
             {
                 lastHitTime = curtime;
 
-                doSwitch=true;
+                antiBrurteSwitch=true;
             }
         }
         lastImpacts[entity] = impact;
@@ -1587,6 +1633,14 @@ function switchAA()
             }
         
         
+        }
+        if(AA_MANAGER[currentAAMode][1]==1)
+        {
+            if(antiBrurteSwitch==true)
+            {
+                antiBrurteSwitch=false;
+                doSwitch=true;
+            }
         }
         //if either forced a switch or reached time
         if(doSwitch==true)
