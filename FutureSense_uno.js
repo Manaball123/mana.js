@@ -4,272 +4,277 @@
       line 4956
   updated at 6.13.2021
 */
+//auth fucked by Mana(lol)
+//cant put this shit in an obfustacator due to it being badly coded(lmfao)
 //Start load log
 const updated_time = "13.3.2021"
 
 //Menu UI
 //rofl wtf is this shit, just use a  path constant
+//OK REDOING SHIT SO IT FITS IN OBFIUSTACATOR(HOPEFULLY)
+const futureSensePath=["Config", "FutureSense", "FutureSense"]
+const futureSenseVisuals=["Config", "FS -> Visuals", "FS -> Visuals"]
 UI.AddSubTab(["Config", "SUBTAB_MGR"], "FutureSense");
 UI.AddSubTab(["Config", "SUBTAB_MGR"], "FS -> Visuals");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "========>Permium Anti-Aim<========", 0, 0);
-UI.AddDropdown(["Config", "FutureSense", "FutureSense"], "AA mode", ["Default", "Full sway", "Ideal yaw", "Advanced sway", ], 0);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Yaw & jitter");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Fakelag & Anti-Brute");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "=============================", 0, 0);
+UI.AddSliderInt(futureSensePath, "========>Permium Anti-Aim<========", 0, 0);
+UI.AddDropdown(futureSensePath, "AA mode", ["Default", "Full sway", "Ideal yaw", "Advanced sway", ], 0);
+UI.AddCheckbox(futureSensePath, "Yaw & jitter");
+UI.AddCheckbox(futureSensePath, "Fakelag & Anti-Brute");
+UI.AddSliderInt(futureSensePath, "=============================", 0, 0);
 
 //AA mode 1 "Normal sway AA"
-UI.AddDropdown(["Config", "FutureSense", "FutureSense"], "Anti-Aim condition", ["Global", "Standing", "Moving", "Walking", "Jumping"], 1)
+UI.AddDropdown(futureSensePath, "Anti-Aim condition", ["Global", "Standing", "Moving", "Walking", "Jumping"], 1)
 
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Global] Enable condition");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Global] Enable Low deleta");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Global] Advanced Jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Global] Jitter limit", -180, 180);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Global] Offset Break");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Global] AA-Swing");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Global] Swing astrict");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Global] Sway Amount", 0, 60);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Global] Sway Range", 0, 360);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Global] Sway frequency", 1, 50);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Global] False jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Global] False jitter Speed", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Global] False jitter Range", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Global] False jitter Step", 1, 10);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Global] AntiAim-Switch");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Global] Switch Delay", 1, 1000);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Global] Switch Yaw - A", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Global] Switch Yaw - B", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Global] Switch Yaw - C", -180, 180);
+UI.AddCheckbox(futureSensePath, "[Global] Enable condition");
+UI.AddCheckbox(futureSensePath, "[Global] Enable Low deleta");
+UI.AddCheckbox(futureSensePath, "[Global] Advanced Jitter");
+UI.AddSliderInt(futureSensePath, "[Global] Jitter limit", -180, 180);
+UI.AddCheckbox(futureSensePath, "[Global] Offset Break");
+UI.AddCheckbox(futureSensePath, "[Global] AA-Swing");
+UI.AddCheckbox(futureSensePath, "[Global] Swing astrict");
+UI.AddSliderInt(futureSensePath, "[Global] Sway Amount", 0, 60);
+UI.AddSliderInt(futureSensePath, "[Global] Sway Range", 0, 360);
+UI.AddSliderInt(futureSensePath, "[Global] Sway frequency", 1, 50);
+UI.AddCheckbox(futureSensePath, "[Global] False jitter");
+UI.AddSliderInt(futureSensePath, "[Global] False jitter Speed", 1, 100);
+UI.AddSliderInt(futureSensePath, "[Global] False jitter Range", 1, 100);
+UI.AddSliderInt(futureSensePath, "[Global] False jitter Step", 1, 10);
+UI.AddCheckbox(futureSensePath, "[Global] AntiAim-Switch");
+UI.AddSliderInt(futureSensePath, "[Global] Switch Delay", 1, 1000);
+UI.AddSliderInt(futureSensePath, "[Global] Switch Yaw - A", -180, 180);
+UI.AddSliderInt(futureSensePath, "[Global] Switch Yaw - B", -180, 180);
+UI.AddSliderInt(futureSensePath, "[Global] Switch Yaw - C", -180, 180);
 
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Standing] Enable condition");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Standing] Enable Low deleta");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Standing] Advanced Jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Standing] Jitter limit", -180, 180);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Standing] Offset Break");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Standing] AA-Swing");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Standing] Swing astrict");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Standing] Sway Amount", 0, 60);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Standing] Sway Range", 0, 360);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Standing] Sway frequency", 1, 50);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Standing] False jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Standing] False jitter Speed", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Standing] False jitter Range", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Standing] False jitter Step", 1, 10);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Standing] AntiAim-Switch");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Standing] Switch Delay", 1, 1000);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Standing] Switch Yaw - A", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Standing] Switch Yaw - B", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Standing] Switch Yaw - C", -180, 180);
+UI.AddCheckbox(futureSensePath, "[Standing] Enable condition");
+UI.AddCheckbox(futureSensePath, "[Standing] Enable Low deleta");
+UI.AddCheckbox(futureSensePath, "[Standing] Advanced Jitter");
+UI.AddSliderInt(futureSensePath, "[Standing] Jitter limit", -180, 180);
+UI.AddCheckbox(futureSensePath, "[Standing] Offset Break");
+UI.AddCheckbox(futureSensePath, "[Standing] AA-Swing");
+UI.AddCheckbox(futureSensePath, "[Standing] Swing astrict");
+UI.AddSliderInt(futureSensePath, "[Standing] Sway Amount", 0, 60);
+UI.AddSliderInt(futureSensePath, "[Standing] Sway Range", 0, 360);
+UI.AddSliderInt(futureSensePath, "[Standing] Sway frequency", 1, 50);
+UI.AddCheckbox(futureSensePath, "[Standing] False jitter");
+UI.AddSliderInt(futureSensePath, "[Standing] False jitter Speed", 1, 100);
+UI.AddSliderInt(futureSensePath, "[Standing] False jitter Range", 1, 100);
+UI.AddSliderInt(futureSensePath, "[Standing] False jitter Step", 1, 10);
+UI.AddCheckbox(futureSensePath, "[Standing] AntiAim-Switch");
+UI.AddSliderInt(futureSensePath, "[Standing] Switch Delay", 1, 1000);
+UI.AddSliderInt(futureSensePath, "[Standing] Switch Yaw - A", -180, 180);
+UI.AddSliderInt(futureSensePath, "[Standing] Switch Yaw - B", -180, 180);
+UI.AddSliderInt(futureSensePath, "[Standing] Switch Yaw - C", -180, 180);
 
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Moving] Enable condition");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Moving] Enable Low deleta");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Moving] Advanced Jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Moving] Jitter limit", -180, 180);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Moving] Offset Break");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Moving] AA-Swing");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Moving] Swing astrict");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Moving] Sway Amount", 0, 60);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Moving] Sway Range", 0, 360);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Moving] Sway frequency", 1, 50);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Moving] False jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Moving] False jitter Speed", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Moving] False jitter Range", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Moving] False jitter Step", 1, 10);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Moving] AntiAim-Switch");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Moving] Switch Delay", 1, 1000);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Moving] Switch Yaw - A", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Moving] Switch Yaw - B", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Moving] Switch Yaw - C", -180, 180);
+UI.AddCheckbox(futureSensePath, "[Moving] Enable condition");
+UI.AddCheckbox(futureSensePath, "[Moving] Enable Low deleta");
+UI.AddCheckbox(futureSensePath, "[Moving] Advanced Jitter");
+UI.AddSliderInt(futureSensePath, "[Moving] Jitter limit", -180, 180);
+UI.AddCheckbox(futureSensePath, "[Moving] Offset Break");
+UI.AddCheckbox(futureSensePath, "[Moving] AA-Swing");
+UI.AddCheckbox(futureSensePath, "[Moving] Swing astrict");
+UI.AddSliderInt(futureSensePath, "[Moving] Sway Amount", 0, 60);
+UI.AddSliderInt(futureSensePath, "[Moving] Sway Range", 0, 360);
+UI.AddSliderInt(futureSensePath, "[Moving] Sway frequency", 1, 50);
+UI.AddCheckbox(futureSensePath, "[Moving] False jitter");
+UI.AddSliderInt(futureSensePath, "[Moving] False jitter Speed", 1, 100);
+UI.AddSliderInt(futureSensePath, "[Moving] False jitter Range", 1, 100);
+UI.AddSliderInt(futureSensePath, "[Moving] False jitter Step", 1, 10);
+UI.AddCheckbox(futureSensePath, "[Moving] AntiAim-Switch");
+UI.AddSliderInt(futureSensePath, "[Moving] Switch Delay", 1, 1000);
+UI.AddSliderInt(futureSensePath, "[Moving] Switch Yaw - A", -180, 180);
+UI.AddSliderInt(futureSensePath, "[Moving] Switch Yaw - B", -180, 180);
+UI.AddSliderInt(futureSensePath, "[Moving] Switch Yaw - C", -180, 180);
 
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Walking] Enable condition");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Walking] Enable Low deleta");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Walking] Advanced Jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Walking] Jitter limit", -180, 180);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Walking] Offset Break");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Walking] AA-Swing");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Walking] Swing astrict");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Walking] Sway Amount", 0, 60);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Walking] Sway Range", 0, 360);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Walking] Sway frequency", 1, 50);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Walking] False jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Walking] False jitter Speed", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Walking] False jitter Range", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Walking] False jitter Step", 1, 10);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Walking] AntiAim-Switch");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Walking] Switch Delay", 1, 1000);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Walking] Switch Yaw - A", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Walking] Switch Yaw - B", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Walking] Switch Yaw - C", -180, 180);
+UI.AddCheckbox(futureSensePath, "[Walking] Enable condition");
+UI.AddCheckbox(futureSensePath, "[Walking] Enable Low deleta");
+UI.AddCheckbox(futureSensePath, "[Walking] Advanced Jitter");
+UI.AddSliderInt(futureSensePath, "[Walking] Jitter limit", -180, 180);
+UI.AddCheckbox(futureSensePath, "[Walking] Offset Break");
+UI.AddCheckbox(futureSensePath, "[Walking] AA-Swing");
+UI.AddCheckbox(futureSensePath, "[Walking] Swing astrict");
+UI.AddSliderInt(futureSensePath, "[Walking] Sway Amount", 0, 60);
+UI.AddSliderInt(futureSensePath, "[Walking] Sway Range", 0, 360);
+UI.AddSliderInt(futureSensePath, "[Walking] Sway frequency", 1, 50);
+UI.AddCheckbox(futureSensePath, "[Walking] False jitter");
+UI.AddSliderInt(futureSensePath, "[Walking] False jitter Speed", 1, 100);
+UI.AddSliderInt(futureSensePath, "[Walking] False jitter Range", 1, 100);
+UI.AddSliderInt(futureSensePath, "[Walking] False jitter Step", 1, 10);
+UI.AddCheckbox(futureSensePath, "[Walking] AntiAim-Switch");
+UI.AddSliderInt(futureSensePath, "[Walking] Switch Delay", 1, 1000);
+UI.AddSliderInt(futureSensePath, "[Walking] Switch Yaw - A", -180, 180);
+UI.AddSliderInt(futureSensePath, "[Walking] Switch Yaw - B", -180, 180);
+UI.AddSliderInt(futureSensePath, "[Walking] Switch Yaw - C", -180, 180);
 
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Jumping] Enable condition");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Jumping] Enable Low deleta");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Jumping] Advanced Jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Jumping] Jitter limit", -180, 180);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Jumping] Offset Break");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Jumping] AA-Swing");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Jumping] Swing astrict");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Jumping] Sway Amount", 0, 60);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Jumping] Sway Range", 0, 360);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Jumping] Sway frequency", 1, 50);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Jumping] False jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Jumping] False jitter Speed", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Jumping] False jitter Range", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Jumping] False jitter Step", 1, 10);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "[Jumping] AntiAim-Switch");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Jumping] Switch Delay", 1, 1000);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Jumping] Switch Yaw - A", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Jumping] Switch Yaw - B", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "[Jumping] Switch Yaw - C", -180, 180);
+UI.AddCheckbox(futureSensePath, "[Jumping] Enable condition");
+UI.AddCheckbox(futureSensePath, "[Jumping] Enable Low deleta");
+UI.AddCheckbox(futureSensePath, "[Jumping] Advanced Jitter");
+UI.AddSliderInt(futureSensePath, "[Jumping] Jitter limit", -180, 180);
+UI.AddCheckbox(futureSensePath, "[Jumping] Offset Break");
+UI.AddCheckbox(futureSensePath, "[Jumping] AA-Swing");
+UI.AddCheckbox(futureSensePath, "[Jumping] Swing astrict");
+UI.AddSliderInt(futureSensePath, "[Jumping] Sway Amount", 0, 60);
+UI.AddSliderInt(futureSensePath, "[Jumping] Sway Range", 0, 360);
+UI.AddSliderInt(futureSensePath, "[Jumping] Sway frequency", 1, 50);
+UI.AddCheckbox(futureSensePath, "[Jumping] False jitter");
+UI.AddSliderInt(futureSensePath, "[Jumping] False jitter Speed", 1, 100);
+UI.AddSliderInt(futureSensePath, "[Jumping] False jitter Range", 1, 100);
+UI.AddSliderInt(futureSensePath, "[Jumping] False jitter Step", 1, 10);
+UI.AddCheckbox(futureSensePath, "[Jumping] AntiAim-Switch");
+UI.AddSliderInt(futureSensePath, "[Jumping] Switch Delay", 1, 1000);
+UI.AddSliderInt(futureSensePath, "[Jumping] Switch Yaw - A", -180, 180);
+UI.AddSliderInt(futureSensePath, "[Jumping] Switch Yaw - B", -180, 180);
+UI.AddSliderInt(futureSensePath, "[Jumping] Switch Yaw - C", -180, 180);
 
 //AA mode 3 "Advanced sway AA"
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "---> Advanced sway AA <---", 0, 0);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Enable walk AA");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Advanced Jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Jitter limit", -180, 180);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Offset Break");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "AA-Swing");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Swing astrict");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Sway Amount", 0, 60);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Sway Range", 0, 360);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Sway frequency", 1, 50);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "False jitter");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "False jitter Speed", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "False jitter Range", 1, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "False jitter Step", 1, 10);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "AntiAim-Switch");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Switch Delay", 1, 1000);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Switch Yaw - A", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Switch Yaw - B", -180, 180);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Switch Yaw - C", -180, 180);
+UI.AddSliderInt(futureSensePath, "---> Advanced sway AA <---", 0, 0);
+UI.AddCheckbox(futureSensePath, "Enable walk AA");
+UI.AddCheckbox(futureSensePath, "Advanced Jitter");
+UI.AddSliderInt(futureSensePath, "Jitter limit", -180, 180);
+UI.AddCheckbox(futureSensePath, "Offset Break");
+UI.AddCheckbox(futureSensePath, "AA-Swing");
+UI.AddCheckbox(futureSensePath, "Swing astrict");
+UI.AddSliderInt(futureSensePath, "Sway Amount", 0, 60);
+UI.AddSliderInt(futureSensePath, "Sway Range", 0, 360);
+UI.AddSliderInt(futureSensePath, "Sway frequency", 1, 50);
+UI.AddCheckbox(futureSensePath, "False jitter");
+UI.AddSliderInt(futureSensePath, "False jitter Speed", 1, 100);
+UI.AddSliderInt(futureSensePath, "False jitter Range", 1, 100);
+UI.AddSliderInt(futureSensePath, "False jitter Step", 1, 10);
+UI.AddCheckbox(futureSensePath, "AntiAim-Switch");
+UI.AddSliderInt(futureSensePath, "Switch Delay", 1, 1000);
+UI.AddSliderInt(futureSensePath, "Switch Yaw - A", -180, 180);
+UI.AddSliderInt(futureSensePath, "Switch Yaw - B", -180, 180);
+UI.AddSliderInt(futureSensePath, "Switch Yaw - C", -180, 180);
 
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "---> Yaw & Jitter <---", 0, 0);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Jitter value", -180, 180);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Random Jitter");
+UI.AddSliderInt(futureSensePath, "---> Yaw & Jitter <---", 0, 0);
+UI.AddSliderInt(futureSensePath, "Jitter value", -180, 180);
+UI.AddCheckbox(futureSensePath, "Random Jitter");
 
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "---> FakeLag <---", 0, 0);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Fakelag Max", 0, 16);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Fakelag Min", 0, 16);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Fakelag Delay", 1, 40);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Trigger fakelag Max", 0, 16);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Trigger fakelag Min", 0, 16);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Trigger fakelag Delay", 1, 40);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Fakelag jitter Max", 0, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Fakelag jitter Min", 0, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Fakelag jitter Delay", 1, 40);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "FakeLag On Move");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Move Fakelag", 0, 16);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Fakelag On Auto Stop");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Auto Stop Fakelag", 0, 16);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Better coverage lag");
+UI.AddSliderInt(futureSensePath, "---> FakeLag <---", 0, 0);
+UI.AddSliderInt(futureSensePath, "Fakelag Max", 0, 16);
+UI.AddSliderInt(futureSensePath, "Fakelag Min", 0, 16);
+UI.AddSliderInt(futureSensePath, "Fakelag Delay", 1, 40);
+UI.AddSliderInt(futureSensePath, "Trigger fakelag Max", 0, 16);
+UI.AddSliderInt(futureSensePath, "Trigger fakelag Min", 0, 16);
+UI.AddSliderInt(futureSensePath, "Trigger fakelag Delay", 1, 40);
+UI.AddSliderInt(futureSensePath, "Fakelag jitter Max", 0, 100);
+UI.AddSliderInt(futureSensePath, "Fakelag jitter Min", 0, 100);
+UI.AddSliderInt(futureSensePath, "Fakelag jitter Delay", 1, 40);
+UI.AddCheckbox(futureSensePath, "FakeLag On Move");
+UI.AddSliderInt(futureSensePath, "Move Fakelag", 0, 16);
+UI.AddCheckbox(futureSensePath, "Fakelag On Auto Stop");
+UI.AddSliderInt(futureSensePath, "Auto Stop Fakelag", 0, 16);
+UI.AddCheckbox(futureSensePath, "Better coverage lag");
 
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "---> Anti-Brute <---", 0, 0);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "On shot mode");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "On shot fakelag", 0, 16);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Dynamic desync on shot");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Leg movement");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Anti Bruteforce");
+UI.AddSliderInt(futureSensePath, "---> Anti-Brute <---", 0, 0);
+UI.AddCheckbox(futureSensePath, "On shot mode");
+UI.AddSliderInt(futureSensePath, "On shot fakelag", 0, 16);
+UI.AddCheckbox(futureSensePath, "Dynamic desync on shot");
+UI.AddCheckbox(futureSensePath, "Leg movement");
+UI.AddCheckbox(futureSensePath, "Anti Bruteforce");
 
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "=====>Ragebot assist && Movement<====", 0, 0);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "AWP&Scout Flip");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "SemiRage assist");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Edit autowall");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Double Tap assist");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "DT DMG perdiction");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Better DT recharge");
-UI.AddDropdown(["Config", "FutureSense", "FutureSense"], "DT mode", ["Adaptive", "Best speed"], 0)
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Disable DT on other weapon");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "DMG override on key");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Reduce hitchance");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Legit AA on use");
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Jump Scout/Revolver Hitchance");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Hitchance", 0, 100);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "---> Slowwalk speed <---", 0, 0);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Speed", 0, 135);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "--> Jitter Speed");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Jitter Min", 0, 135);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Jitter Max", 0, 135);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "--> Individual speeds");
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Forward Speed", 0, 135);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Side Speed", 0, 135);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "Back Speed", 0, 135);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "---> Pitch misc. <---", 0, 0);
-UI.AddDropdown(["Config", "FutureSense", "FutureSense"], "Pitch Setting", ["Off", "Pitch zero", "Pitch zero on land", "Pitch down", "Fake pitch down"], 0);
-UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "---> Freestading <---", 0, 0);
-UI.AddCheckbox(["Config", "FutureSense", "FutureSense"], "Enable freestanding");
-UI.AddDropdown(["Config", "FutureSense", "FutureSense"], "Freestanding Mode", ["Disabled", "Normal", "Reversed"], 0);
+UI.AddSliderInt(futureSensePath, "=====>Ragebot assist && Movement<====", 0, 0);
+UI.AddCheckbox(futureSensePath, "AWP&Scout Flip");
+UI.AddCheckbox(futureSensePath, "SemiRage assist");
+UI.AddCheckbox(futureSensePath, "Edit autowall");
+UI.AddCheckbox(futureSensePath, "Double Tap assist");
+UI.AddCheckbox(futureSensePath, "DT DMG perdiction");
+UI.AddCheckbox(futureSensePath, "Better DT recharge");
+UI.AddDropdown(futureSensePath, "DT mode", ["Adaptive", "Best speed"], 0)
+UI.AddCheckbox(futureSensePath, "Disable DT on other weapon");
+UI.AddCheckbox(futureSensePath, "DMG override on key");
+UI.AddCheckbox(futureSensePath, "Reduce hitchance");
+UI.AddCheckbox(futureSensePath, "Legit AA on use");
+UI.AddCheckbox(futureSensePath, "Jump Scout/Revolver Hitchance");
+UI.AddSliderInt(futureSensePath, "Hitchance", 0, 100);
+UI.AddSliderInt(futureSensePath, "---> Slowwalk speed <---", 0, 0);
+UI.AddSliderInt(futureSensePath, "Speed", 0, 135);
+UI.AddCheckbox(futureSensePath, "--> Jitter Speed");
+UI.AddSliderInt(futureSensePath, "Jitter Min", 0, 135);
+UI.AddSliderInt(futureSensePath, "Jitter Max", 0, 135);
+UI.AddCheckbox(futureSensePath, "--> Individual speeds");
+UI.AddSliderInt(futureSensePath, "Forward Speed", 0, 135);
+UI.AddSliderInt(futureSensePath, "Side Speed", 0, 135);
+UI.AddSliderInt(futureSensePath, "Back Speed", 0, 135);
+UI.AddSliderInt(futureSensePath, "---> Pitch misc. <---", 0, 0);
+UI.AddDropdown(futureSensePath, "Pitch Setting", ["Off", "Pitch zero", "Pitch zero on land", "Pitch down", "Fake pitch down"], 0);
+UI.AddSliderInt(futureSensePath, "---> Freestading <---", 0, 0);
+UI.AddCheckbox(futureSensePath, "Enable freestanding");
+UI.AddDropdown(futureSensePath, "Freestanding Mode", ["Disabled", "Normal", "Reversed"], 0);
 
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "=======>indicators && Visuals<========", 0, 0);
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Left TXT list indicator");
-UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "List indicator main color");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Health state indicator");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Top RGB line");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Crosshair hitmarker");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Bar indicator");
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Pos_x", 10, 1920)
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Pos_y", 10, 1080)
+UI.AddSliderInt(futureSenseVisuals, "=======>indicators && Visuals<========", 0, 0);
+UI.AddCheckbox(futureSenseVisuals, "Left TXT list indicator");
+UI.AddColorPicker(futureSenseVisuals, "List indicator main color");
+UI.AddCheckbox(futureSenseVisuals, "Health state indicator");
+UI.AddCheckbox(futureSenseVisuals, "Top RGB line");
+UI.AddCheckbox(futureSenseVisuals, "Crosshair hitmarker");
+UI.AddCheckbox(futureSenseVisuals, "Bar indicator");
+UI.AddSliderInt(futureSenseVisuals, "Pos_x", 10, 1920)
+UI.AddSliderInt(futureSenseVisuals, "Pos_y", 10, 1080)
     /*
-    UI.AddMultiDropdown(["Config", "FS -> Visuals", "FS -> Visuals"], "active modules", ["Doubletap", "Fakelag", "Miscellaneous"]);
-    UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "doubletap accent")
-    UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "primary accent")
-    UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "secondary accent")
-    UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "pos_dt_x", 10, 1920)
-    UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "pos_dt_y", 10, 1080)
-    UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "pos_fl_x", 10, 1920)
-    UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "pos_fl_y", 10, 1080)
-    UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "pos_misc_x", 10, 1920)
-    UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "pos_misc_y", 10, 1080)
+    UI.AddMultiDropdown(futureSenseVisuals, "active modules", ["Doubletap", "Fakelag", "Miscellaneous"]);
+    UI.AddColorPicker(futureSenseVisuals, "doubletap accent")
+    UI.AddColorPicker(futureSenseVisuals, "primary accent")
+    UI.AddColorPicker(futureSenseVisuals, "secondary accent")
+    UI.AddSliderInt(futureSenseVisuals, "pos_dt_x", 10, 1920)
+    UI.AddSliderInt(futureSenseVisuals, "pos_dt_y", 10, 1080)
+    UI.AddSliderInt(futureSenseVisuals, "pos_fl_x", 10, 1920)
+    UI.AddSliderInt(futureSenseVisuals, "pos_fl_y", 10, 1080)
+    UI.AddSliderInt(futureSenseVisuals, "pos_misc_x", 10, 1920)
+    UI.AddSliderInt(futureSenseVisuals, "pos_misc_y", 10, 1080)
     */
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Menu Border");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "AA indicator");
-UI.AddDropdown(["Config", "FS -> Visuals", "FS -> Visuals"], "AA indicator mode", ["Ideal yaw", "Half triangle"], 0)
-UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "AA indicator Color");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "AA indicator Desync base Color");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Display indicator");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Show Bullet Tracer");
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Bullet Tracer Thickness", 1, 50);
-UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "Bullet Tracer Color");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Enable Aspect Ratio Changer");
-UI.AddSliderFloat(["Config", "FS -> Visuals", "FS -> Visuals"], "Aspect Ratio", 0.5, 3.10);
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Free camera");
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Free camera following speed", 2, 64);
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Enable destroy watermark");
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Pos - x", 0, 1920);
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Pos - y", 0, 1080);
-UI.AddDropdown(["Config", "FS -> Visuals", "FS -> Visuals"], "Head portrait mode", ["?", "Custom texture"], 0)
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Enable Weapon indicator");
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Pos x", 0, 1920);
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Pos y", 0, 1080);
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Enable Heaven arrow");
-UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "Active arrow color");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Active head circle");
-UI.AddSliderFloat(["Config", "FS -> Visuals", "FS -> Visuals"], "Hit effect", 0, 2);
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Enable watermark");
-UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "Watermark color");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Rainbow trail");
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Rainbow Speed", 1, 10)
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Residene time", 1, 20)
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Thickness", 1, 3)
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Destroy ball");
-UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "Destroy ball color");
-//UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Draw hitbox");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Cool Box ESP");
-UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "Cool Box 1");
-UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "Cool Box 2");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "health based color");
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "DT indicator");
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Pos X", 0, 1920);
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Pos Y", 0, 1080);
-UI.AddColorPicker(["Config", "FS -> Visuals", "FS -> Visuals"], "Bar color");
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "===========>Misc.<===========", 0, 0);
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Scope fov");
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Scope fov range", 50, 150);
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Advanced logs");
-UI.AddMultiDropdown(["Config", "FS -> Visuals", "FS -> Visuals"], "Active log print", ["Shot log", "Buy log"])
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Enable custom clantag");
-UI.AddTextbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Custom Clantag")
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Clantag Speed", 1, 50);
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Ping spike");
-UI.AddSliderInt(["Config", "FS -> Visuals", "FS -> Visuals"], "Ping spike value", 0, 200);
-UI.AddCheckbox(["Config", "FS -> Visuals", "FS -> Visuals"], "Better strafe");
+UI.AddCheckbox(futureSenseVisuals, "Menu Border");
+UI.AddCheckbox(futureSenseVisuals, "AA indicator");
+UI.AddDropdown(futureSenseVisuals, "AA indicator mode", ["Ideal yaw", "Half triangle"], 0)
+UI.AddColorPicker(futureSenseVisuals, "AA indicator Color");
+UI.AddCheckbox(futureSenseVisuals, "AA indicator Desync base Color");
+UI.AddCheckbox(futureSenseVisuals, "Display indicator");
+UI.AddCheckbox(futureSenseVisuals, "Show Bullet Tracer");
+UI.AddSliderInt(futureSenseVisuals, "Bullet Tracer Thickness", 1, 50);
+UI.AddColorPicker(futureSenseVisuals, "Bullet Tracer Color");
+UI.AddCheckbox(futureSenseVisuals, "Enable Aspect Ratio Changer");
+UI.AddSliderFloat(futureSenseVisuals, "Aspect Ratio", 0.5, 3.10);
+UI.AddCheckbox(futureSenseVisuals, "Free camera");
+UI.AddSliderInt(futureSenseVisuals, "Free camera following speed", 2, 64);
+UI.AddCheckbox(futureSenseVisuals, "Enable destroy watermark");
+UI.AddSliderInt(futureSenseVisuals, "Pos - x", 0, 1920);
+UI.AddSliderInt(futureSenseVisuals, "Pos - y", 0, 1080);
+UI.AddDropdown(futureSenseVisuals, "Head portrait mode", ["?", "Custom texture"], 0)
+UI.AddCheckbox(futureSenseVisuals, "Enable Weapon indicator");
+UI.AddSliderInt(futureSenseVisuals, "Pos x", 0, 1920);
+UI.AddSliderInt(futureSenseVisuals, "Pos y", 0, 1080);
+UI.AddCheckbox(futureSenseVisuals, "Enable Heaven arrow");
+UI.AddColorPicker(futureSenseVisuals, "Active arrow color");
+UI.AddCheckbox(futureSenseVisuals, "Active head circle");
+UI.AddSliderFloat(futureSenseVisuals, "Hit effect", 0, 2);
+UI.AddCheckbox(futureSenseVisuals, "Enable watermark");
+UI.AddColorPicker(futureSenseVisuals, "Watermark color");
+UI.AddCheckbox(futureSenseVisuals, "Rainbow trail");
+UI.AddSliderInt(futureSenseVisuals, "Rainbow Speed", 1, 10)
+UI.AddSliderInt(futureSenseVisuals, "Residene time", 1, 20)
+UI.AddSliderInt(futureSenseVisuals, "Thickness", 1, 3)
+UI.AddCheckbox(futureSenseVisuals, "Destroy ball");
+UI.AddColorPicker(futureSenseVisuals, "Destroy ball color");
+//UI.AddCheckbox(futureSenseVisuals, "Draw hitbox");
+UI.AddCheckbox(futureSenseVisuals, "Cool Box ESP");
+UI.AddColorPicker(futureSenseVisuals, "Cool Box 1");
+UI.AddColorPicker(futureSenseVisuals, "Cool Box 2");
+UI.AddCheckbox(futureSenseVisuals, "health based color");
+UI.AddCheckbox(futureSenseVisuals, "DT indicator");
+UI.AddSliderInt(futureSenseVisuals, "Pos X", 0, 1920);
+UI.AddSliderInt(futureSenseVisuals, "Pos Y", 0, 1080);
+UI.AddColorPicker(futureSenseVisuals, "Bar color");
+UI.AddSliderInt(futureSenseVisuals, "===========>Misc.<===========", 0, 0);
+UI.AddCheckbox(futureSenseVisuals, "Scope fov");
+UI.AddSliderInt(futureSenseVisuals, "Scope fov range", 50, 150);
+UI.AddCheckbox(futureSenseVisuals, "Advanced logs");
+UI.AddMultiDropdown(futureSenseVisuals, "Active log print", ["Shot log", "Buy log"])
+UI.AddCheckbox(futureSenseVisuals, "Enable custom clantag");
+UI.AddTextbox(futureSenseVisuals, "Custom Clantag")
+UI.AddSliderInt(futureSenseVisuals, "Clantag Speed", 1, 50);
+UI.AddCheckbox(futureSenseVisuals, "Ping spike");
+UI.AddSliderInt(futureSenseVisuals, "Ping spike value", 0, 200);
+UI.AddCheckbox(futureSenseVisuals, "Better strafe");
 
 UI.AddHotkey(["Config", "SUBTAB_MGR", "Scripts", "SHEET_MGR", "Keys", "JS Keybinds"], "Autowall on key", "Autowall");
 UI.AddHotkey(["Config", "SUBTAB_MGR", "Scripts", "SHEET_MGR", "Keys", "JS Keybinds"], "DMG override", "DMG override");
@@ -281,7 +286,7 @@ if (UI.GetValue(["Config", "FS -> Visuals", "FS -> Visuals", "Aspect Ratio"]) ==
 }
 
 function UIEnabled() {
-    // UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "===========>Anti-Aim<===========", 0, 0);
+    // UI.AddSliderInt(futureSensePath, "===========>Anti-Aim<===========", 0, 0);
 
     // sway AA enable
     if (UI.GetValue(["Config", "FutureSense", "FutureSense", "AA mode"]) == 1) {
@@ -863,7 +868,7 @@ function UIEnabled() {
         UI.SetEnabled(["Config", "FutureSense", "FutureSense", "Dynamic desync on shot"], 0)
     }
 
-    // UI.AddSliderInt(["Config", "FutureSense", "FutureSense"], "=====>Ragebot assist && Movement<====", 0, 0);
+    // UI.AddSliderInt(futureSensePath, "=====>Ragebot assist && Movement<====", 0, 0);
 
     if (UI.GetValue(["Config", "FutureSense", "FutureSense", "SemiRage assist"])) {
         UI.SetEnabled(["Config", "FutureSense", "FutureSense", "Edit autowall"], 1);
@@ -2587,7 +2592,7 @@ function Anti_Aim_Loop() {
 
 
 function getScriptVal(name) {
-    return UI.GetValue(["Config", "FutureSense", "FutureSense"], name);
+    return UI.GetValue(futureSensePath, name);
 }
 
 function areExploits() {
