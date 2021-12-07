@@ -2895,7 +2895,7 @@ function HSV2RGB(h, s, v) {
         b: Math.round(multiply(b, 255))
     };
 }
-
+//LOL WHY 
 function multiply(a, b) {
     const multiply = a * b
     return multiply

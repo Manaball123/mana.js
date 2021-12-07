@@ -57,6 +57,36 @@ function main()
 
 }
 
+function add(a,b)
+{
+    return a+b;
+}
+function subtract(a,b)
+{
+    return add(a,-b)
+}
+
+function multiply(a,b)
+{
+    result=0;
+    for(i=0;i<b;i++)
+    {
+        result=add(result,a)
+    }
+}
+
+function exponentiation(a,b)
+{
+    result=0;
+    for(i=0;i,b;i++)
+    {
+        result=add(multiply(a,a),result)
+    }
+}
+
+
+
+
 
 Cheat.RegisterCallback("Draw","main");
 

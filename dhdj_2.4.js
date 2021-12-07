@@ -5751,6 +5751,9 @@ var last = false;
 var lasttick = 0;
 var m2Clicked = 0;
 //hahah
+//dhdj paster how
+//well im also pasting this
+
 //partially pasted from forum
 function rect(x, y, w, h, dir, color1, color2) {
 	Render_GradientRect(x - Math.round(w / 2), y - Math.round(h / 2), w, h, dir, color1, color2);

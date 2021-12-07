@@ -365,6 +365,7 @@ const secrets_path=[ "Config","SUBTAB_MGR","Secrets","SHEET_MGR","Secrets" ];
 
 
 //vars
+const screen_size = Render.GetScreenSize();
 var presetCache=99;
 
 var realModeCache=99;
@@ -424,6 +425,21 @@ var randomTimeOffset=[0,0,0];
 var randomOffsetHolder=[0,0,0];
 
 var doSwitch=false;
+
+
+//indicator settings
+var customIndicators=0;
+var crosshairIndicators=0;
+var customCrosshair=0;
+
+var crosshairLength=100;
+var crosshairDist=10;
+var crosshairThickness=2;
+
+var crosshairColor1=[255,255,255,255];
+var crosshairColor2=[255,255,255,255];
+
+
 
 //UI Elements
 //password
@@ -1133,6 +1149,61 @@ function updateConfig()
     //Cheat.Print( UI.GetChildren(["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"]) + '\n')
     
 }
+//courtesy to dhdj
+//dont know how it works but cool rainbow :D
+function HSV2RGB(h, s, v) {
+	var r, g, b, i, f, p, q, t;
+
+	i = Math.floor(h * 6);
+	f = h * 6 - i;
+	p = v * (1 - s);
+	q = v * (1 - f * s);
+	t = v * (1 - (1 - f) * s);
+
+	switch (i % 6) {
+		case 0:
+			r = v,
+				g = t,
+				b = p;
+			break;
+		case 1:
+			r = q,
+				g = v,
+				b = p;
+			break;
+		case 2:
+			r = p,
+				g = v,
+				b = t;
+			break;
+		case 3:
+			r = p,
+				g = q,
+				b = v;
+			break;
+		case 4:
+			r = t,
+				g = p,
+				b = v;
+			break;
+		case 5:
+			r = v,
+				g = p,
+				b = q;
+			break;
+	}
+
+	return {
+		r: Math.round(r * 255),
+		g: Math.round(g * 255),
+		b: Math.round(b * 255)
+	};
+}
+
+function renderIndicators()
+{
+    
+}
 
 
 
@@ -1222,7 +1293,7 @@ function OnBulletImpact()
         {
             doSwitch=true;
         }
-        
+
         
         
 
@@ -1621,6 +1692,8 @@ function switchAA()
 
 Cheat.RegisterCallback("Draw","updateConfig");
 Cheat.RegisterCallback("CreateMove","switchAA");
+Cheat.RegisterCallback("Draw","renderIndicators");
 //the antibruteforce i pasted
 Cheat.RegisterCallback("player_hurt", "OnHurt");
 Cheat.RegisterCallback("bullet_impact", "OnBulletImpact");
+
