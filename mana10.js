@@ -204,6 +204,17 @@ var AA=
     ]
 ];
 
+/*
+var a1 =
+{
+    switchMode : 0,
+    dodgeBruteforce : 0,
+    activePresets : 0,
+    switchDelay : 0,
+    switchDelta : 0,
+}
+*/
+
 var AA_MANAGER=
 [
     [0,0,0,0,0],
