@@ -5750,7 +5750,7 @@ var scopeY = screen_y / 2;
 var last = false;
 var lasttick = 0;
 var m2Clicked = 0;
-
+//hahah
 //partially pasted from forum
 function rect(x, y, w, h, dir, color1, color2) {
 	Render_GradientRect(x - Math.round(w / 2), y - Math.round(h / 2), w, h, dir, color1, color2);

@@ -297,9 +297,9 @@ function VectorMultiply(a, b)
 }
 
 //get abseloute vector magnitude
-function VectorLength(x, y, z)
+function VectorLength(a)
 {
-    return Math.sqrt(x * x + y * y + z * z);
+    return Math.sqrt(a[1]**2+a[2]**2+a[3]**2);
 }
 
 
@@ -321,6 +321,37 @@ function VectorDot(a, b)
 function VectorDistance(a, b)
 {
     return VectorLength(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+}
+//REAL SHIT
+//recoding this, confusing af
+function pointRayDistance(point, rayStart, rayEnd)
+{
+    //delta of the vectors(range that bullet travels)
+    
+    var startToPoint = VectorSubtract(point, rayStart);
+    var startToEnd = VectorSubtract(rayEnd, rayStart);
+    //length of bullet beam
+    var rayLength = VectorLength(startToEnd);
+    var pointLength = VectorLength(startToPoint)
+    
+    //proving my theory that this is some sort of "abseloute direction"
+
+    //dot product of the enemy bullet beam to enemy--> player
+    var dotProduct = VectorDot(startToPoint, startToEnd);
+    var sideLength = dotProduct/rayLength
+
+
+    //these check for if angle between 2 rays >90 or point too far
+    if (dotProduct < 0.0)
+    {
+        return rayStart;
+    }
+    if (sideLength > rayLength)
+    {
+        return rayEnd;
+    }
+
+    return sqrt(pointLength**2-sideLength**2)
 }
 
 //Paths
@@ -1107,64 +1138,17 @@ function updateConfig()
 
 //COURTESY TO MIXOLOGIST
 //REMEMBER TO EDIT
-//each time this activates, settings in menu gets updated
 //IMPORTANT
 
-UI.AddSubTab(["Rage", "SUBTAB_MGR"], "MIXO-YAW");
-UI.AddCheckbox(["Rage", "MIXO-YAW", "MIXO-YAW"], "Anti bruteforce");
-
-
-
-//REAL SHIT
-
-function ClosestPointOnRay(target, rayStart, rayEnd)
-{
-    //delta of the vectors(range that bullet travels)
-    
-    var to = VectorSubtract(target, rayStart);
-    var dir = VectorSubtract(rayEnd, rayStart);
-    //length of bullet beam
-    var length = VectorLength(dir[0], dir[1], dir[2]);
-    
-    //proving my theory that this is some sort of "abseloute direction"
-    dir = VectorNormalize(dir);
-
-    //dot product of the enemy bullet beam to enemy--> player
-    var rangeAlong = VectorDot(dir, to);
-
-
-    //these check for if angle between 2 rays >90
-    if (rangeAlong < 0.0)
-    {
-        return rayStart;
-    }
-    if (rangeAlong > length)
-    {
-        return rayEnd;
-    }
-
-    //WHAT. IS. THIS. 
-    //Seriously, what the fuck is this???
-    //goddamn fucking chink, confuses me on the VERY FUCKING LAST PART OF THIS SHIT REEEEEEEEEEEEEEEEEEEEEEEE
-    
-    //ok....? I kinda know what this, but shouldnt it be vector subtract or something?
-    return VectorAdd(rayStart, VectorMultiply(dir, [rangeAlong, rangeAlong, rangeAlong]));
-}
 
 
 
 //retard var decls
 var lastHitTime = 0.0;
 
-//HAHAHA look at this shit, tfw u indent a single fucking array lmfao
-var lastImpactTimes =
-[
-    0.0
-];
-var lastImpacts =
-[
-    [0.0, 0.0, 0.0]
-];
+var lastImpactTimes = [0.0];
+//why
+var lastImpacts =[[0.0, 0.0, 0.0]];
 
 //function gets called when ANY player gets hurt
 function OnHurt()
@@ -1199,6 +1183,7 @@ function OnBulletImpact()
     var impact = [Event.GetFloat("x"), Event.GetFloat("y"), Event.GetFloat("z"), curtime];
 
     //whats this
+    //nvm its bullt source
     var source;
     
     //if bullet comes from enemy
@@ -1228,14 +1213,22 @@ function OnBulletImpact()
         //only bodydist is actually used, everything else is basically placeholders rofll
         var local = Entity.GetLocalPlayer();
         var localEye = Entity.GetEyePosition(local);
-        var localOrigin = Entity.GetProp(local, "CBaseEntity", "m_vecOrigin");
-        var localBody = VectorMultiply(VectorAdd(localEye, localOrigin), [0.5, 0.5, 0.5]);
+        //var localOrigin = Entity.GetProp(local, "CBaseEntity", "m_vecOrigin");
+
+        var headDist=pointRayDistance(localEye,source,impact)
+
+        
+        if(headDist<100.0)
+        {
+            doSwitch=true;
+        }
         
         
-        var bodyVec = ClosestPointOnRay(localBody, source, impact);
-        var bodyDist = VectorDistance(localBody, bodyVec);
+        
+
       
         //if bullet went close to the player BODY
+        /*
         if (bodyDist < 85.0)
         {
             var realAngle = Local.GetRealYaw();
@@ -1299,6 +1292,7 @@ function OnBulletImpact()
         }
         lastImpacts[entity] = impact;
         lastImpactTimes[entity] = curtime;
+        */
     }
 }
 
