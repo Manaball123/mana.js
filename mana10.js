@@ -177,7 +177,14 @@ AA_MANAGER index explanations
 
 [i][4]: Switch Delta
 
+
+RENDERING SETTINGS
+[0]: general settings
+
 */
+
+//hey, if ur not using my aa, then FUCK YOU
+//not making a toggle for custom aa, if u dont know what I meant
 
 var AA=
 [
@@ -236,6 +243,31 @@ var AA_MANAGER=
 ];
 
 var RAGEBOT=[];
+
+//save data cannot be objects cuz its fucking shit
+
+//NEW PLAN
+//PUT OBJECTS IN ARRAYS
+//
+var RENDER=
+[
+    //GENERAL SETTINGS
+    //REMEMBER THE 255 CHAR LIMIT PLEASE
+    {
+    indicators : 0,
+    crosshairIndicators : 0,
+    customCrosshair: 0,
+    rechargeBar : 0,
+    rainbowMenuFrame : 0,
+    },
+    //MULTIDROPDOWN SETTINGS(WHICH INDICTS TO TOGGLE, ETC)
+    {
+        activeIndicators : 0,
+        activeCrosshairIndicators : 0,
+        
+    }
+
+];
 //config owner, password
 var SECRETS=["manaball123","configPass"]
 
@@ -281,7 +313,7 @@ function clampTo(variable,to,mode)
 
 //deg2rad function
 
-function radian(degree)
+function DEG2RAD(degree)
 {
     return degree * Math.PI / 180.0;
 }
@@ -333,6 +365,11 @@ function VectorDistance(a, b)
 {
     return VectorLength(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 }
+function ANGLE2VEC(angle) {
+	var pitch = angle[0];
+	var yaw = angle[1];
+	return [Math.cos(DEG2RAD(pitch)) * Math.cos(DEG2RAD(yaw)), Math.cos(DEG2RAD(pitch)) * Math.sin(DEG2RAD(yaw)), -Math.sin(DEG2RAD(pitch))];
+}
 //REAL SHIT
 //recoding this, confusing af
 function pointRayDistance(point, rayStart, rayEnd)
@@ -371,8 +408,10 @@ const main_path=["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"];
 const aa_path=["Rage","SUBTAB_MGR","Custom Anti-Aim","Custom Anti-Aim"];
 const aa_control_path=["Rage","SUBTAB_MGR","AA Preset Manager","AA Preset Manager"];
 const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "Key assignment"];
+const aa_keybinds=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "General","Key assignment"];
+const exploits_keybinds=["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "Keys","Key assignment"];
 const aa_default_path=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "Directions"];
-const secrets_path=[ "Config","SUBTAB_MGR","Secrets","SHEET_MGR","Secrets" ];
+const secrets_path=[ "Config","SUBTAB_MGR","Secrets","SHEET_MGR","Secrets"];
 
 
 //vars
@@ -439,14 +478,19 @@ var doSwitch=false;
 
 
 //indicator settings
-var customIndicators=0;
-var crosshairIndicators=0;
-var customCrosshair=0;
+//PERFECT THIS THING BEFORE STRUCTURING IT
+//general settings
+
+//multidropdown setting
+var rainbowBars=0;
 
 var crosshairLength=100;
 var crosshairDist=10;
 var crosshairThickness=2;
 
+
+//colors are gonna be a BIG CONCERN due to the fucky nature of it
+//u can only fit 14 colors in a key, which means that we HAVE TO SPLIT IT INTO ARRAYS :(
 var crosshairColor1=[255,255,255,255];
 var crosshairColor2=[255,255,255,255];
 
@@ -1146,20 +1190,126 @@ function updateConfig()
             AA_MANAGER[modeVal][3]=UI.GetValue(aa_control_path.concat("Switch Delay"));
             AA_MANAGER[modeVal][4]=UI.GetValue(aa_control_path.concat("Switch Delta"));
         }
-
-        
-
-
-        
-        
+  
         
     }
-    
-    
-
-    //Cheat.Print( UI.GetChildren(["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"]) + '\n')
-    
+  
 }
+//helpers pasted from galaxysense thing
+const mirage = [
+    //[ "Balcony", "Stand ", 15, [-1170.448974609375,-2351.35009765625,-112.76617431640625], [-6.143388271331787,14.879289627075195,0 ], "Oneway" ],
+    [ "Palace Entrance", "Fake duck + E", 15, [-32.827205657958984,-1747.707763671875,-116.18266296386719], [-13.562880516052246,-80.47711944580078,0 ], "Oneway"  ],
+    [ "Palace Entrace", "Crouch + E", 25, [146.87937927246094,-2078.0126953125,9.615781784057617], [-0.2739872932434082,-108.96994018554688,0 ], "Oneway"  ],
+    [ "Sniper's Nest", "Crouch + E (manual)", 40, [-886.25830078125,-1317.399658203125,-120.41223907470703], [-0.3445321321487427,-177.3930206298828,0 ], "Oneway"  ],
+    [ "Cat Box", "Stand ", 10, [-691.8399658203125,-885.2897338867188,-182.1551055908203], [-1.4627931118011475,102.77088165283203,0 ], "Oneway"  ],
+    [ "Connector", "Stand ", 1, [-758.4989013671875,-1321.30224609375,-108.56095123291016], [10.404932975769043,82.45069122314453,0 ], "Oneway"  ],
+    [ "Cat", "Fake duck ", 10, [-1495.3671875,-1112.000732421875,-183.45028686523438], [-2.77838134765625,38.17058563232422,0 ], "Oneway"  ],
+    [ "Apartments", "Fake duck ", 0, [-2336.7314453125,766.5013427734375,-79.1664810180664], [-5.943861484527588,-2.0283021926879883,0 ], "Oneway"  ],
+    [ "Cat", "Fake duck ", 0, [-394.3824768066406,-796.3460693359375,-216.0263214111328], [-5.173882484436035,122.90838623046875,0 ], "Oneway"  ],
+    [ "T Stairs", "Stand ", 25, [275.092529296875,316.94354248046875,-201.4618377685547], [0.7233693599700928,11.497645378112793,0 ], "Oneway"  ],
+    [ "Top Mid", "Stand ", 35, [219.89126586914063,877.2789306640625,-76.8647232055664], [2.8979110717773438,-90.38306427001953,0 ], "Oneway"  ],
+    [ "House Stairs / Top Mid Connector", "Fake duck ", 32, [454.9155578613281,852.4118041992188,-53.246543884277344], [16.369403839111328,-44.87099838256836,0 ], "Oneway"  ],
+    [ "Underpass Stairs", "Fake duck ", 10, [-1264.1064453125,218.20901489257813,-120.45449829101563], [12.757319450378418,27.84868621826172,0 ], "Oneway"  ],
+    [ "Underpass Stairs", "Stand ", 15, [-1124.922119140625,310.01190185546875,-100.71343994140625], [29.21480369567871,42.90019226074219,0 ], "Wallbang" ],
+    [ "Market Entrace", "Fake duck ", 0, [-1705.237548828125,-1220.2938232421875,-207.29591369628906], [-7.482339859008789,79.5807113647461,0 ], "Oneway"],
+    [ "Apartment Entrance", "Stand ", 12, [-374.2903137207031,779.552978515625,-20.803316116333008], [1.6386109590530396,-161.68849182128906,0 ], "Oneway" ],
+    [ "Underpass Stairs", "Crouch ", 12, [-1101.185791015625,522.3583984375,-38.548126220703125], [80.03816223144531,-51.8855094909668,0 ], "Oneway" ],
+    [ "Right Side Connector", "Stand ", 10, [-842.7730102539063,32.43463134765625,-108.64161682128906], [1.2841607332229614,-85.02303314208984,0 ], "Oneway" ],
+    [ "Palace Entrance", "Fake duck ", 0, [-811.739013671875,-1145.87060546875,-72.66464233398438], [-2.2234721183776855,-50.907833099365234,0 ], "Oneway" ],
+    [ "CT Stairs", "Stand ", 20, [-1495.1767578125,-1588.8564453125,-201.6099395751953], [-0.707923412322998,-79.56673431396484,0 ], "Oneway" ],
+    [ "CT Spawn", "Stand ", 1, [-1722.5516357421875,-680.75244140625,-108.86699676513672], [3.074936866760254,-86.70063781738281,0 ], "Wallbang" ],
+    [ "Market Entrace", "Stand (AWP)", 10, [-2231.71142578125,32.56330490112305,-108.5659408569336], [-0.22803455591201782,-47.783348083496094,0 ], "Wallbang" ],
+    [ "A Ramp", "Fake duck ", 0, [-291.80877685546875,-2112.17333984375,-53.190345764160156], [7.508554935455322,48.7481803894043,0 ], "Oneway" ],
+    [ "Palace/A Ramp Connector", "Fake duck + E", 0, [1127.9307861328125,228.2334747314453,-185.51644897460938], [-1.6344425678253174,-89.02660369873047,0 ], "ESP Oneway" ],
+    [ "Apartments + House", "Fake duck + E", 0, [-477.98028564453125,492.88311767578125,-99.00080871582031], [-0.6445350646972656,89.8587417602539,0 ], "Oneway" ],
+    [ "Ramp", "Crouch ", 0, [780.37841796875,-1550.7978515625,-60.35479736328125], [18.644933700561523,-176.00025939941406,0 ], "Oneway" ],
+    [ "House exit", "Stand", 0, [-859.4331665039063,614.7947387695313,-14.041431427001953], [2.2666337490081787,7.958107948303223,0 ], "Oneway" ],
+    [ "Apartment entrance", "Stand (AWP)", 0, [-1843.001220703125,488.68048095703125,-101.81539916992188], [-2.849693775177002,3.4349939823150635,0 ], "Oneway" ],
+    [ "B Van", "Fake duck ", 0, [-2259.607421875,677.5836791992188,7.429899215698242], [5.68641996383667,-71.17919158935547,0 ], "Oneway" ],
+    [ "Palace", "Stand (manual shoot/ESP) ", 0, [-1506.1005859375,-990.6868896484375,-149.39236450195313], [-3.874444007873535,-38.0708122253418,0 ], "Wallbang" ],
+    [ "Top Mid", "Stand", 0, [-266.930573,-366.495056,-103.172424], [1.882086,19.124743,0 ], "Oneway" ],
+    [ "Balcony", "Stand ", 1, [462.96588134765625,-2084.01904296875,18.9892520904541], [1.6673067808151245,177.59693908691406,0 ], "Wallbang" ]
+];
+
+const dust2 = [
+    [ "T Spawn", "Fake duck ", 0, [-1828.306884765625,-455.19976806640625,141.17587280273438], [-2.199988603591919,-17.8001766204834,0 ], "Oneway" ],
+    [ "Tunnels", "Fake duck + E", 0, [-2071.30908203125,2895.8076171875,82.59713745117188], [0.7149654626846313,-83.99018859863281,0 ], "Oneway" ],
+    [ "Tunnels Exit", "Crouch ", 0, [-776.18408203125,2555.6904296875,-25.649532318115234], [-4.512523174285889,-147.3076629638672,0 ], "Wallbang" ],
+    [ "Mid/Cat", "Fake duck ", 0, [-210.51968383789063,542.5650634765625,47.2431755065918], [5.387450218200684,100.62740325927734,0 ], "Oneway" ],
+    [ "Long Doors / Blue", "Fake duck ", 25, [1299.95654296875,620.3975219726563,-3.8381288051605225], [1.5557122230529785,150.635986328125,0 ], "Oneway" ],
+    [ "A Site / Long", "Fake duck ", 0, [1528.8955078125,505.183837890625,-49.267723083496094], [-3.854454517364502,99.73228454589844,0 ], "Oneway" ],
+    [ "A Site", "Fake duck (Long Plant)", 0, [1570.482421875,461.5287170410156,-63.220176696777344], [-5.327244758605957,99.6102294921875,0 ], "Oneway" ],
+    [ "B Doors", "Crouch ", 0, [16.597061157226563,2311.9716796875,17.10267448425293], [-0.5667411088943481,-177.3401641845703,0 ], "Wallbang" ],
+    [ "Long Cross / Ramp", "Fake duck ", 0, [493.2771911621094,2613.61572265625,143.1537322998047], [5.055543422698975,-37.76759338378906,0 ], "Oneway" ],
+    [ "Long Doors", "Stand ", 1, [1372.70068359375,1358.381103515625,50.24076843261719], [-0.30388620495796204,-139.5752716064453,0 ], "Wallbang" ],
+    [ "Long Doors Box", "Stand ", 1, [530.4532470703125,826.2880249023438,62.459720611572266], [0.7473396062850952,-50.05582046508789,0 ], "Wallbang" ],
+    [ "Outside Long House", "Stand ", 10, [554.1951293945313,353.6593017578125,69.35932159423828], [2.23449444770813,-145.07130432128906,0 ], "Oneway" ],
+    [ "Top Mid", "Stand ", 10, [654.1134033203125,297.8545227050781,59.560081481933594], [0.6505045294761658,-179.7573699951172,0 ], "Oneway" ],
+    [ "Lower Tunnels", "Stand ", 35, [-216.03515625,1160.060791015625,89.53584289550781], [11.780013084411621,153.25389099121094,0 ], "Wallbang" ],
+    [ "Cat", "Stand ", 10, [-874.2039794921875,1464.575927734375,-53.34953308105469], [-10.956621170043945,-24.002500534057617,0 ], "Oneway" ]
+];
+const inferno = [
+    [ "library | risk", "Stand ", 0, [2491.488974609375,1232.55009765625,215.03000000000625], [12.100088271331787,-170.540089627075195,0 ], "Oneway" ],
+    [ "barrels | risk", "Crouch ", 0, [2477.968974609375,-130.53009765625,135.65000000000625], [2.090088271331787,168.650089627075195,0 ], "Oneway" ],
+    [ "box", "Fake duck ", 0, [1999.968974609375,480.60009765625,206.65000000000625], [-10.090088271331787,-100.650089627075195,0 ], "Oneway" ],
+    [ "box2", "Fake duck ", 0, [2013.97,701.99,210.61], [-0.28,1.18,0 ], "Oneway" ],
+    [ "BigBox", "Fake duck ", 0, [2083.79,182.85,210.18], [0.21,76.14,0 ], "Oneway" ],
+    [ "Barrels2 | risk", "Fake duck+min dmg ", 0, [63.91,2603.67,206.03], [2.33,4.84,0 ], "Oneway" ],
+    [ "Docs", "Fake duck+min dmg ", 0, [753.09,1871.93,177.94], [-2.13,174.72,0 ], "Oneway" ],
+    [ "Window", "Fake duck", 0, [-5.32,383.99,230.03], [3.58,79.43,0 ], "Oneway" ],
+    [ "BigBox2", "Fake duck+min dmg (AWP)", 0, [2148.63,301.60,206.03], [-13.03,-110.59,0 ], "Oneway" ],
+];
+const overpass = [
+    [ "Barrels", "Stand ", 15, [-806.2734033203125,392.8045227050781,145.030081481933594], [8.943388271331787,-67.049289627075195,0 ], "Oneway" ],
+    [ "Water", "Fake duck", 15, [-1169.75,256.00,76.78], [0.97,-78.36,0 ], "Oneway" ],
+    [ "Window", "Stand ", 15, [-1672.8734033203125,450.7745227050781,353.030081481933594], [6.843388271331787,-50.989289627075195,0 ], "Oneway" ],
+    [ "Kill window | risk", "Stand ", 15, [-416.0434033203125,-2467.3245227050781,267.030081481933594], [-0.163388271331787,113.539289627075195,0 ], "Oneway" ],
+    [ "Stairs", "Fake duck ", 15, [-628.59,-1168.31,123.18], [-0.34,114.22,0 ], "Oneway" ],
+    [ "Wooden", "Stand | risk ", 15, [-1049.98,-302.36,163.93], [-0.14,-63.30,0 ], "Shooting" ],
+    [ "Cement", "Fake duck ", 15, [-1178.99,171.99,143.03], [-12.23,150.72,0 ], "Oneway" ],
+];
+const cobblestone = [
+    [ "Outside", "Min dmg | risk (Scar) ", 15, [73.81,-1292.57,-70.09], [-5.55,77.47,0 ], "Oneway" ],
+    [ "Stairs", "Min dmg", 15, [668.03,-466.79,-0.86], [-0.15,147.68,0 ], "Oneway" ],
+];
+const short_dust = [
+    [ "Car", "Fake Duck", 15, [70.52,494.88,46.30], [-0.37,98.23,0 ], "Oneway" ],
+];
+const vertigo = [
+    [ "Box", "Fake Duck | risk", 15, [-2107.30,954.03,11790.03], [5.45,-110.75,0 ], "Oneway" ],
+    [ "Box2", "Fake Duck", 15, [-1435.92,660.21,11921.28], [5.45,-110.75,0 ], "Oneway" ],
+    [ "Box", "Stand | risk", 15, [-2113.13,879.35,11893.03], [2.03,-67.31,0 ], "Oneway" ],
+    [ "Container", "Min dmg | Stand", 15, [-1900.03,684.36,11840.03], [-10.17,-19.12,0 ], "Oneway" ],
+    [ "Container2", "Fake duck", 15, [-2342.90,741.01,11843.03], [5.04,-95.87,0 ], "Oneway" ],
+];
+const office = [
+    [" ",  "Crouch | Stand (AWP)", 15, [-488.09,-1369.03,-193.97], [-4.63,97.02,0 ], "Oneway" ],
+    [" ",  "Fake duck", 15, [-744,-416,-187], [-0.52,1.39,0 ], "Oneway" ],
+    [" ", "Stand", 15, [-774,-307,-77], [8.05,-113,0 ], "Oneway" ],
+    [" ", "Fake duck", 15, [1024.42,-1072.03,-164.28], [-0.20,107,0 ], "Oneway" ],
+    [" ",  "Stand", 15, [ 18, -764.733398, -121.746964], [-1.358088, 74.478157, 0], "Oneway" ],
+    [" ",  "Stand", 15, [ -0.204876 ,-887.967957,-126.317039], [-1.392609 ,78.579758 ,0.000000], "Oneway" ],
+    [" ",  "Fake duck", 15, [  174.968750, -104.789978 ,-113.037590], [2.613178 ,-98.549133, 0.000000], "Oneway" ],
+    [" ",  "Fake duck", 15, [  366.431168, -428.199738, -114.615715], [-0.103847 ,1.141723, 0.000000], "Oneway" ],
+    ["",  "Stand", 15, [  625.584717, -389.167236, -95.968750], [2.543516, -172.531570, 0.000000], "Oneway" ],
+    [" ",  "Stand", 15, [  797.682739, -573.968750, -95.968750], [0.767023, -37.171745, 0.000000], "Oneway" ],
+    [" ",  "Fake duck", 15, [  811.329346, -1072.375366, -143.436768], [-0.074401, 77.782188, 0.000000], "Oneway" ],
+    [" ",  "Stand", 15, [ 669.717529, -289.459137, -95.968750], [0.343555, -55.699059, 0.000000], "Oneway" ],
+
+
+];
+const maps = {
+    "de_mirage": mirage,
+    "de_dust2": dust2,
+    "de_inferno": inferno,
+    "de_mirage": mirage,
+    "de_overpass": overpass,
+    "de_dust2": dust2,
+    "de_cbble": cobblestone,
+    "de_shortdust": short_dust,
+    "de_vertigo": vertigo,
+    "cs_office": office
+};
 //courtesy to dhdj
 //dont know how it works but cool rainbow :D
 function HSV2RGB(h, s, v) {
@@ -1171,36 +1321,37 @@ function HSV2RGB(h, s, v) {
 	q = v * (1 - f * s);
 	t = v * (1 - (1 - f) * s);
 
-	switch (i % 6) {
+	switch (i % 6) 
+    {
 		case 0:
 			r = v,
-				g = t,
-				b = p;
+			g = t,
+			b = p;
 			break;
 		case 1:
 			r = q,
-				g = v,
-				b = p;
+			g = v,
+			b = p;
 			break;
 		case 2:
 			r = p,
-				g = v,
-				b = t;
+			g = v,
+			b = t;
 			break;
 		case 3:
 			r = p,
-				g = q,
-				b = v;
+			g = q,
+			b = v;
 			break;
 		case 4:
 			r = t,
-				g = p,
-				b = v;
+			g = p,
+			b = v;
 			break;
 		case 5:
 			r = v,
-				g = p,
-				b = q;
+            g = p,
+			b = q;
 			break;
 	}
 
@@ -1380,9 +1531,9 @@ function OnBulletImpact()
 
 //again, courtesy to mixologist
 //check for in air
-function isInAir()
+function isInAir(player)
 {
-	var fv = Entity.GetProp(Entity.GetLocalPlayer(), "CBasePlayer", "m_flFallVelocity");
+	var fv = Entity.GetProp(Entity.GetLocalPlayer(player), "CBasePlayer", "m_flFallVelocity");
 	if(fv < -1 || fv > 1){
         //in_air = true;
 		return true;
@@ -1397,6 +1548,14 @@ function getVelocity(player)
 	return Math.sqrt(velocity[0] * velocity[0] + velocity[1] * velocity[1]);
 }
 
+function isDucking(player) {
+	return Entity_GetProp(player, "CCSPlayer", "m_flDuckAmount");
+}
+
+function getWeapons(player)
+{
+    return Entity.GetName(Entity.GetWeapon(player));
+}
 
 //mode: 0=real, 1=fake, 2=lby
 
@@ -1545,18 +1704,18 @@ function updateAA(preset)
                 }
                 SetOffset(randomOffsetHolder[i],i);
                 break;
-                
-              
-               
+         
         }
     }
     
 }
 
 
+
 //handles presets ig
 function switchAA()
 {
+    var localPlayer = Entity.GetLocalPlayer();
     //Cheat.Print("switch aa called\n");
     //if overriding(highest priority)
     if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 4")==1))
@@ -1586,31 +1745,32 @@ function switchAA()
     {
         currentAAMode=2;
     }
-    /*
-    else if(fakeduck)
+    
+    else if(UI.GetValue(aa_keybinds.concat("Fake duck"))==1)
     {
         currentAAMode=6;
     }
-    else if(knifing)
+    else if(getWeapons(localPlayer)=="knife")
     {
         currentAAMode=10;
     }
-    else if(zeusing)
+    else if(getWeapons(localPlayer) =="zeus x27")
     {
         currentAAMode=11;
     }
-    else if(hideshots)
+    
+    else if(exploits_keybinds.concat("Hide shots"))
     {
         currentAAMode=7;
     }
     
-    else if(dt)
+    else if(exploits_keybinds.concat("Double tap"))
     {
         currentAAMode=8;
     }
-    */
+    
     //in air
-    else if(isInAir())
+    else if(isInAir(localPlayer))
     {
         currentAAMode=4;
     }
@@ -1620,12 +1780,12 @@ function switchAA()
         currentAAMode=5;
     }
     */
-    /*
-    else if(crouching)
+    
+    else if(isDucking(localPlayer))
     {
         currentAAMode=3;
     }
-    */
+    
     //if running
     else if(getVelocity(Entity.GetLocalPlayer())>1)
     {

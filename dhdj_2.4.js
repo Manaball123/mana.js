@@ -1798,7 +1798,8 @@ function showDefaultWeapons(visibility) {
 	}
 }
 var ff = Cheat;
-
+//quite smart ngl
+//might implement objects in my own js
 function addNewMenuItems() {
 	
 	Object.keys(menuItems).forEach(function(key) {
@@ -2011,10 +2012,12 @@ function hideAllItems() {
 }
 
 function initializeMenuItems() {
+	//HAHAHAHAHAHA
 	UI_SetValue(["Cheat", General, "Restrictions"], 0);
 
 	addNewMenuItems();
 	addWeapons();
+	//LMFAO
 	hideAllItems();
 }
 var ll = Cheat;
@@ -2022,12 +2025,16 @@ var cachedValues={};
 
 function getValue(key) {
 	return UI_GetValue(menuItems[key][loc].concat(key));
+	//MORE CANCER
+	
 }
+//useless vars, ewww
 var mm = Cheat;
 
 function getColor(key) {
 	return UI_GetColor(menuItems[key][loc].concat(key));
 }
+//see this shit? this is u, fucker
 var nn = Cheat;
 
 function setValue(key, value) {

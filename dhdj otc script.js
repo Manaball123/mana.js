@@ -1371,6 +1371,8 @@ const Material_Create = Material.Create;
 
 	function getValue(key) {
 		return UI.GetValue("Misc", "JAVASCRIPT", "Script items", key);
+		//CANCER
+		
 	}
 
 	function setValue(key, value) {
@@ -3845,6 +3847,10 @@ function drawRingRadar() {
 			}
 		}
 	}
+
+	//HAHAHAHAHA
+	//DHDJ PASTER
+	//BOTTOM TEXT
 
 	// Pasted from https://www.onetap.com/threads/release-cornflakes-indicator-script.27327/. LOLLOLLOLLOLLOL
 	function normalizeYaw(angle) {
