@@ -26,168 +26,24 @@ UI.AddSubTab([ "Rage","SUBTAB_MGR" ],"Custom Anti-Aim")
 UI.AddSubTab([ "Rage","SUBTAB_MGR",],"AA Preset Manager")
 
 
-//CALC FUNCTIONS
-
-
-
-
 //Config
 
 //AUTH SYSTEM
-    
 
 
-
-//handles save file to usable data
-
-
-
-
-/*Index explanations:
-    AA[i]:preset number
-
-        AA[i][0]: Misc settings(at targets, auto dir, etc)
-
-        AA[i][1][x]:values for static
-            0: real offset
-            1: fake offset
-            2: lby offset
-
-
-        
-        AA[i][2][x]:values for jitter
-            0: real offset
-            1: fake offset
-            2: lby offset
-
-            3: real jitter
-            4: fake jitter
-            5: lby jitter
-
-            6: real randomized intervals(1 or 0)
-            7: fake randomized intervals(1 or 0)
-            8: lby randomized intervals(1 or 0)
-
-            9: real jitter delay
-            10: fake jitter delay 
-            11: lby jiter delay
-
-            12: real jitter interval offset
-            13. fake jitter interval offset
-            14. lby jitter interval offset
-
-
-        
-        AA[i][3][x]: values for switch
-            AA[i][2][0]: values for real offset
-            AA[i][2][1]: values for fake offset
-            AA[i][2][2]: values for lby offset
-            
-            AA[i][2][3]: values for max index of switch
-
-            (delay[0]=time between 0--->1)
-            AA[i][2][4]: values for real offset switch delay
-            AA[i][2][5]: values for fake offset switch delay
-            AA[i][2][6]: values for lby offset switch delay
-
-            
-
-        AA[i][4][x]: values for sway
-            0: real start
-            1: fake start
-            2: lby start
-
-            //calculated internally
-            3: real delta
-            4: fake delta
-            5: lby delta
-        
-           
-            6: real sway time
-            7: fake sway time
-            8: lby sway time
-            
-
-            
-        AA[i][5][x]: values for random
-            0: real offset
-            1: fake offset
-            2: lby offset
-            3: real delta
-            4: fake delta
-            5: lby delta
-
-            6: real randomized intervals(1 or 0)
-            7: fake randomized intervals(1 or 0)
-            8: lby randomized intervals(1 or 0)
-
-            9: real delay
-            10: fake delay
-            11: lby delay
-
-            12: real randomize interval offset
-            13. fake randomize interval offset
-            14. lby randomize interval offset
-    
-
-
-        AA[i][6][x]: active mode(0=static,1=jitter,2=switch,3=sway,4=random) for real(0),fake(1), and lby(2)
-
-
-
-        AA[i][7]: name of aa preset
-*/
-
-/*
-ALSO ADD FORCE SWITCH KEY
-
-AA_MANAGER index explanations
-
-0=Standing 
-1=Running 
-2=Slow-Walking
-3=Crouching 
-4=In Air 
-5=On Peek 
-6=Fake-Ducking
-7:HS Active
-8:DT Active
-9:On Use
-10:Knifing
-11:Zeusing
-12:Override Key 1 
-13:Override Key 2     
-14:Override Key 3
-15:Override Key 4
-
-
-[i][0]: General Settings:
-    0: no/conditional switch(only when antibruteforce)
-    1: sequenced switch
-    2: random switch
-
-[i][1]:
-    0: no antibruteforce
-    1: complex antibruteforce(forces an aa switch,if switch enabled)
-
-[i][2]:
-    INT representing active multidropdown options
-
-[i][3]: Switch Delay
-
-[i][4]: Switch Delta
-
-
-RENDERING SETTINGS
-[0]: general settings
-
-*/
+const main_path=["Config", "SUBTAB_MGR", "mana.js 1.0", "SHEET_MGR", "mana.js 1.0"];
+const aa_path=["Rage", "SUBTAB_MGR", "Custom Anti-Aim", "Custom Anti-Aim"];
+const aa_control_path=["Rage", "SUBTAB_MGR", "AA Preset Manager", "AA Preset Manager"];
+const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "Key assignment"];
+const aa_keybinds=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "General", "Key assignment"];
+const aa_default_path=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "Directions"];
+//const secrets_path=["Config", "SUBTAB_MGR", "Secrets", "SHEET_MGR", "Secrets"];
 
 //hey, if ur not using my aa, then FUCK YOU
 //not making a toggle for custom aa, if u dont know what I meant
 //ahhhhh finally
 //my eyes and brain
-var presetTemplate = {
+const presetTemplate = {
     general : [0],//general settings(pitch, at targets, etc)
     staticSettings : 
     {
@@ -271,8 +127,8 @@ var AA=
     JSON.parse(JSON.stringify(presetTemplate))
 ];
 
-/*
-var a1 =
+
+const AA_MODE_TEMPLATE =
 {
     switchMode : 0,
     dodgeBruteforce : 0,
@@ -280,150 +136,150 @@ var a1 =
     switchDelay : 0,
     switchDelta : 0,
 }
-*/
+
 //rework this for obvious reasons
 //im fine with ids representing unimportant values
 //I GET TO DECIDE WHT IS AND ISNT BTW
 var AA_MANAGER=
 {
-    dormant : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    running : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    crouching : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    peeking : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    inAir : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    doubleTapActive : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    hideShotsActive : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    zeusing : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    knifing : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    fakeDucking : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    slowWalking : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    onUse : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    override1 : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    override2 : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    override3 : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    },
-    override4 : 
-    {
-        switchConditions : 0,
-        antiBruteforce : 0,
-        activePresets : 0,
-        delay : 0,
-        delayDelta : 0,
-    }
+    dormant : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    running : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    crouching : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    peeking : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    inAir : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    doubleTapActive : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    hideShotsActive : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    zeusing : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    knifing : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    fakeDucking : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    slowWalking : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    onUse : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    override1 : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    override2 : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    override3 : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    override4 : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
 }
 
 var RAGEBOT=[];
+/*
+const TYPE_SUBTAB=0;
+const TYPE_TEXTBOX=1;
+const TYPE_COLORPICKER=2;
+const TYPE_MULTIDROPDOWN=3;
+const TYPE_DROPDOWN=4;
+const TYPE_HOTKEY=5;
+const TYPE_SLIDERFLOAT=6;
+const TYPE_SLIDERINT=7;
+const TYPE_CHECKBOX=8;
+const TYPE_SEPERATOR=9;
+*/
+//pointless dont use
+//ok this is pasted
+//make the ui load this shit instead, to avoid fuckery
+//i didnt paste this from dhdj, i promise :(
 
 
+//ACTS LIKE A PROXY FOR VARS<---->UI SETTINGS, SO I DONT END UP BREAKING MY BRAIN
+var UI_SETTINGS=
+{
+    JS_SETTINGS :
+    {
+        PATH : main_path
+    },
+
+    AA_SETTINGS : 
+    {
+        PATH : aa_path,
+        //offsets
+        realOffset : 
+        {
+            NAME = "Real Offset",
+            VALUE = 0,
+        },
+
+        fakeOffset : 
+        {
+            NAME = "Fake Offset",
+            VALUE = 0,
+        },
+        LBYOffset : 
+        {
+            NAME = "LBY Offset",
+            VALUE = 0,
+        },
+
+        //deltas
+        realDelta : 
+        {
+            NAME = "Real Delta",
+            VALUE = 0,
+        },
+
+        fakeDelta : 
+        {
+            NAME = "Fake Delta",
+            VALUE = 0,
+        },
+        LBYDelta : 
+        {
+            NAME = "LBY Delta",
+            VALUE = 0,
+        },
+
+        //delays
+        realDelay : 
+        {
+            NAME = "Real Delay",
+            VALUE = 0,
+        },
+
+        fakeDelay : 
+        {
+            NAME = "Fake Delay",
+            VALUE = 0,
+        },
+        LBYDelay : 
+        {
+            NAME = "LBY Delay",
+            VALUE = 0,
+        },
+        //delay offsets
+        realDelayOffset : 
+        {
+            NAME = "Real Delay Offset",
+            VALUE = 0,
+        },
+
+        fakeDelayOffset : 
+        {
+            NAME = "Fake Delay Offset",
+            VALUE = 0,
+        },
+        LBYDelayOffset : 
+        {
+            NAME = "LBY Delay Offset",
+            VALUE = 0,
+        }
+    },
+
+    AA_MANAGER_SETTINGS :
+    {
+        PATH : aa_control_path,
+        
+    },
+
+    VISUALS_SETTINGS :
+    {
+
+    }
+
+};
 //
-var RENDER=
-[
+var VISUALS= 
+{
     //GENERAL SETTINGS
     //REMEMBER THE 255 CHAR LIMIT PLEASE
+    general : 
     {
     indicators : 0,
     crosshairIndicators : 0,
@@ -432,13 +288,14 @@ var RENDER=
     rainbowMenuFrame : 0,
     },
     //MULTIDROPDOWN SETTINGS(WHICH INDICTS TO TOGGLE, ETC)
+    activeItems : 
     {
         activeIndicators : 0,
         activeCrosshairIndicators : 0,
 
     }
 
-];
+};
 //config owner, password
 var SECRETS=["manaball123","configPass"]
 
@@ -575,14 +432,7 @@ function pointRayDistance(point, rayStart, rayEnd)
 
 //Paths
 
-const main_path=["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"];
-const aa_path=["Rage","SUBTAB_MGR","Custom Anti-Aim","Custom Anti-Aim"];
-const aa_control_path=["Rage","SUBTAB_MGR","AA Preset Manager","AA Preset Manager"];
-const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "Key assignment"];
-const aa_keybinds=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "General","Key assignment"];
-const exploits_keybinds=["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "Keys","Key assignment"];
-const aa_default_path=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "Directions"];
-const secrets_path=[ "Config","SUBTAB_MGR","Secrets","SHEET_MGR","Secrets"];
+
 
 
 //vars
@@ -628,7 +478,7 @@ var modeOffset=0.0;
 var initAA=true;
 var initializePresets=true;
 
-var presetNames=["Mana Default AA"];
+
 
 //timers:
 //0=real,1=fake,2=lby
@@ -676,7 +526,7 @@ UI.AddCheckbox(secrets_path,"Save Password")
 UI.AddCheckbox(main_path,"UPDATE CONFIG");
 
 //aa settings(presets and stuff)
-UI.AddDropdown(aa_path,"Presets",presetNames,0);
+UI.AddDropdown(aa_path,"Presets",p[""],0);
 UI.AddTextbox(aa_path,"Rename Selected Preset:");
 UI.AddCheckbox(aa_path,"Confirm");
 //real
@@ -716,7 +566,7 @@ UI.AddCheckbox(main_path,"Config Name:")
 UI.AddDropdown(aa_control_path, "Conditions" ,["Standing","Running","Slow-Walking","Crouching","In Air","On Peek","Fake-Ducking","HS Active","DT Active","On Use","Knifing","Zeusing","Override Key 1","Override Key 2","Override Key 3","Override Key 4"],0);
 UI.AddDropdown(aa_control_path, "Switch" , ["Conditional","Sequenced","Random"],0);
 UI.AddCheckbox(aa_control_path, "Anti Bruteforce");
-UI.AddMultiDropdown(aa_control_path, "Presets" ,presetNames);
+UI.AddMultiDropdown(aa_control_path, "Presets" ,[""]);
 UI.AddSliderInt(aa_control_path, "Switch Delay" , 1 , 256);
 UI.AddSliderInt(aa_control_path,"Switch Delta" ,1 , 256);
 
@@ -787,13 +637,7 @@ function addAAPreset(index, newPresetName)
 
 function updatePresetNames()
 {
-    presetNames=[]
-    for(i = 0; i < AA.length; i++)
-    {
-        presetNames[i] = AA[i].presetName      
-    }
-    
-
+    presetNames=Object.keys(AA);
     UI.UpdateList(aa_path.concat("Presets"),presetNames);
     UI.UpdateList(aa_control_path.concat("Presets"),presetNames);
 
@@ -1141,19 +985,19 @@ function updateConfig()
         {
 
             fakeSwitchVal = UI.GetValue(aa_path.concat("Fake Switch Phase"))
-            if(fakeSwitchVal!=fakeSwitchCache)
+            if(fakeSwitchVal != fakeSwitchCache)
             {
                 fakeSwitchCache=fakeSwitchVal;
-                UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][3][1][fakeSwitchVal]);
-                UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][3][4][fakeSwitchVal]);
+                UI.SetValue(aa_path.concat("Fake Offset"), AA[presetVal][3][1][fakeSwitchVal]);
+                UI.SetValue(aa_path.concat("Fake Delay"), AA[presetVal][3][4][fakeSwitchVal]);
                 uiUpdate=true;
             }
         }
         //lby
-        if(AA[presetVal].modes[2]==2)
+        if(AA[presetVal].modes[2] == 2)
         {
 
-            LBYSwitchVal=UI.GetValue(aa_path.concat("LBY Switch Phase"))
+            LBYSwitchVal = UI.GetValue(aa_path.concat("LBY Switch Phase"))
             if(LBYSwitchVal!=LBYSwitchCache)
             {
                 LBYSwitchCache=LBYSwitchVal;
