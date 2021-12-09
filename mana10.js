@@ -190,76 +190,94 @@ var UI_SETTINGS=
     AA_SETTINGS : 
     {
         PATH : aa_path,
+        MODES : ["Static","Static","Static"],
         //offsets
         realOffset : 
         {
-            NAME = "Real Offset",
-            VALUE = 0,
+            NAME : "Real Offset",
+            VALUE : 0,
         },
 
         fakeOffset : 
         {
-            NAME = "Fake Offset",
-            VALUE = 0,
+            NAME : "Fake Offset",
+            VALUE : 0,
         },
         LBYOffset : 
         {
-            NAME = "LBY Offset",
-            VALUE = 0,
+            NAME : "LBY Offset",
+            VALUE : 0,
         },
 
         //deltas
         realDelta : 
         {
-            NAME = "Real Delta",
-            VALUE = 0,
+            NAME : "Real Delta",
+            VALUE : 0,
         },
 
         fakeDelta : 
         {
-            NAME = "Fake Delta",
-            VALUE = 0,
+            NAME : "Fake Delta",
+            VALUE : 0,
         },
         LBYDelta : 
         {
-            NAME = "LBY Delta",
-            VALUE = 0,
+            NAME : "LBY Delta",
+            VALUE : 0,
         },
 
         //delays
         realDelay : 
         {
-            NAME = "Real Delay",
-            VALUE = 0,
+            NAME : "Real Delay",
+            VALUE : 0,
         },
 
         fakeDelay : 
         {
-            NAME = "Fake Delay",
-            VALUE = 0,
+            NAME : "Fake Delay",
+            VALUE : 0,
         },
         LBYDelay : 
         {
-            NAME = "LBY Delay",
-            VALUE = 0,
+            NAME : "LBY Delay",
+            VALUE : 0,
         },
         //delay offsets
         realDelayOffset : 
         {
-            NAME = "Real Delay Offset",
-            VALUE = 0,
+            NAME : "Real Delay Offset",
+            VALUE : 0,
         },
 
         fakeDelayOffset : 
         {
-            NAME = "Fake Delay Offset",
-            VALUE = 0,
+            NAME : "Fake Delay Offset",
+            VALUE : 0,
         },
         LBYDelayOffset : 
         {
-            NAME = "LBY Delay Offset",
-            VALUE = 0,
+            NAME : "LBY Delay Offset",
+            VALUE : 0,
+        },
+        //switch dropdowns
+        realSwitchValue :
+        {
+            NAME : "Real Switch Phase",
+            VALUE : 0,
+        },
+        fakeSwitchValue :
+        {
+            NAME : "Fake Switch Phase",
+            VALUE : 0,
+        },
+        LBYSwitchValue :
+        {
+            NAME : "LBY Switch Phase",
+            VALUE : 0,
         }
+
     },
 
     AA_MANAGER_SETTINGS :
