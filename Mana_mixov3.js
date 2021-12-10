@@ -88,6 +88,7 @@ function HSVtoRGB(h, s, v)
 
     return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
 }
+
 //检测空中
 function isInAir(){
 	var fv = Entity.GetProp(Entity.GetLocalPlayer(), "CBasePlayer", "m_flFallVelocity");

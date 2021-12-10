@@ -31,6 +31,7 @@ var presetTemplate=
 ];
 
 UI.AddMultiDropdown(aa_control_path,"Presets",["1","2","3"]);
+UI.AddDropDown(aa_control_path,"kek",["boo","hoo","nigga","no","one","cares"])
 function setDropdownValue( value, index, enable ) 
 { // credits ed
     var mask = 1 << index;
@@ -48,14 +49,49 @@ function getDropdownValue(value, index)
 function main()
 {
     //Cheat.Print(toString(testArray[0]));
+    /*
     var variable1=UI.GetValue(aa_control_path.concat("Presets"))
     Cheat.Print("value of var is "+variable1.toString()+"\n")
     Cheat.Print(presetTemplate.toString())
     //THIS IS HOW U DO GET AND SET DROPDOWNS. PERIOD.
     UI.SetValue(aa_control_path.concat("Presets"),setDropdownValue(UI.GetValue(aa_control_path.concat("Presets")),2,true))
+    */
+   Cheat.Print(UI.GetString(aa_control_path.concat("kek")))
+
     
 
 }
+//meme funcs obv
+
+function add(a,b)
+{
+    return a+b;
+}
+function subtract(a,b)
+{
+    return add(a,-b)
+}
+
+function multiply(a,b)
+{
+    result=0;
+    for(i=0;i<b;i++)
+    {
+        result=add(result,a)
+    }
+}
+
+function exponentiation(a,b)
+{
+    result=0;
+    for(i=0;i,b;i++)
+    {
+        result=add(multiply(a,a),result)
+    }
+}
+
+
+
 
 
 Cheat.RegisterCallback("Draw","main");

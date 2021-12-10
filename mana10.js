@@ -26,205 +26,387 @@ UI.AddSubTab([ "Rage","SUBTAB_MGR" ],"Custom Anti-Aim")
 UI.AddSubTab([ "Rage","SUBTAB_MGR",],"AA Preset Manager")
 
 
-//CALC FUNCTIONS
-
-
-
-
 //Config
 
 //AUTH SYSTEM
-    
 
 
+const main_path=["Config", "SUBTAB_MGR", "mana.js 1.0", "SHEET_MGR", "mana.js 1.0"];
+const aa_path=["Rage", "SUBTAB_MGR", "Custom Anti-Aim", "Custom Anti-Aim"];
+const aa_control_path=["Rage", "SUBTAB_MGR", "AA Preset Manager", "AA Preset Manager"];
+const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "Key assignment"];
+const aa_keybinds=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "General", "Key assignment"];
+const aa_default_path=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "Directions"];
+//const secrets_path=["Config", "SUBTAB_MGR", "Secrets", "SHEET_MGR", "Secrets"];
 
-//handles save file to usable data
+//hey, if ur not using my aa, then FUCK YOU
+//not making a toggle for custom aa, if u dont know what I meant
+//ahhhhh finally
+//my eyes and brain
+const presetTemplate = {
+    general : [0],//general settings(pitch, at targets, etc)
+    staticSettings : 
+    {
+        real :
+        {
+            offset : 0,
+        },
+        fake :
+        {
+            offset : 0,
+        },
+        LBY :
+        {
+            offset : 0,
+        }
+    },
+    jitterSettings : 
+    {
+        real :
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
 
+        },
+        fake :
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
 
+        },
+        LBY :
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
 
+        }
 
-/*Index explanations:
-    AA[i]:preset number
-
-        AA[i][0]: Misc settings(at targets, auto dir, etc)
-
-        AA[i][1][x]:values for static
-            0: real offset
-            1: fake offset
-            2: lby offset
-
-
-        
-        AA[i][2][x]:values for jitter
-            0: real offset
-            1: fake offset
-            2: lby offset
-
-            3: real jitter
-            4: fake jitter
-            5: lby jitter
-
-            6: real randomized intervals(1 or 0)
-            7: fake randomized intervals(1 or 0)
-            8: lby randomized intervals(1 or 0)
-
-            9: real jitter delay
-            10: fake jitter delay 
-            11: lby jiter delay
-
-            12: real jitter interval offset
-            13. fake jitter interval offset
-            14. lby jitter interval offset
-
-
-        
-        AA[i][3][x]: values for switch
-            AA[i][2][0]: values for real offset
-            AA[i][2][1]: values for fake offset
-            AA[i][2][2]: values for lby offset
-            
-            AA[i][2][3]: values for max index of switch
-
-            (delay[0]=time between 0--->1)
-            AA[i][2][4]: values for real offset switch delay
-            AA[i][2][5]: values for fake offset switch delay
-            AA[i][2][6]: values for lby offset switch delay
-
-            
-
-        AA[i][4][x]: values for sway
-            0: real start
-            1: fake start
-            2: lby start
-
-            //calculated internally
-            3: real delta
-            4: fake delta
-            5: lby delta
-        
-           
-            6: real sway time
-            7: fake sway time
-            8: lby sway time
-            
-
-            
-        AA[i][5][x]: values for random
-            0: real offset
-            1: fake offset
-            2: lby offset
-            3: real delta
-            4: fake delta
-            5: lby delta
-
-            6: real randomized intervals(1 or 0)
-            7: fake randomized intervals(1 or 0)
-            8: lby randomized intervals(1 or 0)
-
-            9: real delay
-            10: fake delay
-            11: lby delay
-
-            12: real randomize interval offset
-            13. fake randomize interval offset
-            14. lby randomize interval offset
-    
+    },
+    switchSettings : 
+    {
+        real : 
+        {
+            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
+            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
+            activePhases : 1
+        },
+        fake : 
+        {
+            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
+            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
+            activePhases : 1
+        },
+        LBY : 
+        {
+            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
+            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
+            activePhases : 1
+        },
 
 
-        AA[i][6][x]: active mode(0=static,1=jitter,2=switch,3=sway,4=random) for real(0),fake(1), and lby(2)
+    },
+    swaySettings : 
+    {
+        real : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+        },
+        fake : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+        },
+        LBY : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+        },
+ 
+    },
+    randomSettings : 
+    {
+        real : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
+        },
+        fake : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
+        },
+        LBY : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
+        },
 
 
+    },
+    modes : 
+    {
+        real : 0,
+        fake : 0,
+        LBY : 0,
+    },//active modes
 
-        AA[i][7]: name of aa preset
-*/
-
-/*
-ALSO ADD FORCE SWITCH KEY
-
-AA_MANAGER index explanations
-
-0=Standing 
-1=Running 
-2=Slow-Walking
-3=Crouching 
-4=In Air 
-5=On Peek 
-6=Fake-Ducking
-7:HS Active
-8:DT Active
-9:On Use
-10:Knifing
-11:Zeusing
-12:Override Key 1 
-13:Override Key 2     
-14:Override Key 3
-15:Override Key 4
-
-
-[i][0]: General Settings:
-    0: no/conditional switch(only when antibruteforce)
-    1: sequenced switch
-    2: random switch
-
-[i][1]:
-    0: no antibruteforce
-    1: complex antibruteforce(forces an aa switch,if switch enabled)
-
-[i][2]:
-    INT representing active multidropdown options
-
-[i][3]: Switch Delay
-
-[i][4]: Switch Delta
-
-*/
-
+    presetName : "Mana Default AA"
+    //self explanatory
+}
 var AA=
 [
-    [
-        [0],//general
-        [0,0,0], //static
-        [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1], //jitter
-        [
-            //arrays for switch, can potentially be changed
-            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
-            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//fake
-            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//lby
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//fake delay
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//lby delay
-            [1,1,1],//real,fake,lby max index of phase
-            
-        ],
-        [0,0,0,0,0,0,1,1,1], //sway
-        [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1], //random
-        [0,0,0],//active modes
-
-        "Mana Default AA"
-    ]
+    JSON.parse(JSON.stringify(presetTemplate))
 ];
 
+
+const AA_MODE_TEMPLATE =
+{
+    switchMode : 0,
+    dodgeBruteforce : 0,
+    activePresets : 0,
+    switchDelay : 0,
+    switchDelta : 0,
+}
+
+//rework this for obvious reasons
+//im fine with ids representing unimportant values
+//I GET TO DECIDE WHT IS AND ISNT BTW
 var AA_MANAGER=
-[
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0]
-];
+{
+    dormant : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    running : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    crouching : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    peeking : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    inAir : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    doubleTapActive : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    hideShotsActive : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    zeusing : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    knifing : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    fakeDucking : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    slowWalking : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    onUse : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    override1 : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    override2 : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    override3 : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+    override4 : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
+}
 
 var RAGEBOT=[];
+/*
+const TYPE_SUBTAB=0;
+const TYPE_TEXTBOX=1;
+const TYPE_COLORPICKER=2;
+const TYPE_MULTIDROPDOWN=3;
+const TYPE_DROPDOWN=4;
+const TYPE_HOTKEY=5;
+const TYPE_SLIDERFLOAT=6;
+const TYPE_SLIDERINT=7;
+const TYPE_CHECKBOX=8;
+const TYPE_SEPERATOR=9;
+*/
+//pointless dont use
+//ok this is pasted
+//make the ui load this shit instead, to avoid fuckery
+//i didnt paste this from dhdj, i promise :(
+
+
+//ACTS LIKE A PROXY FOR VARS<---->UI SETTINGS, SO I DONT END UP BREAKING MY BRAIN
+/*
+var UI_SETTINGS=
+{
+    JS_SETTINGS :
+    {
+        PATH : main_path
+    },
+
+    AA_SETTINGS : 
+    {
+        PATH : aa_path,
+        //uses index of presets cuz it will fuck shit up if i dont
+        ACTIVE_PRESET : 0,
+        DROPDOWNS : 
+        {
+            //mode tabs
+            realModeValue :
+            {
+                NAME : "Real Mode",
+                VALUE : 0,
+            },
+            fakeModeValue :
+            {
+                NAME : "Fake Mode",
+                VALUE : 0,
+            },
+            LBYModeValue :
+            {
+                NAME : "LBY Mode",
+                VALUE : 0,
+            },
+            
+            //switch tabs
+            realSwitchValue :
+            {
+                NAME : "Real Switch Phase",
+                VALUE : 0,
+            },
+            fakeSwitchValue :
+            {
+                NAME : "Fake Switch Phase",
+                VALUE : 0,
+            },
+            LBYSwitchValue :
+            {
+                NAME : "LBY Switch Phase",
+                VALUE : 0,
+            },
+        },
+
+        //SLIDERS
+        //number of switch phases
+        SLIDERS : 
+        {
+            maxRealSwitchValue :
+            {
+                NAME : "Active Real Switch Phases",
+                VALUE : 0,
+            },
+            maxFakeSwitchValue :
+            {
+                NAME : "Active Fake Switch Phases",
+                VALUE : 0,
+            },
+            maxLBYSwitchValue :
+            {
+                NAME : "Active LBY Switch Phases",
+                VALUE : 0,
+            },
+            //offsets
+            realOffset : 
+            {
+                NAME : "Real Offset",
+                VALUE : 0,
+            },
+
+            fakeOffset : 
+            {
+                NAME : "Fake Offset",
+                VALUE : 0,
+            },
+            LBYOffset : 
+            {
+                NAME : "LBY Offset",
+                VALUE : 0,
+            },
+
+            //deltas
+            realDelta : 
+            {
+                NAME : "Real Delta",
+                VALUE : 0,
+            },
+
+            fakeDelta : 
+            {
+                NAME : "Fake Delta",
+                VALUE : 0,
+            },
+            LBYDelta : 
+            {
+                NAME : "LBY Delta",
+                VALUE : 0,
+            },
+
+            //delays
+            realDelay : 
+            {
+                NAME : "Real Delay",
+                VALUE : 0,
+            },
+
+            fakeDelay : 
+            {
+                NAME : "Fake Delay",
+                VALUE : 0,
+            },
+            LBYDelay : 
+            {
+                NAME : "LBY Delay",
+                VALUE : 0,
+            },
+            //delay offsets
+            realDelayOffset : 
+            {
+                NAME : "Real Delay Offset",
+                VALUE : 0,
+            },
+
+            fakeDelayOffset : 
+            {
+                NAME : "Fake Delay Offset",
+                VALUE : 0,
+            },
+            LBYDelayOffset : 
+            {
+                NAME : "LBY Delay Offset",
+                VALUE : 0,
+            },
+        }
+        
+
+    },
+
+    AA_MANAGER_SETTINGS :
+    {
+        PATH : aa_control_path,
+        
+    },
+
+    VISUALS_SETTINGS :
+    {
+
+    }
+
+};
+*/
+//nvm lol
+//
+var VISUALS= 
+{
+    //GENERAL SETTINGS
+    //REMEMBER THE 255 CHAR LIMIT PLEASE
+    general : 
+    {
+    indicators : 0,
+    crosshairIndicators : 0,
+    customCrosshair: 0,
+    rechargeBar : 0,
+    rainbowMenuFrame : 0,
+    },
+    //MULTIDROPDOWN SETTINGS(WHICH INDICTS TO TOGGLE, ETC)
+    activeItems : 
+    {
+        activeIndicators : 0,
+        activeCrosshairIndicators : 0,
+
+    }
+
+};
 //config owner, password
 var SECRETS=["manaball123","configPass"]
 
@@ -302,7 +484,7 @@ function clampTo(variable,to,mode)
 
 //deg2rad function
 
-function radian(degree)
+function DEG2RAD(degree)
 {
     return degree * Math.PI / 180.0;
 }
@@ -329,9 +511,9 @@ function VectorMultiply(a, b)
 }
 
 //get abseloute vector magnitude
-function VectorLength(x, y, z)
+function VectorLength(a)
 {
-    return Math.sqrt(x * x + y * y + z * z);
+    return Math.sqrt(a[1]**2+a[2]**2+a[3]**2);
 }
 
 
@@ -354,18 +536,50 @@ function VectorDistance(a, b)
 {
     return VectorLength(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 }
+function ANGLE2VEC(angle) {
+	var pitch = angle[0];
+	var yaw = angle[1];
+	return [Math.cos(DEG2RAD(pitch)) * Math.cos(DEG2RAD(yaw)), Math.cos(DEG2RAD(pitch)) * Math.sin(DEG2RAD(yaw)), -Math.sin(DEG2RAD(pitch))];
+}
+//REAL SHIT
+//recoding this, confusing af
+function pointRayDistance(point, rayStart, rayEnd)
+{
+    //delta of the vectors(range that bullet travels)
+    
+    var startToPoint = VectorSubtract(point, rayStart);
+    var startToEnd = VectorSubtract(rayEnd, rayStart);
+    //length of bullet beam
+    var rayLength = VectorLength(startToEnd);
+    var pointLength = VectorLength(startToPoint)
+    
+    //proving my theory that this is some sort of "abseloute direction"
+
+    //dot product of the enemy bullet beam to enemy--> player
+    var dotProduct = VectorDot(startToPoint, startToEnd);
+    var sideLength = dotProduct/rayLength
+
+
+    //these check for if angle between 2 rays >90 or point too far
+    if (dotProduct < 0.0)
+    {
+        return rayStart;
+    }
+    if (sideLength > rayLength)
+    {
+        return rayEnd;
+    }
+
+    return sqrt(pointLength**2-sideLength**2)
+}
 
 //Paths
 
-const main_path=["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"];
-const aa_path=["Rage","SUBTAB_MGR","Custom Anti-Aim","Custom Anti-Aim"];
-const aa_control_path=["Rage","SUBTAB_MGR","AA Preset Manager","AA Preset Manager"];
-const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "Key assignment"];
-const aa_default_path=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "Directions"];
-const secrets_path=[ "Config","SUBTAB_MGR","Secrets","SHEET_MGR","Secrets" ];
+
 
 
 //vars
+const screen_size = Render.GetScreenSize();
 var presetCache=99;
 var realModeCache=99;
 var fakeModeCache=99;
@@ -406,9 +620,6 @@ var modeOffset=0.0;
 var initAA=true;
 var initializePresets=true;
 
-var antiBruteSwitch=false;
-
-var presetNames=["Mana Default AA"];
 
 //timers:
 //0=real,1=fake,2=lby
@@ -427,6 +638,26 @@ var randomOffsetHolder=[0,0,0];
 
 var doSwitch=false;
 
+
+//indicator settings
+//PERFECT THIS THING BEFORE STRUCTURING IT
+//general settings
+
+//multidropdown setting
+var rainbowBars=0;
+
+var crosshairLength=100;
+var crosshairDist=10;
+var crosshairThickness=2;
+
+
+//colors are gonna be a BIG CONCERN due to the fucky nature of it
+//u can only fit 14 colors in a key, which means that we HAVE TO SPLIT IT INTO ARRAYS :(
+var crosshairColor1=[255,255,255,255];
+var crosshairColor2=[255,255,255,255];
+
+
+
 //UI Elements
 //password
 UI.AddCheckbox(secrets_path,"Protect Config With Password")
@@ -436,7 +667,7 @@ UI.AddCheckbox(secrets_path,"Save Password")
 UI.AddCheckbox(main_path,"UPDATE CONFIG");
 
 //aa settings(presets and stuff)
-UI.AddDropdown(aa_path,"Presets",presetNames,0);
+UI.AddDropdown(aa_path,"Presets",[""],0);
 UI.AddTextbox(aa_path,"Rename Selected Preset:");
 UI.AddCheckbox(aa_path,"Confirm");
 //real
@@ -446,8 +677,7 @@ UI.AddSliderInt(aa_path,"Active Real Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"Real Offset",-180,180);
 UI.AddSliderInt(aa_path,"Real Delta",-180,180);
 UI.AddSliderInt(aa_path,"Real Delay",1,256);
-UI.AddCheckbox(aa_path,"Randomized Real Delay");
-UI.AddSliderInt(aa_path,"Real Delay MaxDelta",1,128);
+UI.AddSliderInt(aa_path,"Real Delay Offset",1,128);
 
 //fake
 UI.AddDropdown(aa_path,"Fake Mode",["Static","Jitter","Switch","Sway","Random"],0);
@@ -456,8 +686,7 @@ UI.AddSliderInt(aa_path,"Active Fake Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"Fake Offset",-180,180);
 UI.AddSliderInt(aa_path,"Fake Delta",-180,180);
 UI.AddSliderInt(aa_path,"Fake Delay",1,256);
-UI.AddCheckbox(aa_path,"Randomized Fake Delay");
-UI.AddSliderInt(aa_path,"Fake Delay MaxDelta",1,128);
+UI.AddSliderInt(aa_path,"Fake Delay Offset",1,128);
 
 //lby
 UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"],0);
@@ -466,8 +695,7 @@ UI.AddSliderInt(aa_path,"Active LBY Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"LBY Offset",-180,180);
 UI.AddSliderInt(aa_path,"LBY Delta",-180,180);
 UI.AddSliderInt(aa_path,"LBY Delay",1,256);
-UI.AddCheckbox(aa_path,"Randomized LBY Delay");
-UI.AddSliderInt(aa_path,"LBY Delay MaxDelta",1,128);
+UI.AddSliderInt(aa_path,"LBY Delay Offset",1,128);
 
 //preset interface
 UI.AddTextbox(main_path,"New Preset Name:");
@@ -477,18 +705,18 @@ UI.AddCheckbox(main_path,"LOAD CONFIG")
 UI.AddTextbox(main_path,"Config Name:")
 
 //preset management interface
-UI.AddDropdown(aa_control_path,"Conditions",["Standing","Running","Slow-Walking","Crouching","In Air","On Peek","Fake-Ducking","HS Active","DT Active","On Use","Knifing","Zeusing","Override Key 1","Override Key 2","Override Key 3","Override Key 4"],0);
-UI.AddDropdown(aa_control_path,"Switch",["Conditional","Sequenced","Random"],0);
-UI.AddCheckbox(aa_control_path,"Anti Bruteforce");
-UI.AddMultiDropdown(aa_control_path,"Presets",presetNames);
-UI.AddSliderInt(aa_control_path,"Switch Delay",1,256);
-UI.AddSliderInt(aa_control_path,"Switch Delta",1,256);
+UI.AddDropdown(aa_control_path, "Conditions" ,["Standing","Running","Slow-Walking","Crouching","In Air","On Peek","Fake-Ducking","HS Active","DT Active","On Use","Knifing","Zeusing","Override Key 1","Override Key 2","Override Key 3","Override Key 4"],0);
+UI.AddDropdown(aa_control_path, "Switch" , ["Conditional","Sequenced","Random"],0);
+UI.AddCheckbox(aa_control_path, "Anti Bruteforce");
+UI.AddMultiDropdown(aa_control_path, "Presets" ,[""]);
+UI.AddSliderInt(aa_control_path, "Switch Delay" , 1 , 256);
+UI.AddSliderInt(aa_control_path,"Switch Delta" ,1 , 256);
 
 //keybinds
-UI.AddHotkey(rage_keybinds,"AA Override Key 1","AA 1");
-UI.AddHotkey(rage_keybinds,"AA Override Key 2","AA 2");
-UI.AddHotkey(rage_keybinds,"AA Override Key 3","AA 3");
-UI.AddHotkey(rage_keybinds,"AA Override Key 4","AA 4");
+UI.AddHotkey(rage_keybinds,"AA Override Key 1" , "AA 1");
+UI.AddHotkey(rage_keybinds,"AA Override Key 2" , "AA 2");
+UI.AddHotkey(rage_keybinds,"AA Override Key 3" , "AA 3");
+UI.AddHotkey(rage_keybinds,"AA Override Key 4" , "AA 4");
 
 
 
@@ -496,7 +724,7 @@ UI.AddHotkey(rage_keybinds,"AA Override Key 4","AA 4");
 //converts internal index to user-named aa presets
 //GODDAMN THIS FUNCTION
 
-function setDropdownValue( value, index, enable ) 
+function setDropdownValue(value, index, enable) 
 { // credits ed
     var mask = 1 << index;
   
@@ -509,7 +737,7 @@ function getDropdownValue(value, index)
     return value & mask ? true : false;
 }
 
-function getValueFromCounter(value,varConter,maxIndex)
+function getValueFromCounter(value, varConter, maxIndex)
 {
     if(value==0)
     {
@@ -523,14 +751,14 @@ function getValueFromCounter(value,varConter,maxIndex)
     while(true)
     {
         //should not be called, but in case something goes wrong
-        if(i>maxIndex)
+        if(i > maxIndex)
         {
             i=0;
         }
-        if(getDropdownValue(value,i))
+        if(getDropdownValue(value, i))
         {
             found++;
-            if(found>varConter)
+            if(found > varConter)
             {
                 return i;
             }
@@ -540,44 +768,18 @@ function getValueFromCounter(value,varConter,maxIndex)
 
 }
 
-function addAAPreset(index,name)
+function addAAPreset(index, newPresetName)
 {
-    AA[index]=
-    [
-        [0],//general
-        [0,0,0], //static
-        [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1], //jitter
-        [
-            //arrays for switch, can potentially be changed
-            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
-            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//fake
-            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//lby
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//fake delay
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//lby delay
-            [1,1,1],//real,fake,lby max index of phase
-            
-        ],
-        [0,0,0,0,0,0,1,1,1], //sway
-        [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1], //random
-        [0,0,0],//active modes
-
-        ""
-    ];
-    AA[index][7]=name;
+    AA[index] = JSON.parse(JSON.stringify(presetTemplate))
+    AA[index].presetName = newPresetName;
+    
 }
 
 
 
 function updatePresetNames()
 {
-    presetNames=[]
-    for(i=0;i<AA.length;i++)
-    {
-        presetNames[i]=AA[i][7]       
-    }
-    
-
+    presetNames=Object.keys(AA);
     UI.UpdateList(aa_path.concat("Presets"),presetNames);
     UI.UpdateList(aa_control_path.concat("Presets"),presetNames);
 
@@ -594,24 +796,13 @@ function updateConfig()
     if(UI.GetValue(main_path.concat("UPDATE CONFIG"))==1)
     {
         // do magic here
+        /*
         if(UI.GetValue(secrets_path.concat("Protect Config With Password"))==1)
         {
                                                                                                                                                                                                                       
             
         }
-        if(UI.GetValue(main_path.concat("SAVE CONFIG"))==1)
-        {
-            UI.SetValue(main_path.concat("SAVE CONFIG"),0);
-            configName=UI.GetString(main_path.concat("Config Name:"));
-            saveConfig();
-        }
-        if(UI.GetValue(main_path.concat("LOAD CONFIG"))==1)
-        {
-            configName=UI.GetString(main_path.concat("Config Name:"));
-            UI.SetValue(main_path.concat("LOAD CONFIG"),0);
-            loadConfig();
-            updatePresetNames();
-        }
+        */
 
         uiUpdate=false;
         presetUpdate=false;
@@ -638,75 +829,72 @@ function updateConfig()
         {
             UI.SetValue(main_path.concat("Create New Preset"),0);
             currentLength=AA.length;
-            addAAPreset(currentLength,UI.GetString(main_path.concat("New Preset Name:")))
+            addAAPreset(currentLength , UI.GetString(main_path.concat("New Preset Name:")));
             updatePresetNames();
         }
         if(UI.GetValue(aa_path.concat("Confirm")))
         {
-            UI.SetValue(aa_path.concat("Confirm"),0);
-            AA[presetVal][7]=UI.GetString(aa_path.concat("Rename Selected Preset:"))
-            Cheat.Print("renamed aa to"+AA[presetVal][7].toString()+"\n")
-            updatePresetNames();
+            UI.GetValue(aa_path.concat("Confirm") , 0);
+            AA[presetVal].presetName = UI.GetString(aa_path.concat("Rename Selected Preset:"));
         }
         
         //TODO: ui updates(half done)
         //save data from ui to aa array
         //verify auth intergity with password
 
-        if(presetVal!=presetCache)
+        if(presetVal != presetCache)
         {
-            presetCache=presetVal;
-            uiUpdate=true;
-            UI.SetValue(aa_path.concat("Real Mode"),AA[presetVal][6][0]);
-            UI.SetValue(aa_path.concat("Fake Mode"),AA[presetVal][6][1]);
-            UI.SetValue(aa_path.concat("LBY Mode"),AA[presetVal][6][2]);
+            presetCache = presetVal;
+            uiUpdate = true;
+            UI.SetValue(aa_path.concat("Real Mode") , AA[presetVal].modes.real);
+            UI.SetValue(aa_path.concat("Fake Mode") , AA[presetVal].modes.fake);
+            UI.SetValue(aa_path.concat("LBY Mode") , AA[presetVal].modes.LBY);
             
         }
         //if stuff here changed
+
         realModeVal=UI.GetValue(aa_path.concat("Real Mode"));
         fakeModeVal=UI.GetValue(aa_path.concat("Fake Mode")); 
         LBYModeVal=UI.GetValue(aa_path.concat("LBY Mode"));
         realSwitchVal=UI.GetValue(aa_path.concat("Real Switch Phase"));
         fakeSwitchVal=UI.GetValue(aa_path.concat("Fake Switch Phase"));
         LBYSwitchVal=UI.GetValue(aa_path.concat("LBY Switch Phase"));
-        modeVal=UI.GetValue(aa_control_path.concat("Conditions"));
 
+        modeVal=UI.GetValue(aa_control_path.concat("Conditions"));
 
 
         if(realModeVal!=realModeCache)
         {
             //Cheat.Print("updated this thing");
             realModeCache=realModeVal;
-            AA[presetVal][6][0]=realModeVal;
+            AA[presetVal].modes[0]=realModeVal;
             switch(realModeVal)
             {
                 case 0:
                     //static
                     UI.SetEnabled(aa_path.concat("Real Switch Phase"),0);
                     UI.SetEnabled(aa_path.concat("Active Real Switch Phases"),0);
-                    UI.SetEnabled(aa_path.concat("Real Offset"),1);
-                    UI.SetEnabled(aa_path.concat("Real Delta"),0);
-                    UI.SetEnabled(aa_path.concat("Real Delay"),0);
-                    UI.SetEnabled(aa_path.concat("Randomized Real Delay"),0);
-                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),0);
+                    UI.SetEnabled(aa_path.concat("Real Offset"), 1);
+                    UI.SetEnabled(aa_path.concat("Real Delta"), 0);
+                    UI.SetEnabled(aa_path.concat("Real Delay"), 0); 
+                    UI.SetEnabled(aa_path.concat("Real Delay Offset"), 0);
 
-                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][1][0]);
+                    UI.SetValue(aa_path.concat("Real Offset"), AA[presetVal].staticSettings.real.offset);
                     break;
                 case 1:
                     //jitter
-                    UI.SetEnabled(aa_path.concat("Real Switch Phase"),0);
-                    UI.SetEnabled(aa_path.concat("Active Real Switch Phases"),0);
-                    UI.SetEnabled(aa_path.concat("Real Offset"),1);
-                    UI.SetEnabled(aa_path.concat("Real Delta"),1);
-                    UI.SetEnabled(aa_path.concat("Real Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized Real Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),1);
+                    UI.SetEnabled(aa_path.concat("Real Switch Phase"), 0);
+                    UI.SetEnabled(aa_path.concat("Active Real Switch Phases"), 0);
+                    UI.SetEnabled(aa_path.concat("Real Offset"), 1);
+                    UI.SetEnabled(aa_path.concat("Real Delta"), 1);
+                    UI.SetEnabled(aa_path.concat("Real Delay"), 1);
+                    UI.SetEnabled(aa_path.concat("Real Delay Offset"), 1);
 
-                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][2][0]);
-                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal][2][3]);
-                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][2][9]);
-                    UI.SetValue(aa_path.concat("Randomized Real Delay"),AA[presetVal][2][6]);
-                    UI.SetValue(aa_path.concat("Real Delay MaxDelta"),AA[presetVal][2][12]);
+                    UI.SetValue(aa_path.concat("Real Offset"), AA[presetVal].jitterSettings.real.offset);
+                    UI.SetValue(aa_path.concat("Real Delta"), AA[presetVal].jitterSettings.real.delta);
+                    UI.SetValue(aa_path.concat("Real Delay"), AA[presetVal].jitterSettings.real.delay);
+                    
+                    UI.SetValue(aa_path.concat("Real Delay Offset"), AA[presetVal].jitterSettings.real.delayOffset);
                     break;
                 case 2:
                     //switch
@@ -718,14 +906,13 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Real Offset"),1);
                     UI.SetEnabled(aa_path.concat("Real Delta"),0);
                     UI.SetEnabled(aa_path.concat("Real Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized Real Delay"),0);
-                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),0);
+                    UI.SetEnabled(aa_path.concat("Real Delay Offset"),0);
 
                     //CHECK IF THIS WORKS
                     UI.SetValue(aa_path.concat("Real Switch Phase"),0);
-                    UI.SetValue(aa_path.concat("Active Real Switch Phases"),AA[presetVal][3][6][0]+1);
-                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][3][0][0]);
-                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][3][3][0]);
+                    UI.SetValue(aa_path.concat("Active Real Switch Phases"),AA[presetVal].switchSettings.real.activePhases+1);
+                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal].switchSettings.real.offset[0]);
+                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal].switchSettings.real.delay[0]);
                     break;
                 
                 case 3:
@@ -735,12 +922,11 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Real Offset"),1);
                     UI.SetEnabled(aa_path.concat("Real Delta"),1);
                     UI.SetEnabled(aa_path.concat("Real Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized Real Delay"),0);
-                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),0);
+                    UI.SetEnabled(aa_path.concat("Real Delay Offset"),0);
 
-                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][4][0]);
-                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal][4][3]);
-                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][4][6]);
+                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal].swaySettings.real.offset);
+                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal].swaySettings.real.delta);
+                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal].swaySettings.realDelay);
                     break;
                 case 4:
                     //random
@@ -749,14 +935,12 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Real Offset"),1);
                     UI.SetEnabled(aa_path.concat("Real Delta"),1);
                     UI.SetEnabled(aa_path.concat("Real Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized Real Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Real Delay MaxDelta"),1);
+                    UI.SetEnabled(aa_path.concat("Real Delay Offset"),1);
 
-                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][5][0]);
-                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal][5][3]);
-                    UI.SetValue(aa_path.concat("Randomized Real Delay"),AA[presetVal][5][6]);
-                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][5][9]);
-                    UI.SetValue(aa_path.concat("Real Delay MaxDelta"),AA[presetVal][5][12]);
+                    UI.SetValue(aa_path.concat("Real Offset"), AA[presetVal].randomSettings.real.offset);
+                    UI.SetValue(aa_path.concat("Real Delta"), AA[presetVal].realDelta);
+                    UI.SetValue(aa_path.concat("Real Delay"), AA[presetVal].realDelay);
+                    UI.SetValue(aa_path.concat("Real Delay Offset"), AA[presetVal].realDelayOffset);
                     break;
 
             }
@@ -773,15 +957,14 @@ function updateConfig()
             {
                 case 0:
                     //static
-                    UI.SetEnabled(aa_path.concat("Fake Switch Phase"),0);
-                    UI.SetEnabled(aa_path.concat("Active Fake Switch Phases"),0);
-                    UI.SetEnabled(aa_path.concat("Fake Offset"),1);
-                    UI.SetEnabled(aa_path.concat("Fake Delta"),0);
-                    UI.SetEnabled(aa_path.concat("Fake Delay"),0);
-                    UI.SetEnabled(aa_path.concat("Randomized Fake Delay"),0);
-                    UI.SetEnabled(aa_path.concat("Fake Delay MaxDelta"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Switch Phase"), 0);
+                    UI.SetEnabled(aa_path.concat("Active Fake Switch Phases"), 0);
+                    UI.SetEnabled(aa_path.concat("Fake Offset"), 1);
+                    UI.SetEnabled(aa_path.concat("Fake Delta"), 0);
+                    UI.SetEnabled(aa_path.concat("Fake Delay"), 0);
+                    UI.SetEnabled(aa_path.concat("Fake Delay Offset"), 0);
 
-                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][1][1]);
+                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal].staticSettings.fakeOffset);
                     break;
                 case 1:
                     //jitter
@@ -790,14 +973,12 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Fake Offset"),1);
                     UI.SetEnabled(aa_path.concat("Fake Delta"),1);
                     UI.SetEnabled(aa_path.concat("Fake Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized Fake Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Fake Delay MaxDelta"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delay Offset"),1);
 
-                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][2][1]);
-                    UI.SetValue(aa_path.concat("Fake Delta"),AA[presetVal][2][4]);
-                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][2][10]);
-                    UI.SetValue(aa_path.concat("Randomized Fake Delay"),AA[presetVal][2][7]);
-                    UI.SetValue(aa_path.concat("Fake Delay MaxDelta"),AA[presetVal][2][13]);
+                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal].jitterSettings.fakeOffset);
+                    UI.SetValue(aa_path.concat("Fake Delta"),AA[presetVal].jitterSettings.fakeDelta);
+                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal].jitterSettings.fakeDelay);
+                    UI.SetValue(aa_path.concat("Fake Delay Offset"),AA[presetVal].jitterSettings.fakeDelayOffset);
                     break;
                 case 2:
                     //switch
@@ -808,14 +989,13 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Fake Offset"),1);
                     UI.SetEnabled(aa_path.concat("Fake Delta"),0);
                     UI.SetEnabled(aa_path.concat("Fake Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized Fake Delay"),0);
-                    UI.SetEnabled(aa_path.concat("Fake Delay MaxDelta"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Delay Offset"),0);
 
                     //CHECK IF THIS WORKS
                     UI.SetValue(aa_path.concat("Fake Switch Phase"),0);
-                    UI.SetValue(aa_path.concat("Active Fake Switch Phases"),AA[presetVal][3][6][1]+1);
-                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][3][1][0]);
-                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][3][4][0]);
+                    UI.SetValue(aa_path.concat("Active Fake Switch Phases"),AA[presetVal].switchSettings.activePhases[1]+1);
+                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal].switchSettings.fakeOffset[0]);
+                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal].switchSettings.fakeDelay[0]);
                     break;
                 
                 case 3:
@@ -825,12 +1005,11 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Fake Offset"),1);
                     UI.SetEnabled(aa_path.concat("Fake Delta"),1);
                     UI.SetEnabled(aa_path.concat("Fake Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized Fake Delay"),0);
-                    UI.SetEnabled(aa_path.concat("Fake Delay MaxDelta"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Delay Offset"),0);
 
-                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][4][2]);
-                    UI.SetValue(aa_path.concat("Fake Delta"),AA[presetVal][4][4]);
-                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][4][7]);
+                    UI.SetValue(aa_path.concat("Fake Offset"), AA[presetVal].swaySettings.fakeOffset);
+                    UI.SetValue(aa_path.concat("Fake Delta"), AA[presetVal].swaySettings.fakeDelta);
+                    UI.SetValue(aa_path.concat("Fake Delay"), AA[presetVal].swaySettings.fakeDelay);
                     break;
                 case 4:
                     //random
@@ -839,14 +1018,12 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Fake Offset"),1);
                     UI.SetEnabled(aa_path.concat("Fake Delta"),1);
                     UI.SetEnabled(aa_path.concat("Fake Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized Fake Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Fake Delay MaxDelta"),1);
+                    UI.SetEnabled(aa_path.concat("Fake Delay Offset"),1);
 
-                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][5][1]);
-                    UI.SetValue(aa_path.concat("Fake Delta"),AA[presetVal][5][4]);
-                    UI.SetValue(aa_path.concat("Randomized Fake Delay"),AA[presetVal][5][7]);
-                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][5][10]);
-                    UI.SetValue(aa_path.concat("Fake Delay MaxDelta"),AA[presetVal][5][13]);
+                    UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal].randomSettings.fakeOffset);
+                    UI.SetValue(aa_path.concat("Fake Delta"),AA[presetVal].randomSettings.fakeDelta);
+                    UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal].randomSettings.fakeDelay);
+                    UI.SetValue(aa_path.concat("Fake Delay Offset"),AA[presetVal].randomSettings.fakeDelayOffset);
                     break;
                     
             }
@@ -866,10 +1043,9 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("LBY Offset"),1);
                     UI.SetEnabled(aa_path.concat("LBY Delta"),0);
                     UI.SetEnabled(aa_path.concat("LBY Delay"),0);
-                    UI.SetEnabled(aa_path.concat("Randomized LBY Delay"),0);
-                    UI.SetEnabled(aa_path.concat("LBY Delay MaxDelta"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Delay Offset"),0);
 
-                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][1][2]);
+                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal].staticSettings);
                     break;
                 case 1:
                     //jitter
@@ -878,14 +1054,12 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("LBY Offset"),1);
                     UI.SetEnabled(aa_path.concat("LBY Delta"),1);
                     UI.SetEnabled(aa_path.concat("LBY Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized LBY Delay"),1);
-                    UI.SetEnabled(aa_path.concat("LBY Delay MaxDelta"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delay Offset"),1);
 
-                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][2][2]);
-                    UI.SetValue(aa_path.concat("LBY Delta"),AA[presetVal][2][5]);
-                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][2][11]);
-                    UI.SetValue(aa_path.concat("Randomized LBY Delay"),AA[presetVal][2][8]);
-                    UI.SetValue(aa_path.concat("LBY Delay MaxDelta"),AA[presetVal][2][14]);
+                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal].jitterSettings.LBYOffset);
+                    UI.SetValue(aa_path.concat("LBY Delta"),AA[presetVal].jitterSettings.LBYDelta);
+                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal].jitterSettings.LBYDelay);
+                    UI.SetValue(aa_path.concat("LBY Delay Offset"),AA[presetVal].jitterSettings.LBYDelayOffset);
                     break;
                 case 2:
                     //switch
@@ -896,14 +1070,13 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("LBY Offset"),1);
                     UI.SetEnabled(aa_path.concat("LBY Delta"),0);
                     UI.SetEnabled(aa_path.concat("LBY Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized LBY Delay"),0);
-                    UI.SetEnabled(aa_path.concat("LBY Delay MaxDelta"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Delay Offset"),0);
 
                     //CHECK IF THIS WORKS
                     UI.SetValue(aa_path.concat("LBY Switch Phase"),0);
-                    UI.SetValue(aa_path.concat("Active LBY Switch Phases"),AA[presetVal][3][6][2]+1);
-                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][3][2][0]);
-                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][3][5][0]);
+                    UI.SetValue(aa_path.concat("Active LBY Switch Phases"),AA[presetVal].switchSettings.activePhases[2]+1);
+                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal].switchSettings.LBYOffset[0]);
+                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal].switchSettings.LBYDelay[0]);
                     break;
                 
                 case 3:
@@ -913,12 +1086,11 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("LBY Offset"),1);
                     UI.SetEnabled(aa_path.concat("LBY Delta"),1);
                     UI.SetEnabled(aa_path.concat("LBY Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized LBY Delay"),0);
-                    UI.SetEnabled(aa_path.concat("LBY Delay MaxDelta"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Delay Offset"),0);
 
-                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][4][2]);
-                    UI.SetValue(aa_path.concat("LBY Delta"),AA[presetVal][4][5]);
-                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][4][8]);
+                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal].swaySettings.LBYOffset);
+                    UI.SetValue(aa_path.concat("LBY Delta"),AA[presetVal].swaySettings.LBYDelta);
+                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal].swaySettings.LBYDelay);
                     break;
                 case 4:
                     //random
@@ -927,14 +1099,12 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("LBY Offset"),1);
                     UI.SetEnabled(aa_path.concat("LBY Delta"),1);
                     UI.SetEnabled(aa_path.concat("LBY Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Randomized LBY Delay"),1);
-                    UI.SetEnabled(aa_path.concat("LBY Delay MaxDelta"),1);
+                    UI.SetEnabled(aa_path.concat("LBY Delay Offset"),1);
 
-                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal][5][2]);
-                    UI.SetValue(aa_path.concat("LBY Delta"),AA[presetVal][5][5]);
-                    UI.SetValue(aa_path.concat("Randomized LBY Delay"),AA[presetVal][5][8]);
-                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal][5][11]);
-                    UI.SetValue(aa_path.concat("LBY Delay MaxDelta"),AA[presetVal][5][14]);
+                    UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal].randomSettings.LBYOffset);
+                    UI.SetValue(aa_path.concat("LBY Delta"),AA[presetVal].randomSettings.LBYDelta);
+                    UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal].randomSettings.LBYDelay);
+                    UI.SetValue(aa_path.concat("LBY Delay Offset"),AA[presetVal].randomSettings.LBYDelayOffset);
                     break;
                     
             }
@@ -943,37 +1113,37 @@ function updateConfig()
         }
         //update switch ui
         //real
-        if(AA[presetVal][6][0]==2)
+        if(AA[presetVal].modes[0] == 2)
         {
 
             
-            realSwitchVal=UI.GetValue(aa_path.concat("Real Switch Phase"))
+            realSwitchVal = UI.GetValue(aa_path.concat("Real Switch Phase"))
             if(realSwitchVal!=realSwitchCache)
             {
-                realSwitchCache=realSwitchVal;
+                realSwitchCache = realSwitchVal;
                 UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal][3][0][realSwitchVal]);
                 UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal][3][3][realSwitchVal]);
                 uiUpdate=true;
             }
         }
         //fake
-        if(AA[presetVal][6][1]==2)
+        if(AA[presetVal].modes[1] == 2)
         {
 
-            fakeSwitchVal=UI.GetValue(aa_path.concat("Fake Switch Phase"))
-            if(fakeSwitchVal!=fakeSwitchCache)
+            fakeSwitchVal = UI.GetValue(aa_path.concat("Fake Switch Phase"))
+            if(fakeSwitchVal != fakeSwitchCache)
             {
                 fakeSwitchCache=fakeSwitchVal;
-                UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal][3][1][fakeSwitchVal]);
-                UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal][3][4][fakeSwitchVal]);
+                UI.SetValue(aa_path.concat("Fake Offset"), AA[presetVal][3][1][fakeSwitchVal]);
+                UI.SetValue(aa_path.concat("Fake Delay"), AA[presetVal][3][4][fakeSwitchVal]);
                 uiUpdate=true;
             }
         }
         //lby
-        if(AA[presetVal][6][2]==2)
+        if(AA[presetVal].modes[2] == 2)
         {
 
-            LBYSwitchVal=UI.GetValue(aa_path.concat("LBY Switch Phase"))
+            LBYSwitchVal = UI.GetValue(aa_path.concat("LBY Switch Phase"))
             if(LBYSwitchVal!=LBYSwitchCache)
             {
                 LBYSwitchCache=LBYSwitchVal;
@@ -996,15 +1166,14 @@ function updateConfig()
             {
                 //static
                 case 0:
-                    AA[presetVal][1][0]=UI.GetValue(aa_path.concat("Real Offset"));
+                    AA[presetVal][1][0] = UI.GetValue(aa_path.concat("Real Offset"));
                     break;
                 //jitter
                 case 1:
-                    AA[presetVal][2][0]=UI.GetValue(aa_path.concat("Real Offset"));
-                    AA[presetVal][2][3]=UI.GetValue(aa_path.concat("Real Delta"));
-                    AA[presetVal][2][9]=UI.GetValue(aa_path.concat("Real Delay"));
-                    AA[presetVal][2][6]=UI.GetValue(aa_path.concat("Randomized Real Delay"));
-                    AA[presetVal][2][12]=UI.GetValue(aa_path.concat("Real Delay MaxDelta"));
+                    AA[presetVal][2][0] = UI.GetValue(aa_path.concat("Real Offset"));
+                    AA[presetVal][2][3] = UI.GetValue(aa_path.concat("Real Delta"));
+                    AA[presetVal][2][9] = UI.GetValue(aa_path.concat("Real Delay"));
+                    AA[presetVal][2][12] = UI.GetValue(aa_path.concat("Real Delay Offset"));
                     break;
                 //switch
                 case 2:
@@ -1024,8 +1193,7 @@ function updateConfig()
                     AA[presetVal][5][0]=UI.GetValue(aa_path.concat("Real Offset"));
                     AA[presetVal][5][3]=UI.GetValue(aa_path.concat("Real Delta"));
                     AA[presetVal][5][9]=UI.GetValue(aa_path.concat("Real Delay"));
-                    AA[presetVal][5][6]=UI.GetValue(aa_path.concat("Randomized Real Delay"));
-                    AA[presetVal][5][12]=UI.GetValue(aa_path.concat("Real Delay MaxDelta"))
+                    AA[presetVal][5][12]=UI.GetValue(aa_path.concat("Real Delay Offset"))
                     break;
             }
             //fake
@@ -1040,8 +1208,7 @@ function updateConfig()
                     AA[presetVal][2][1]=UI.GetValue(aa_path.concat("Fake Offset"));
                     AA[presetVal][2][4]=UI.GetValue(aa_path.concat("Fake Delta"));
                     AA[presetVal][2][10]=UI.GetValue(aa_path.concat("Fake Delay"));
-                    AA[presetVal][2][7]=UI.GetValue(aa_path.concat("Randomized Fake Delay"));
-                    AA[presetVal][2][13]=UI.GetValue(aa_path.concat("Fake Delay MaxDelta"));
+                    AA[presetVal][2][13]=UI.GetValue(aa_path.concat("Fake Delay Offset"));
                     break;
                 //switch
                 case 2:
@@ -1060,8 +1227,7 @@ function updateConfig()
                     AA[presetVal][5][1]=UI.GetValue(aa_path.concat("Fake Offset"));
                     AA[presetVal][5][4]=UI.GetValue(aa_path.concat("Fake Delta"));
                     AA[presetVal][5][10]=UI.GetValue(aa_path.concat("Fake Delay"));
-                    AA[presetVal][5][7]=UI.GetValue(aa_path.concat("Randomized Fake Delay"));
-                    AA[presetVal][5][13]=UI.GetValue(aa_path.concat("Fake Delay MaxDelta"));
+                    AA[presetVal][5][13]=UI.GetValue(aa_path.concat("Fake Delay Offset"));
                     break;
             }
             //lby
@@ -1076,8 +1242,7 @@ function updateConfig()
                     AA[presetVal][2][2]=UI.GetValue(aa_path.concat("LBY Offset"));
                     AA[presetVal][2][5]=UI.GetValue(aa_path.concat("LBY Delta"));
                     AA[presetVal][2][11]=UI.GetValue(aa_path.concat("LBY Delay"));
-                    AA[presetVal][2][8]=UI.GetValue(aa_path.concat("Randomized LBY Delay"));
-                    AA[presetVal][2][14]=UI.GetValue(aa_path.concat("LBY Delay MaxDelta"));
+                    AA[presetVal][2][14]=UI.GetValue(aa_path.concat("LBY Delay Offset"));
                     break;
                 //switch
                 case 2:
@@ -1096,12 +1261,12 @@ function updateConfig()
                     AA[presetVal][5][2]=UI.GetValue(aa_path.concat("LBY Offset"));
                     AA[presetVal][5][5]=UI.GetValue(aa_path.concat("LBY Delta"));
                     AA[presetVal][5][11]=UI.GetValue(aa_path.concat("LBY Delay"));
-                    AA[presetVal][5][8]=UI.GetValue(aa_path.concat("Randomized LBY Delay"));
-                    AA[presetVal][5][14]=UI.GetValue(aa_path.concat("LBY Delay MaxDelta"))
+                    AA[presetVal][5][14]=UI.GetValue(aa_path.concat("LBY Delay Offset"))
                     break;
             }
         }
         //AA Manager UI
+        //TEST UI.GetString
         if(modeVal!=modeCache)
         {
             modeCache=modeVal;
@@ -1138,18 +1303,180 @@ function updateConfig()
             AA_MANAGER[modeVal][3]=UI.GetValue(aa_control_path.concat("Switch Delay"));
             AA_MANAGER[modeVal][4]=UI.GetValue(aa_control_path.concat("Switch Delta"));
         }
-
-        
-
-
-        
-        
+  
         
     }
-    
-    
+  
+}
+//helpers pasted from galaxysense thing
+const mirage = [
+    //[ "Balcony", "Stand ", 15, [-1170.448974609375,-2351.35009765625,-112.76617431640625], [-6.143388271331787,14.879289627075195,0 ], "Oneway" ],
+    [ "Palace Entrance", "Fake duck + E", 15, [-32.827205657958984,-1747.707763671875,-116.18266296386719], [-13.562880516052246,-80.47711944580078,0 ], "Oneway"  ],
+    [ "Palace Entrace", "Crouch + E", 25, [146.87937927246094,-2078.0126953125,9.615781784057617], [-0.2739872932434082,-108.96994018554688,0 ], "Oneway"  ],
+    [ "Sniper's Nest", "Crouch + E (manual)", 40, [-886.25830078125,-1317.399658203125,-120.41223907470703], [-0.3445321321487427,-177.3930206298828,0 ], "Oneway"  ],
+    [ "Cat Box", "Stand ", 10, [-691.8399658203125,-885.2897338867188,-182.1551055908203], [-1.4627931118011475,102.77088165283203,0 ], "Oneway"  ],
+    [ "Connector", "Stand ", 1, [-758.4989013671875,-1321.30224609375,-108.56095123291016], [10.404932975769043,82.45069122314453,0 ], "Oneway"  ],
+    [ "Cat", "Fake duck ", 10, [-1495.3671875,-1112.000732421875,-183.45028686523438], [-2.77838134765625,38.17058563232422,0 ], "Oneway"  ],
+    [ "Apartments", "Fake duck ", 0, [-2336.7314453125,766.5013427734375,-79.1664810180664], [-5.943861484527588,-2.0283021926879883,0 ], "Oneway"  ],
+    [ "Cat", "Fake duck ", 0, [-394.3824768066406,-796.3460693359375,-216.0263214111328], [-5.173882484436035,122.90838623046875,0 ], "Oneway"  ],
+    [ "T Stairs", "Stand ", 25, [275.092529296875,316.94354248046875,-201.4618377685547], [0.7233693599700928,11.497645378112793,0 ], "Oneway"  ],
+    [ "Top Mid", "Stand ", 35, [219.89126586914063,877.2789306640625,-76.8647232055664], [2.8979110717773438,-90.38306427001953,0 ], "Oneway"  ],
+    [ "House Stairs / Top Mid Connector", "Fake duck ", 32, [454.9155578613281,852.4118041992188,-53.246543884277344], [16.369403839111328,-44.87099838256836,0 ], "Oneway"  ],
+    [ "Underpass Stairs", "Fake duck ", 10, [-1264.1064453125,218.20901489257813,-120.45449829101563], [12.757319450378418,27.84868621826172,0 ], "Oneway"  ],
+    [ "Underpass Stairs", "Stand ", 15, [-1124.922119140625,310.01190185546875,-100.71343994140625], [29.21480369567871,42.90019226074219,0 ], "Wallbang" ],
+    [ "Market Entrace", "Fake duck ", 0, [-1705.237548828125,-1220.2938232421875,-207.29591369628906], [-7.482339859008789,79.5807113647461,0 ], "Oneway"],
+    [ "Apartment Entrance", "Stand ", 12, [-374.2903137207031,779.552978515625,-20.803316116333008], [1.6386109590530396,-161.68849182128906,0 ], "Oneway" ],
+    [ "Underpass Stairs", "Crouch ", 12, [-1101.185791015625,522.3583984375,-38.548126220703125], [80.03816223144531,-51.8855094909668,0 ], "Oneway" ],
+    [ "Right Side Connector", "Stand ", 10, [-842.7730102539063,32.43463134765625,-108.64161682128906], [1.2841607332229614,-85.02303314208984,0 ], "Oneway" ],
+    [ "Palace Entrance", "Fake duck ", 0, [-811.739013671875,-1145.87060546875,-72.66464233398438], [-2.2234721183776855,-50.907833099365234,0 ], "Oneway" ],
+    [ "CT Stairs", "Stand ", 20, [-1495.1767578125,-1588.8564453125,-201.6099395751953], [-0.707923412322998,-79.56673431396484,0 ], "Oneway" ],
+    [ "CT Spawn", "Stand ", 1, [-1722.5516357421875,-680.75244140625,-108.86699676513672], [3.074936866760254,-86.70063781738281,0 ], "Wallbang" ],
+    [ "Market Entrace", "Stand (AWP)", 10, [-2231.71142578125,32.56330490112305,-108.5659408569336], [-0.22803455591201782,-47.783348083496094,0 ], "Wallbang" ],
+    [ "A Ramp", "Fake duck ", 0, [-291.80877685546875,-2112.17333984375,-53.190345764160156], [7.508554935455322,48.7481803894043,0 ], "Oneway" ],
+    [ "Palace/A Ramp Connector", "Fake duck + E", 0, [1127.9307861328125,228.2334747314453,-185.51644897460938], [-1.6344425678253174,-89.02660369873047,0 ], "ESP Oneway" ],
+    [ "Apartments + House", "Fake duck + E", 0, [-477.98028564453125,492.88311767578125,-99.00080871582031], [-0.6445350646972656,89.8587417602539,0 ], "Oneway" ],
+    [ "Ramp", "Crouch ", 0, [780.37841796875,-1550.7978515625,-60.35479736328125], [18.644933700561523,-176.00025939941406,0 ], "Oneway" ],
+    [ "House exit", "Stand", 0, [-859.4331665039063,614.7947387695313,-14.041431427001953], [2.2666337490081787,7.958107948303223,0 ], "Oneway" ],
+    [ "Apartment entrance", "Stand (AWP)", 0, [-1843.001220703125,488.68048095703125,-101.81539916992188], [-2.849693775177002,3.4349939823150635,0 ], "Oneway" ],
+    [ "B Van", "Fake duck ", 0, [-2259.607421875,677.5836791992188,7.429899215698242], [5.68641996383667,-71.17919158935547,0 ], "Oneway" ],
+    [ "Palace", "Stand (manual shoot/ESP) ", 0, [-1506.1005859375,-990.6868896484375,-149.39236450195313], [-3.874444007873535,-38.0708122253418,0 ], "Wallbang" ],
+    [ "Top Mid", "Stand", 0, [-266.930573,-366.495056,-103.172424], [1.882086,19.124743,0 ], "Oneway" ],
+    [ "Balcony", "Stand ", 1, [462.96588134765625,-2084.01904296875,18.9892520904541], [1.6673067808151245,177.59693908691406,0 ], "Wallbang" ]
+];
 
-    //Cheat.Print( UI.GetChildren(["Config","SUBTAB_MGR","mana.js 1.0","SHEET_MGR","mana.js 1.0"]) + '\n')
+const dust2 = [
+    [ "T Spawn", "Fake duck ", 0, [-1828.306884765625,-455.19976806640625,141.17587280273438], [-2.199988603591919,-17.8001766204834,0 ], "Oneway" ],
+    [ "Tunnels", "Fake duck + E", 0, [-2071.30908203125,2895.8076171875,82.59713745117188], [0.7149654626846313,-83.99018859863281,0 ], "Oneway" ],
+    [ "Tunnels Exit", "Crouch ", 0, [-776.18408203125,2555.6904296875,-25.649532318115234], [-4.512523174285889,-147.3076629638672,0 ], "Wallbang" ],
+    [ "Mid/Cat", "Fake duck ", 0, [-210.51968383789063,542.5650634765625,47.2431755065918], [5.387450218200684,100.62740325927734,0 ], "Oneway" ],
+    [ "Long Doors / Blue", "Fake duck ", 25, [1299.95654296875,620.3975219726563,-3.8381288051605225], [1.5557122230529785,150.635986328125,0 ], "Oneway" ],
+    [ "A Site / Long", "Fake duck ", 0, [1528.8955078125,505.183837890625,-49.267723083496094], [-3.854454517364502,99.73228454589844,0 ], "Oneway" ],
+    [ "A Site", "Fake duck (Long Plant)", 0, [1570.482421875,461.5287170410156,-63.220176696777344], [-5.327244758605957,99.6102294921875,0 ], "Oneway" ],
+    [ "B Doors", "Crouch ", 0, [16.597061157226563,2311.9716796875,17.10267448425293], [-0.5667411088943481,-177.3401641845703,0 ], "Wallbang" ],
+    [ "Long Cross / Ramp", "Fake duck ", 0, [493.2771911621094,2613.61572265625,143.1537322998047], [5.055543422698975,-37.76759338378906,0 ], "Oneway" ],
+    [ "Long Doors", "Stand ", 1, [1372.70068359375,1358.381103515625,50.24076843261719], [-0.30388620495796204,-139.5752716064453,0 ], "Wallbang" ],
+    [ "Long Doors Box", "Stand ", 1, [530.4532470703125,826.2880249023438,62.459720611572266], [0.7473396062850952,-50.05582046508789,0 ], "Wallbang" ],
+    [ "Outside Long House", "Stand ", 10, [554.1951293945313,353.6593017578125,69.35932159423828], [2.23449444770813,-145.07130432128906,0 ], "Oneway" ],
+    [ "Top Mid", "Stand ", 10, [654.1134033203125,297.8545227050781,59.560081481933594], [0.6505045294761658,-179.7573699951172,0 ], "Oneway" ],
+    [ "Lower Tunnels", "Stand ", 35, [-216.03515625,1160.060791015625,89.53584289550781], [11.780013084411621,153.25389099121094,0 ], "Wallbang" ],
+    [ "Cat", "Stand ", 10, [-874.2039794921875,1464.575927734375,-53.34953308105469], [-10.956621170043945,-24.002500534057617,0 ], "Oneway" ]
+];
+const inferno = [
+    [ "library | risk", "Stand ", 0, [2491.488974609375,1232.55009765625,215.03000000000625], [12.100088271331787,-170.540089627075195,0 ], "Oneway" ],
+    [ "barrels | risk", "Crouch ", 0, [2477.968974609375,-130.53009765625,135.65000000000625], [2.090088271331787,168.650089627075195,0 ], "Oneway" ],
+    [ "box", "Fake duck ", 0, [1999.968974609375,480.60009765625,206.65000000000625], [-10.090088271331787,-100.650089627075195,0 ], "Oneway" ],
+    [ "box2", "Fake duck ", 0, [2013.97,701.99,210.61], [-0.28,1.18,0 ], "Oneway" ],
+    [ "BigBox", "Fake duck ", 0, [2083.79,182.85,210.18], [0.21,76.14,0 ], "Oneway" ],
+    [ "Barrels2 | risk", "Fake duck+min dmg ", 0, [63.91,2603.67,206.03], [2.33,4.84,0 ], "Oneway" ],
+    [ "Docs", "Fake duck+min dmg ", 0, [753.09,1871.93,177.94], [-2.13,174.72,0 ], "Oneway" ],
+    [ "Window", "Fake duck", 0, [-5.32,383.99,230.03], [3.58,79.43,0 ], "Oneway" ],
+    [ "BigBox2", "Fake duck+min dmg (AWP)", 0, [2148.63,301.60,206.03], [-13.03,-110.59,0 ], "Oneway" ],
+];
+const overpass = [
+    [ "Barrels", "Stand ", 15, [-806.2734033203125,392.8045227050781,145.030081481933594], [8.943388271331787,-67.049289627075195,0 ], "Oneway" ],
+    [ "Water", "Fake duck", 15, [-1169.75,256.00,76.78], [0.97,-78.36,0 ], "Oneway" ],
+    [ "Window", "Stand ", 15, [-1672.8734033203125,450.7745227050781,353.030081481933594], [6.843388271331787,-50.989289627075195,0 ], "Oneway" ],
+    [ "Kill window | risk", "Stand ", 15, [-416.0434033203125,-2467.3245227050781,267.030081481933594], [-0.163388271331787,113.539289627075195,0 ], "Oneway" ],
+    [ "Stairs", "Fake duck ", 15, [-628.59,-1168.31,123.18], [-0.34,114.22,0 ], "Oneway" ],
+    [ "Wooden", "Stand | risk ", 15, [-1049.98,-302.36,163.93], [-0.14,-63.30,0 ], "Shooting" ],
+    [ "Cement", "Fake duck ", 15, [-1178.99,171.99,143.03], [-12.23,150.72,0 ], "Oneway" ],
+];
+const cobblestone = [
+    [ "Outside", "Min dmg | risk (Scar) ", 15, [73.81,-1292.57,-70.09], [-5.55,77.47,0 ], "Oneway" ],
+    [ "Stairs", "Min dmg", 15, [668.03,-466.79,-0.86], [-0.15,147.68,0 ], "Oneway" ],
+];
+const short_dust = [
+    [ "Car", "Fake Duck", 15, [70.52,494.88,46.30], [-0.37,98.23,0 ], "Oneway" ],
+];
+const vertigo = [
+    [ "Box", "Fake Duck | risk", 15, [-2107.30,954.03,11790.03], [5.45,-110.75,0 ], "Oneway" ],
+    [ "Box2", "Fake Duck", 15, [-1435.92,660.21,11921.28], [5.45,-110.75,0 ], "Oneway" ],
+    [ "Box", "Stand | risk", 15, [-2113.13,879.35,11893.03], [2.03,-67.31,0 ], "Oneway" ],
+    [ "Container", "Min dmg | Stand", 15, [-1900.03,684.36,11840.03], [-10.17,-19.12,0 ], "Oneway" ],
+    [ "Container2", "Fake duck", 15, [-2342.90,741.01,11843.03], [5.04,-95.87,0 ], "Oneway" ],
+];
+const office = [
+    [" ",  "Crouch | Stand (AWP)", 15, [-488.09,-1369.03,-193.97], [-4.63,97.02,0 ], "Oneway" ],
+    [" ",  "Fake duck", 15, [-744,-416,-187], [-0.52,1.39,0 ], "Oneway" ],
+    [" ", "Stand", 15, [-774,-307,-77], [8.05,-113,0 ], "Oneway" ],
+    [" ", "Fake duck", 15, [1024.42,-1072.03,-164.28], [-0.20,107,0 ], "Oneway" ],
+    [" ",  "Stand", 15, [ 18, -764.733398, -121.746964], [-1.358088, 74.478157, 0], "Oneway" ],
+    [" ",  "Stand", 15, [ -0.204876 ,-887.967957,-126.317039], [-1.392609 ,78.579758 ,0.000000], "Oneway" ],
+    [" ",  "Fake duck", 15, [  174.968750, -104.789978 ,-113.037590], [2.613178 ,-98.549133, 0.000000], "Oneway" ],
+    [" ",  "Fake duck", 15, [  366.431168, -428.199738, -114.615715], [-0.103847 ,1.141723, 0.000000], "Oneway" ],
+    ["",  "Stand", 15, [  625.584717, -389.167236, -95.968750], [2.543516, -172.531570, 0.000000], "Oneway" ],
+    [" ",  "Stand", 15, [  797.682739, -573.968750, -95.968750], [0.767023, -37.171745, 0.000000], "Oneway" ],
+    [" ",  "Fake duck", 15, [  811.329346, -1072.375366, -143.436768], [-0.074401, 77.782188, 0.000000], "Oneway" ],
+    [" ",  "Stand", 15, [ 669.717529, -289.459137, -95.968750], [0.343555, -55.699059, 0.000000], "Oneway" ],
+
+
+];
+const maps = {
+    "de_mirage": mirage,
+    "de_dust2": dust2,
+    "de_inferno": inferno,
+    "de_mirage": mirage,
+    "de_overpass": overpass,
+    "de_dust2": dust2,
+    "de_cbble": cobblestone,
+    "de_shortdust": short_dust,
+    "de_vertigo": vertigo,
+    "cs_office": office
+};
+//courtesy to dhdj
+//dont know how it works but cool rainbow :D
+function HSV2RGB(h, s, v) {
+	var r, g, b, i, f, p, q, t;
+
+	i = Math.floor(h * 6);
+	f = h * 6 - i;
+	p = v * (1 - s);
+	q = v * (1 - f * s);
+	t = v * (1 - (1 - f) * s);
+
+	switch (i % 6) 
+    {
+		case 0:
+			r = v,
+			g = t,
+			b = p;
+			break;
+		case 1:
+			r = q,
+			g = v,
+			b = p;
+			break;
+		case 2:
+			r = p,
+			g = v,
+			b = t;
+			break;
+		case 3:
+			r = p,
+			g = q,
+			b = v;
+			break;
+		case 4:
+			r = t,
+			g = p,
+			b = v;
+			break;
+		case 5:
+			r = v,
+            g = p,
+			b = q;
+			break;
+	}
+
+	return {
+		r: Math.round(r * 255),
+		g: Math.round(g * 255),
+		b: Math.round(b * 255)
+	};
+}
+
+function renderIndicators()
+{
     
 }
 
@@ -1157,60 +1484,17 @@ function updateConfig()
 
 //COURTESY TO MIXOLOGIST
 //REMEMBER TO EDIT
-//each time this activates, settings in menu gets updated
 //IMPORTANT
 
-
-//REAL SHIT
-
-function ClosestPointOnRay(target, rayStart, rayEnd)
-{
-    //delta of the vectors(range that bullet travels)
-    
-    var to = VectorSubtract(target, rayStart);
-    var dir = VectorSubtract(rayEnd, rayStart);
-    //length of bullet beam
-    var length = VectorLength(dir[0], dir[1], dir[2]);
-    
-    //proving my theory that this is some sort of "abseloute direction"
-    dir = VectorNormalize(dir);
-
-    //dot product of the enemy bullet beam to enemy--> player
-    var rangeAlong = VectorDot(dir, to);
-
-
-    //these check for if angle between 2 rays >90
-    if (rangeAlong < 0.0)
-    {
-        return rayStart;
-    }
-    if (rangeAlong > length)
-    {
-        return rayEnd;
-    }
-
-    //WHAT. IS. THIS. 
-    //Seriously, what the fuck is this???
-    //goddamn fucking chink, confuses me on the VERY FUCKING LAST PART OF THIS SHIT REEEEEEEEEEEEEEEEEEEEEEEE
-    
-    //ok....? I kinda know what this, but shouldnt it be vector subtract or something?
-    return VectorAdd(rayStart, VectorMultiply(dir, [rangeAlong, rangeAlong, rangeAlong]));
-}
 
 
 
 //retard var decls
 var lastHitTime = 0.0;
 
-//HAHAHA look at this shit, tfw u indent a single fucking array lmfao
-var lastImpactTimes =
-[
-    0.0
-];
-var lastImpacts =
-[
-    [0.0, 0.0, 0.0]
-];
+var lastImpactTimes = [0.0];
+//why
+var lastImpacts =[[0.0, 0.0, 0.0]];
 
 //function gets called when ANY player gets hurt
 function OnHurt()
@@ -1245,6 +1529,7 @@ function OnBulletImpact()
     var impact = [Event.GetFloat("x"), Event.GetFloat("y"), Event.GetFloat("z"), curtime];
 
     //whats this
+    //nvm its bullt source
     var source;
     
     //if bullet comes from enemy
@@ -1274,14 +1559,22 @@ function OnBulletImpact()
         //only bodydist is actually used, everything else is basically placeholders rofll
         var local = Entity.GetLocalPlayer();
         var localEye = Entity.GetEyePosition(local);
-        var localOrigin = Entity.GetProp(local, "CBaseEntity", "m_vecOrigin");
-        var localBody = VectorMultiply(VectorAdd(localEye, localOrigin), [0.5, 0.5, 0.5]);
+        //var localOrigin = Entity.GetProp(local, "CBaseEntity", "m_vecOrigin");
+
+        var headDist=pointRayDistance(localEye,source,impact)
+
+        
+        if(headDist<100.0)
+        {
+            doSwitch=true;
+        }
+
         
         
-        var bodyVec = ClosestPointOnRay(localBody, source, impact);
-        var bodyDist = VectorDistance(localBody, bodyVec);
+
       
         //if bullet went close to the player BODY
+        /*
         if (bodyDist < 85.0)
         {
             var realAngle = Local.GetRealYaw();
@@ -1345,14 +1638,15 @@ function OnBulletImpact()
         }
         lastImpacts[entity] = impact;
         lastImpactTimes[entity] = curtime;
+        */
     }
 }
 
 //again, courtesy to mixologist
 //check for in air
-function isInAir()
+function isInAir(player)
 {
-	var fv = Entity.GetProp(Entity.GetLocalPlayer(), "CBasePlayer", "m_flFallVelocity");
+	var fv = Entity.GetProp(Entity.GetLocalPlayer(player), "CBasePlayer", "m_flFallVelocity");
 	if(fv < -1 || fv > 1){
         //in_air = true;
 		return true;
@@ -1367,6 +1661,14 @@ function getVelocity(player)
 	return Math.sqrt(velocity[0] * velocity[0] + velocity[1] * velocity[1]);
 }
 
+function isDucking(player) {
+	return Entity_GetProp(player, "CCSPlayer", "m_flDuckAmount");
+}
+
+function getWeapons(player)
+{
+    return Entity.GetName(Entity.GetWeapon(player));
+}
 
 //mode: 0=real, 1=fake, 2=lby
 
@@ -1515,18 +1817,18 @@ function updateAA(preset)
                 }
                 SetOffset(randomOffsetHolder[i],i);
                 break;
-                
-              
-               
+         
         }
     }
     
 }
 
 
+
 //handles presets ig
 function switchAA()
 {
+    var localPlayer = Entity.GetLocalPlayer();
     //Cheat.Print("switch aa called\n");
     //if overriding(highest priority)
     if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 4")==1))
@@ -1556,31 +1858,32 @@ function switchAA()
     {
         currentAAMode=2;
     }
-    /*
-    else if(fakeduck)
+    
+    else if(UI.GetValue(aa_keybinds.concat("Fake duck"))==1)
     {
         currentAAMode=6;
     }
-    else if(knifing)
+    else if(getWeapons(localPlayer)=="knife")
     {
         currentAAMode=10;
     }
-    else if(zeusing)
+    else if(getWeapons(localPlayer) =="zeus x27")
     {
         currentAAMode=11;
     }
-    else if(hideshots)
+    
+    else if(exploits_keybinds.concat("Hide shots"))
     {
         currentAAMode=7;
     }
     
-    else if(dt)
+    else if(exploits_keybinds.concat("Double tap"))
     {
         currentAAMode=8;
     }
-    */
+    
     //in air
-    else if(isInAir())
+    else if(isInAir(localPlayer))
     {
         currentAAMode=4;
     }
@@ -1590,12 +1893,12 @@ function switchAA()
         currentAAMode=5;
     }
     */
-    /*
-    else if(crouching)
+    
+    else if(isDucking(localPlayer))
     {
         currentAAMode=3;
     }
-    */
+    
     //if running
     else if(getVelocity(Entity.GetLocalPlayer())>1)
     {
@@ -1681,6 +1984,8 @@ function switchAA()
 
 Cheat.RegisterCallback("Draw","updateConfig");
 Cheat.RegisterCallback("CreateMove","switchAA");
+Cheat.RegisterCallback("Draw","renderIndicators");
 //the antibruteforce i pasted
 Cheat.RegisterCallback("player_hurt", "OnHurt");
 Cheat.RegisterCallback("bullet_impact", "OnBulletImpact");
+

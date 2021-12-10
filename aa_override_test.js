@@ -1,4 +1,4 @@
-// /AA INVERTER DOES NOT AFFACT OVERRIDES
+
 
 function anti_aim()
 {
