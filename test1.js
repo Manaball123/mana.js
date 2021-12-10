@@ -31,7 +31,7 @@ var presetTemplate=
 ];
 
 UI.AddMultiDropdown(aa_control_path,"Presets",["1","2","3"]);
-UI.AddDropDown(aa_control_path,"kek",["boo","hoo","nigga","no","one","cares"])
+UI.AddDropdown(aa_control_path,"kek",["boo","hoo","nigga","no","one","cares"])
 function setDropdownValue( value, index, enable ) 
 { // credits ed
     var mask = 1 << index;
@@ -56,9 +56,10 @@ function main()
     //THIS IS HOW U DO GET AND SET DROPDOWNS. PERIOD.
     UI.SetValue(aa_control_path.concat("Presets"),setDropdownValue(UI.GetValue(aa_control_path.concat("Presets")),2,true))
     */
-   Cheat.Print(UI.GetString(aa_control_path.concat("kek")))
-
-    
+    Cheat.Print(UI.GetString(aa_control_path.concat("kek")))
+    //Cheat.Print();
+    UI.SetValue(aa_control_path.concat("kek"),2)
+   
 
 }
 //meme funcs obv
