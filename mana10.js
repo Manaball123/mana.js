@@ -47,77 +47,124 @@ const presetTemplate = {
     general : [0],//general settings(pitch, at targets, etc)
     staticSettings : 
     {
-        realOffset : 0,
-        fakeOffset : 0,
-        LBYOffset : 0
+        real :
+        {
+            offset : 0,
+        },
+        fake :
+        {
+            offset : 0,
+        },
+        LBY :
+        {
+            offset : 0,
+        }
     },
     jitterSettings : 
     {
-        realOffset : 0,
-        fakeOffset : 0,
-        LBYOffset : 0,
+        real :
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
 
-        realDelta : 0,
-        fakeDelta : 0,
-        LBYDelta : 0,
+        },
+        fake :
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
 
-        realDelay : 0,
-        fakeDelay : 0,
-        LBYDelay : 0,
+        },
+        LBY :
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
 
-        //RANDOMIZE WHEN NONZERO, EZPZ
-        realDelayOffset : 0,
-        fakeDelayOffset : 0,
-        LBYDelayOffset : 0,
+        }
+
     },
     switchSettings : 
     {
-        realOffset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
-        fakeOffset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//fake
-        LBYOffset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//lby
+        real : 
+        {
+            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
+            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
+            activePhases : 1
+        },
+        fake : 
+        {
+            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
+            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
+            activePhases : 1
+        },
+        LBY : 
+        {
+            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
+            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
+            activePhases : 1
+        },
 
-        realDelay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
-        fakeDelay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//fake delay
-        LBYDelay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//lby delay
 
-        activePhases : [1,1,1],//real,fake,lby max index of phase
-        
     },
     swaySettings : 
     {
-        realOffset : 0,
-        fakeOffset : 0,
-        LBYOffset : 0,
-
-        realDelta : 0,
-        fakeDelta : 0,
-        LBYDelta : 0,
-
-        realDelay : 0,
-        fakeDelay : 0,
-        LBYDelay : 0,
+        real : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+        },
+        fake : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+        },
+        LBY : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+        },
+ 
     },
     randomSettings : 
     {
-        realOffset : 0,
-        fakeOffset : 0,
-        LBYOffset : 0,
+        real : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
+        },
+        fake : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
+        },
+        LBY : 
+        {
+            offset : 0,
+            delta : 0,
+            delay : 0,
+            delayOffset : 0,
+        },
 
-        realDelta : 0,
-        fakeDelta : 0,
-        LBYDelta : 0,
-
-        realDelay : 0,
-        fakeDelay : 0,
-        LBYDelay : 0,
-
-        //RANDOMIZE WHEN NONZERO, EZPZ
-        realDelayOffset : 0,
-        fakeDelayOffset : 0,
-        LBYDelayOffset : 0,
 
     },
-    modes : [0,0,0],//active modes
+    modes : 
+    {
+        real : 0,
+        fake : 0,
+        LBY : 0,
+    },//active modes
 
     presetName : "Mana Default AA"
     //self explanatory
@@ -180,6 +227,7 @@ const TYPE_SEPERATOR=9;
 
 
 //ACTS LIKE A PROXY FOR VARS<---->UI SETTINGS, SO I DONT END UP BREAKING MY BRAIN
+/*
 var UI_SETTINGS=
 {
     JS_SETTINGS :
@@ -190,93 +238,136 @@ var UI_SETTINGS=
     AA_SETTINGS : 
     {
         PATH : aa_path,
-        MODES : ["Static","Static","Static"],
-        //offsets
-        realOffset : 
+        //uses index of presets cuz it will fuck shit up if i dont
+        ACTIVE_PRESET : 0,
+        DROPDOWNS : 
         {
-            NAME : "Real Offset",
-            VALUE : 0,
+            //mode tabs
+            realModeValue :
+            {
+                NAME : "Real Mode",
+                VALUE : 0,
+            },
+            fakeModeValue :
+            {
+                NAME : "Fake Mode",
+                VALUE : 0,
+            },
+            LBYModeValue :
+            {
+                NAME : "LBY Mode",
+                VALUE : 0,
+            },
+            
+            //switch tabs
+            realSwitchValue :
+            {
+                NAME : "Real Switch Phase",
+                VALUE : 0,
+            },
+            fakeSwitchValue :
+            {
+                NAME : "Fake Switch Phase",
+                VALUE : 0,
+            },
+            LBYSwitchValue :
+            {
+                NAME : "LBY Switch Phase",
+                VALUE : 0,
+            },
         },
 
-        fakeOffset : 
+        //SLIDERS
+        //number of switch phases
+        SLIDERS : 
         {
-            NAME : "Fake Offset",
-            VALUE : 0,
-        },
-        LBYOffset : 
-        {
-            NAME : "LBY Offset",
-            VALUE : 0,
-        },
+            maxRealSwitchValue :
+            {
+                NAME : "Active Real Switch Phases",
+                VALUE : 0,
+            },
+            maxFakeSwitchValue :
+            {
+                NAME : "Active Fake Switch Phases",
+                VALUE : 0,
+            },
+            maxLBYSwitchValue :
+            {
+                NAME : "Active LBY Switch Phases",
+                VALUE : 0,
+            },
+            //offsets
+            realOffset : 
+            {
+                NAME : "Real Offset",
+                VALUE : 0,
+            },
 
-        //deltas
-        realDelta : 
-        {
-            NAME : "Real Delta",
-            VALUE : 0,
-        },
+            fakeOffset : 
+            {
+                NAME : "Fake Offset",
+                VALUE : 0,
+            },
+            LBYOffset : 
+            {
+                NAME : "LBY Offset",
+                VALUE : 0,
+            },
 
-        fakeDelta : 
-        {
-            NAME : "Fake Delta",
-            VALUE : 0,
-        },
-        LBYDelta : 
-        {
-            NAME : "LBY Delta",
-            VALUE : 0,
-        },
+            //deltas
+            realDelta : 
+            {
+                NAME : "Real Delta",
+                VALUE : 0,
+            },
 
-        //delays
-        realDelay : 
-        {
-            NAME : "Real Delay",
-            VALUE : 0,
-        },
+            fakeDelta : 
+            {
+                NAME : "Fake Delta",
+                VALUE : 0,
+            },
+            LBYDelta : 
+            {
+                NAME : "LBY Delta",
+                VALUE : 0,
+            },
 
-        fakeDelay : 
-        {
-            NAME : "Fake Delay",
-            VALUE : 0,
-        },
-        LBYDelay : 
-        {
-            NAME : "LBY Delay",
-            VALUE : 0,
-        },
-        //delay offsets
-        realDelayOffset : 
-        {
-            NAME : "Real Delay Offset",
-            VALUE : 0,
-        },
+            //delays
+            realDelay : 
+            {
+                NAME : "Real Delay",
+                VALUE : 0,
+            },
 
-        fakeDelayOffset : 
-        {
-            NAME : "Fake Delay Offset",
-            VALUE : 0,
-        },
-        LBYDelayOffset : 
-        {
-            NAME : "LBY Delay Offset",
-            VALUE : 0,
-        },
-        //switch dropdowns
-        realSwitchValue :
-        {
-            NAME : "Real Switch Phase",
-            VALUE : 0,
-        },
-        fakeSwitchValue :
-        {
-            NAME : "Fake Switch Phase",
-            VALUE : 0,
-        },
-        LBYSwitchValue :
-        {
-            NAME : "LBY Switch Phase",
-            VALUE : 0,
+            fakeDelay : 
+            {
+                NAME : "Fake Delay",
+                VALUE : 0,
+            },
+            LBYDelay : 
+            {
+                NAME : "LBY Delay",
+                VALUE : 0,
+            },
+            //delay offsets
+            realDelayOffset : 
+            {
+                NAME : "Real Delay Offset",
+                VALUE : 0,
+            },
+
+            fakeDelayOffset : 
+            {
+                NAME : "Fake Delay Offset",
+                VALUE : 0,
+            },
+            LBYDelayOffset : 
+            {
+                NAME : "LBY Delay Offset",
+                VALUE : 0,
+            },
         }
+        
 
     },
 
@@ -292,6 +383,8 @@ var UI_SETTINGS=
     }
 
 };
+*/
+//nvm lol
 //
 var VISUALS= 
 {
@@ -544,7 +637,7 @@ UI.AddCheckbox(secrets_path,"Save Password")
 UI.AddCheckbox(main_path,"UPDATE CONFIG");
 
 //aa settings(presets and stuff)
-UI.AddDropdown(aa_path,"Presets",p[""],0);
+UI.AddDropdown(aa_path,"Presets",[""],0);
 UI.AddTextbox(aa_path,"Rename Selected Preset:");
 UI.AddCheckbox(aa_path,"Confirm");
 //real
@@ -672,11 +765,13 @@ function updateConfig()
     if(UI.GetValue(main_path.concat("UPDATE CONFIG"))==1)
     {
         // do magic here
+        /*
         if(UI.GetValue(secrets_path.concat("Protect Config With Password"))==1)
         {
                                                                                                                                                                                                                       
             
         }
+        */
 
         uiUpdate=false;
         presetUpdate=false;
@@ -720,26 +815,27 @@ function updateConfig()
         {
             presetCache = presetVal;
             uiUpdate = true;
-            UI.SetValue(aa_path.concat("Real Mode") , AA[presetVal][6][0]);
-            UI.SetValue(aa_path.concat("Fake Mode") , AA[presetVal][6][1]);
-            UI.SetValue(aa_path.concat("LBY Mode") , AA[presetVal][6][2]);
+            UI.SetValue(aa_path.concat("Real Mode") , AA[presetVal].modes.real);
+            UI.SetValue(aa_path.concat("Fake Mode") , AA[presetVal].modes.fake);
+            UI.SetValue(aa_path.concat("LBY Mode") , AA[presetVal].modes.LBY);
             
         }
         //if stuff here changed
+
         realModeVal=UI.GetValue(aa_path.concat("Real Mode"));
         fakeModeVal=UI.GetValue(aa_path.concat("Fake Mode")); 
         LBYModeVal=UI.GetValue(aa_path.concat("LBY Mode"));
         realSwitchVal=UI.GetValue(aa_path.concat("Real Switch Phase"));
         fakeSwitchVal=UI.GetValue(aa_path.concat("Fake Switch Phase"));
         LBYSwitchVal=UI.GetValue(aa_path.concat("LBY Switch Phase"));
-        modeVal=UI.GetValue(aa_control_path.concat("Conditions"));
 
+        modeVal=UI.GetValue(aa_control_path.concat("Conditions"));
 
 
         if(realModeVal!=realModeCache)
         {
             realModeCache=realModeVal;
-            AA[presetVal][6][0]=realModeVal;
+            AA[presetVal].modes[0]=realModeVal;
             switch(realModeVal)
             {
                 case 0:
@@ -751,7 +847,7 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Real Delay"), 0); 
                     UI.SetEnabled(aa_path.concat("Real Delay Offset"), 0);
 
-                    UI.SetValue(aa_path.concat("Real Offset"), AA[presetVal].staticSettings.realOffset);
+                    UI.SetValue(aa_path.concat("Real Offset"), AA[presetVal].staticSettings.real.offset);
                     break;
                 case 1:
                     //jitter
@@ -762,11 +858,11 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Real Delay"), 1);
                     UI.SetEnabled(aa_path.concat("Real Delay Offset"), 1);
 
-                    UI.SetValue(aa_path.concat("Real Offset"), AA[presetVal].jitterSettings.realOffset);
-                    UI.SetValue(aa_path.concat("Real Delta"), AA[presetVal].jitterSettings.realDelta);
-                    UI.SetValue(aa_path.concat("Real Delay"), AA[presetVal].jitterSettings.realDelay);
+                    UI.SetValue(aa_path.concat("Real Offset"), AA[presetVal].jitterSettings.real.offset);
+                    UI.SetValue(aa_path.concat("Real Delta"), AA[presetVal].jitterSettings.real.delta);
+                    UI.SetValue(aa_path.concat("Real Delay"), AA[presetVal].jitterSettings.real.delay);
                     
-                    UI.SetValue(aa_path.concat("Real Delay Offset"), AA.jitterSettings.realDelayOffset);
+                    UI.SetValue(aa_path.concat("Real Delay Offset"), AA[presetVal].jitterSettings.real.delayOffset);
                     break;
                 case 2:
                     //switch
@@ -782,9 +878,9 @@ function updateConfig()
 
                     //CHECK IF THIS WORKS
                     UI.SetValue(aa_path.concat("Real Switch Phase"),0);
-                    UI.SetValue(aa_path.concat("Active Real Switch Phases"),AA[presetVal].switchSettings.activePhases[0]+1);
-                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal].switchSettings.realOffset[0]);
-                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal].switchSettings.realDelay[0]);
+                    UI.SetValue(aa_path.concat("Active Real Switch Phases"),AA[presetVal].switchSettings.real.activePhases+1);
+                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal].switchSettings.real.offset[0]);
+                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal].switchSettings.real.delay[0]);
                     break;
                 
                 case 3:
@@ -796,8 +892,8 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Real Delay"),1);
                     UI.SetEnabled(aa_path.concat("Real Delay Offset"),0);
 
-                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal].swaySettings.realOffset);
-                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal].swaySettings.realDelta);
+                    UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal].swaySettings.real.offset);
+                    UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal].swaySettings.real.delta);
                     UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal].swaySettings.realDelay);
                     break;
                 case 4:
@@ -809,7 +905,7 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Real Delay"),1);
                     UI.SetEnabled(aa_path.concat("Real Delay Offset"),1);
 
-                    UI.SetValue(aa_path.concat("Real Offset"), AA[presetVal].randomSettings.realOffset);
+                    UI.SetValue(aa_path.concat("Real Offset"), AA[presetVal].randomSettings.real.offset);
                     UI.SetValue(aa_path.concat("Real Delta"), AA[presetVal].realDelta);
                     UI.SetValue(aa_path.concat("Real Delay"), AA[presetVal].realDelay);
                     UI.SetValue(aa_path.concat("Real Delay Offset"), AA[presetVal].realDelayOffset);
