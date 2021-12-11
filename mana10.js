@@ -37,6 +37,7 @@ const aa_control_path=["Rage", "SUBTAB_MGR", "AA Preset Manager", "AA Preset Man
 const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "Key assignment"];
 const aa_keybinds=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "General", "Key assignment"];
 const aa_default_path=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "Directions"];
+const exploits_keybinds=["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "Keys", "Key assignment"];
 //const secrets_path=["Config", "SUBTAB_MGR", "Secrets", "SHEET_MGR", "Secrets"];
 
 //hey, if ur not using my aa, then FUCK YOU
