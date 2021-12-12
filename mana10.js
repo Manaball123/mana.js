@@ -574,7 +574,7 @@ function pointRayDistance(point, rayStart, rayEnd)
         return rayEnd;
     }
 
-    return sqrt(pointLength**2-sideLength**2)
+    return Math.sqrt(pointLength**2-sideLength**2)
 }
 
 //Paths
@@ -685,6 +685,12 @@ var switchPhaseCounter =
     fake : 0,
     LBY : 0
 };
+var switchTimeOffset = 
+{
+    real : 0,
+    fake : 0,
+    LBY : 0
+};
 
 var randomTimeOffset = 
 {
@@ -744,7 +750,7 @@ UI.AddSliderInt(aa_path,"Active Real Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"Real Offset",-180,180);
 UI.AddSliderInt(aa_path,"Real Delta",-180,180);
 UI.AddSliderInt(aa_path,"Real Delay",1,256);
-UI.AddSliderInt(aa_path,"Real Delay Offset",1,128);
+UI.AddSliderInt(aa_path,"Real Delay Offset",0,128);
 
 //fake
 UI.AddDropdown(aa_path,"Fake Mode",["Static","Jitter","Switch","Sway","Random"],0);
@@ -753,7 +759,7 @@ UI.AddSliderInt(aa_path,"Active Fake Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"Fake Offset",-180,180);
 UI.AddSliderInt(aa_path,"Fake Delta",-180,180);
 UI.AddSliderInt(aa_path,"Fake Delay",1,256);
-UI.AddSliderInt(aa_path,"Fake Delay Offset",1,128);
+UI.AddSliderInt(aa_path,"Fake Delay Offset",0,128);
 
 //lby
 UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"],0);
@@ -762,7 +768,7 @@ UI.AddSliderInt(aa_path,"Active LBY Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"LBY Offset",-180,180);
 UI.AddSliderInt(aa_path,"LBY Delta",-180,180);
 UI.AddSliderInt(aa_path,"LBY Delay",1,256);
-UI.AddSliderInt(aa_path,"LBY Delay Offset",1,128);
+UI.AddSliderInt(aa_path,"LBY Delay Offset",0,128);
 
 //preset interface
 UI.AddTextbox(main_path,"New Preset Name:");
@@ -804,9 +810,26 @@ function getDropdownValue(value, index)
     return value & mask ? true : false;
 }
 
+function getActiveDropdowns(value,maxIndex)
+{
+    if(value == 0)
+    {
+        return 0;
+    }
+    var found = 0;
+    for(i = 0;i <= maxIndex;i++)
+    {
+        if(getDropdownValue(value, i) == true)
+        {
+            found++;
+        }
+    }
+    return found;
+}
+
 function getValueFromCounter(value, varConter, maxIndex)
 {
-    if(value==0)
+    if(value == 0)
     {
         return 0;
     }
@@ -822,7 +845,7 @@ function getValueFromCounter(value, varConter, maxIndex)
         {
             i=0;
         }
-        if(getDropdownValue(value, i))
+        if(getDropdownValue(value, i) == true)
         {
             found++;
             if(found > varConter)
@@ -1007,7 +1030,7 @@ function updateConfig()
 
                     UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal].sway.real.offset);
                     UI.SetValue(aa_path.concat("Real Delta"),AA[presetVal].sway.real.delta);
-                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal].sway.reald.delay);
+                    UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal].sway.real.delay);
                     break;
                 case 4:
                     //random
@@ -1019,9 +1042,9 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Real Delay Offset"),1);
 
                     UI.SetValue(aa_path.concat("Real Offset"), AA[presetVal].random.real.offset);
-                    UI.SetValue(aa_path.concat("Real Delta"), AA[presetVal].real.delta);
-                    UI.SetValue(aa_path.concat("Real Delay"), AA[presetVal].real.delay);
-                    UI.SetValue(aa_path.concat("Real Delay Offset"), AA[presetVal].real.delayOffset);
+                    UI.SetValue(aa_path.concat("Real Delta"), AA[presetVal].random.real.delta);
+                    UI.SetValue(aa_path.concat("Real Delay"), AA[presetVal].random.real.delay);
+                    UI.SetValue(aa_path.concat("Real Delay Offset"), AA[presetVal].random.real.delayOffset);
                     break;
 
             }
@@ -1604,7 +1627,7 @@ function OnHurt()
             if (Math.abs(lastHitTime - curtime) > 0.5)
             {
                 lastHitTime = curtime;
-                antiBrurteSwitch=true;
+                antiBruteSwitch=true;
             }
         }
   
@@ -1725,7 +1748,7 @@ function OnBulletImpact()
             {
                 lastHitTime = curtime;
 
-                antiBrurteSwitch=true;
+                antiBruteSwitch=true;
             }
         }
         lastImpacts[entity] = impact;
@@ -1767,7 +1790,7 @@ function getWeapons(player)
 function SetOffset(value,mode)
 {
     
-    //Cheat.Print("set mode "+mode.toString());
+    //Cheat.Print("set mode "+mode);
     //Cheat.Print(" with value"+value.toString()+"\n");
     
     AntiAim.SetOverride(1)
@@ -1794,8 +1817,10 @@ function updateAA(preset)
 
     //iterate through 3 angle types
 
-    Object.keys(angleTypes).forEach(function(key)
+    for(i=0;i<3;i++)
     {
+        key=angleTypes[i];
+        //Cheat.Print("current iterating key "+ key +" which has a value of " + AA[preset].modes[key].toString()+"\n")
 
 
         switch(AA[preset].modes[key])
@@ -1809,8 +1834,9 @@ function updateAA(preset)
             case 1:
 
                 //if time to change phase
-                if(currentTime>=clampTo(jitterTimer[key] + AA[preset].jitter[key].delay + jitterTimeOffset[i], 1, 0))
+                if(currentTime>=clampTo(jitterTimer[key] + AA[preset].jitter[key].delay + jitterTimeOffset[key], 1, 0))
                 {
+                   
                     
                     jitterTimer[key] = currentTime;
                     //generates offsets if randomized set to true
@@ -1915,73 +1941,72 @@ function updateAA(preset)
                 break;
          
         }
-    })
+    }
     
 }
-
-
 
 //handles presets ig
 function switchAA()
 {
     var localPlayer = Entity.GetLocalPlayer();
     //Cheat.Print("switch aa called\n");
-    //if overriding(highest priority)
-    if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 4")==1))
-    {
-        currentAAMode=15;
-    }
-    else if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 3")==1))
-    {
-        currentAAMode=14;
-    }
-    else if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 2")==1))
-    {
-        currentAAMode=13;
-    }
-    else if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 1")==1))
-    {
-        currentAAMode=12;
-    }
-    //if legit aa(second highest prio)
+     //if legit aa(highest prio)
     /*
     else if(epeeking)
     {
-        currentAAMode=9;
+        currentAAMode = "On Use";
     }
     */
+    //if overriding(SECOND highest priority)
+    if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 4")==1))
+    {
+        currentAAMode = "Override Key 4";
+    }
+    else if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 3")==1))
+    {
+        currentAAMode = "Override Key 3";
+    }
+    else if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 2")==1))
+    {
+        currentAAMode = "Override Key 2";
+    }
+    else if(UI.GetHotkeyState(rage_keybinds.concat("AA Override Key 1")==1))
+    {
+        currentAAMode = "Override Key 1";
+    }
+   
     else if(UI.GetHotkeyState(rage_keybinds.concat("Slow walk")==1))
     {
-        currentAAMode=2;
+        currentAAMode = "Slow-Walking";
     }
     
     else if(UI.GetValue(aa_keybinds.concat("Fake duck"))==1)
     {
-        currentAAMode=6;
+        currentAAMode = "Fake-Ducking";
     }
     else if(getWeapons(localPlayer)=="knife")
     {
-        currentAAMode=10;
+        currentAAMode = "Knifing";
     }
     else if(getWeapons(localPlayer) =="zeus x27")
     {
-        currentAAMode=11;
+        currentAAMode = "Zeusing";
     }
     
     else if(exploits_keybinds.concat("Hide shots"))
     {
-        currentAAMode=7;
+        currentAAMode = "HS Active";
     }
     
     else if(exploits_keybinds.concat("Double tap"))
     {
-        currentAAMode=8;
+        currentAAMode = "DT Active";
     }
     
     //in air
     else if(isInAir(localPlayer))
     {
-        currentAAMode=4;
+        currentAAMode = "In Air";
     }
     /*
     else if(onpeek)
@@ -1992,19 +2017,19 @@ function switchAA()
     
     else if(isDucking(localPlayer))
     {
-        currentAAMode=3;
+        currentAAMode = "Crouching";
     }
     
     //if running
-    else if(getVelocity(Entity.GetLocalPlayer())>1)
+    else if(getVelocity(Entity.GetLocalPlayer()) > 1)
     {
-        currentAAMode=1;
+        currentAAMode = "Running";
     }
     
     //dormant
     else
     {
-        currentAAMode=0;
+        currentAAMode = "Dormant";
     }
     //if aa loop should continue(hasnt changed mode yet)
     //Cheat.Print("current aa mode: "+currentAAMode.toString()+"\n")
@@ -2014,16 +2039,16 @@ function switchAA()
         currentTime=Globals.Tickcount();
 
         //if current phase finished
-        if(AA_MANAGER[currentAAMode][0]!=0)
+        if(AA_MANAGER[currentAAMode].switchMode != 0)
         {
-            if(currentTime>=clampTo(modeTimer+modeDelay+modeDelta,1,0))
+            if(currentTime >= clampTo(modeTimer + modeDelay + modeDelta, 1, 0))
             {
                 doSwitch=true;
                 modeTimer=Globals.Tickcount();
                 //generate random offsets if enabled
-                if(AA_MANAGER[currentAAMode][0]==2)
+                if(AA_MANAGER[currentAAMode].switchDelta != 0)
                 {
-                    modeOffset=zeroToNegOne(Math.round(Math.random()))*Math.random()*AA_MANAGER[currentAAMode][4];
+                    modeOffset=zeroToNegOne(Math.round(Math.random()))*Math.random()*AA_MANAGER[currentAAMode].switchDelta;
                 }
                 else
                 {
@@ -2033,11 +2058,11 @@ function switchAA()
         
         
         }
-        if(AA_MANAGER[currentAAMode][1]==1)
+        if(AA_MANAGER[currentAAMode].dodgeBruteforce == 1)
         {
-            if(antiBrurteSwitch==true)
+            if(antiBruteSwitch==true)
             {
-                antiBrurteSwitch=false;
+                antiBruteSwitch=false;
                 doSwitch=true;
             }
         }
@@ -2047,7 +2072,7 @@ function switchAA()
             doSwitch=false;
             //possible optmization, but im lazy
             //calculate and save length internally
-            if(modeCounter<AA_MANAGER[currentAAMode][2].length)
+            if(modeCounter < getActiveDropdowns(AA_MANAGER[currentAAMode].activePresets,AA.length-1))
             {    
                 modeCounter++;
             }
@@ -2057,15 +2082,13 @@ function switchAA()
             }
      
         }
-        updateAA(getValueFromCounter(AA_MANAGER[currentAAMode][2],modeCounter,AA.length-1));
-         
-        
+        updateAA(getValueFromCounter(AA_MANAGER[currentAAMode].activePresets, modeCounter, AA.length-1));
 
     }
     //restart loop if not
     else
     {
-        updateAA(getValueFromCounter(AA_MANAGER[currentAAMode][2],0,AA.length-1));
+        updateAA(getValueFromCounter(AA_MANAGER[currentAAMode].activePresets, 0, AA.length-1));
         cachedAAMode=currentAAMode;
         modeCounter=0;
         modeTimer=Globals.Tickcount();
@@ -2073,6 +2096,15 @@ function switchAA()
     }
     
 
+    const AA_MODE_TEMPLATE =
+    {
+        switchMode : 0,
+        dodgeBruteforce : 0,
+        activePresets : 0,
+        switchDelay : 0,
+        switchDelta : 0,
+    }
+    
     
     
 }
