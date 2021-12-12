@@ -93,20 +93,23 @@ const presetTemplate = {
     {
         real : 
         {
-            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
-            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
+            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            delayOffset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
             activePhases : 1
         },
         fake : 
         {
-            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
-            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
+            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            delayOffset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], 
             activePhases : 1
         },
         LBY : 
         {
-            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],//real
-            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],//real delay
+            offset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            delay : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            delayOffset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
             activePhases : 1
         },
 
@@ -581,6 +584,7 @@ function pointRayDistance(point, rayStart, rayEnd)
 
 //vars
 const screen_size = Render.GetScreenSize();
+const angleTypes = ["real", "fake", "LBY"];
 var presetCache=99;
 var realModeCache=99;
 var fakeModeCache=99;
@@ -624,18 +628,78 @@ var initializePresets=true;
 
 //timers:
 //0=real,1=fake,2=lby
-var jitterTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
-var switchTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
-var swayTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
-var randomTimer=[Globals.Tickcount(),Globals.Tickcount(),Globals.Tickcount()];
-var swayCycleTimer=[0,0,0];
+var jitterTimer = 
+{
+    real : Globals.Tickcount(),
+    fake : Globals.Tickcount(),
+    LBY : Globals.Tickcount()
+};
+
+var switchTimer = 
+{
+    real : Globals.Tickcount(),
+    fake : Globals.Tickcount(),
+    LBY : Globals.Tickcount()
+};
+
+var swayTimer = 
+{
+    real : Globals.Tickcount(),
+    fake : Globals.Tickcount(),
+    LBY : Globals.Tickcount()
+};
+
+var randomTimer = 
+{
+    real : Globals.Tickcount(),
+    fake : Globals.Tickcount(),
+    LBY : Globals.Tickcount()
+};
+
+var swayCycleTimer = 
+{
+    real : 0,
+    fake : 0,
+    LBY : 0
+};
+
 
 var currentTime=Globals.Tickcount();
-var jitterTimeOffset=[0,0,0];
-var jitterPhaseCounter=[0,0,0];
-var switchPhaseCounter=[0,0,0];
-var randomTimeOffset=[0,0,0];
-var randomOffsetHolder=[0,0,0];
+var jitterTimeOffset = 
+{
+    real : 0,
+    fake : 0,
+    LBY : 0
+};
+
+var jitterPhaseCounter = 
+{
+    real : 0,
+    fake : 0,
+    LBY : 0
+};
+
+var switchPhaseCounter = 
+{
+    real : 0,
+    fake : 0,
+    LBY : 0
+};
+
+var randomTimeOffset = 
+{
+    real : 0,
+    fake : 0,
+    LBY : 0
+};
+
+var randomAngleOffset = 
+{
+    real : 0,
+    fake : 0,
+    LBY : 0
+};
+
 
 var doSwitch=false;
 
@@ -725,7 +789,7 @@ UI.AddHotkey(rage_keybinds,"AA Override Key 4" , "AA 4");
 
 
 //converts internal index to user-named aa presets
-//GODDAMN THIS FUNCTION
+
 
 function setDropdownValue(value, index, enable) 
 { // credits ed
@@ -796,6 +860,7 @@ function updatePresetNames()
 
 //the reason this is a thing is due to how resource intensive it is to read a ton of sliders every single tick
 //so sliders are essentially just an interface and youd actually have to update a config for it to work
+//nvm it isnt but im keeping this anyway
 function updateConfig()
 {
     //Cheat.Print(UI.GetValue(aa_path.concat("Presets")).toString());
@@ -825,6 +890,8 @@ function updateConfig()
             //set default shit to 0
             updatePresetNames();
         }
+        //
+        UI.SetValue(["Config", "Cheat", "General", "Restrictions"], 0);
 
         
         presetVal=UI.GetValue(aa_path.concat("Presets"));
@@ -919,13 +986,14 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Real Offset"),1);
                     UI.SetEnabled(aa_path.concat("Real Delta"),0);
                     UI.SetEnabled(aa_path.concat("Real Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Real Delay Offset"),0);
+                    UI.SetEnabled(aa_path.concat("Real Delay Offset"),1);
 
                     //CHECK IF THIS WORKS
                     UI.SetValue(aa_path.concat("Real Switch Phase"),0);
                     UI.SetValue(aa_path.concat("Active Real Switch Phases"),AA[presetVal].switch.real.activePhases+1);
                     UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal].switch.real.offset[0]);
                     UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal].switch.real.delay[0]);
+                    UI.SetValue(aa_path.concat("Real Delay Offset"),AA[presetVal].switch.real.delayOffset[0]);
                     break;
                 
                 case 3:
@@ -1002,13 +1070,15 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("Fake Offset"),1);
                     UI.SetEnabled(aa_path.concat("Fake Delta"),0);
                     UI.SetEnabled(aa_path.concat("Fake Delay"),1);
-                    UI.SetEnabled(aa_path.concat("Fake Delay Offset"),0);
+                    UI.SetEnabled(aa_path.concat("Fake Delay Offset"),1);
 
                     //CHECK IF THIS WORKS
                     UI.SetValue(aa_path.concat("Fake Switch Phase"),0);
                     UI.SetValue(aa_path.concat("Active Fake Switch Phases"),AA[presetVal].switch.fake.activePhases+1);
                     UI.SetValue(aa_path.concat("Fake Offset"),AA[presetVal].switch.fake.offset[0]);
                     UI.SetValue(aa_path.concat("Fake Delay"),AA[presetVal].switch.fake.delay[0]);
+                    UI.SetValue(aa_path.concat("Fake Delay Offset"),AA[presetVal].switch.fake.delayOffset[0]);
+                    
                     break;
                 
                 case 3:
@@ -1083,13 +1153,14 @@ function updateConfig()
                     UI.SetEnabled(aa_path.concat("LBY Offset"),1);
                     UI.SetEnabled(aa_path.concat("LBY Delta"),0);
                     UI.SetEnabled(aa_path.concat("LBY Delay"),1);
-                    UI.SetEnabled(aa_path.concat("LBY Delay Offset"),0);
+                    UI.SetEnabled(aa_path.concat("LBY Delay Offset"),1);
 
                     //CHECK IF THIS WORKS
                     UI.SetValue(aa_path.concat("LBY Switch Phase"),0);
                     UI.SetValue(aa_path.concat("Active LBY Switch Phases"),AA[presetVal].switch.LBY.activePhases+1);
                     UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal].switch.LBY.offset[0]);
                     UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal].switch.LBY.delay[0]);
+                    UI.SetValue(aa_path.concat("LBY Delay Offset"),AA[presetVal].switch.LBY.delayOffset[0]);
                     break;
                 
                 case 3:
@@ -1135,6 +1206,7 @@ function updateConfig()
                 realSwitchCache = realSwitchVal;
                 UI.SetValue(aa_path.concat("Real Offset"),AA[presetVal].switch.real.offset[realSwitchVal]);
                 UI.SetValue(aa_path.concat("Real Delay"),AA[presetVal].switch.real.delay[realSwitchVal]);
+                UI.SetValue(aa_path.concat("Real Delay Offset"),AA[presetVal].switch.real.delayOffset[realSwitchVal]);
                 uiUpdate=true;
             }
         }
@@ -1148,6 +1220,7 @@ function updateConfig()
                 fakeSwitchCache=fakeSwitchVal;
                 UI.SetValue(aa_path.concat("Fake Offset"), AA[presetVal].switch.fake.offset[fakeSwitchVal]);
                 UI.SetValue(aa_path.concat("Fake Delay"), AA[presetVal].switch.fake.delay[fakeSwitchVal]);
+                UI.SetValue(aa_path.concat("Fake Delay Offset"), AA[presetVal].switch.fake.delayOffset[fakeSwitchVal]);
                 uiUpdate=true;
             }
         }
@@ -1161,6 +1234,7 @@ function updateConfig()
                 LBYSwitchCache=LBYSwitchVal;
                 UI.SetValue(aa_path.concat("LBY Offset"),AA[presetVal].switch.LBY.offset[LBYSwitchVal]);
                 UI.SetValue(aa_path.concat("LBY Delay"),AA[presetVal].switch.LBY.delay[LBYSwitchVal]);
+                UI.SetValue(aa_path.concat("LBY Delay Offset"),AA[presetVal].switch.LBY.delayOffset[LBYSwitchVal]);
                 uiUpdate=true;
             }
         }
@@ -1699,13 +1773,13 @@ function SetOffset(value,mode)
     AntiAim.SetOverride(1)
     switch(mode)
     {
-        case 0:
+        case "real":
             AntiAim.SetRealOffset(value);
             break;
-        case 1:
+        case "fake":
             AntiAim.SetFakeOffset(value);
             break;
-        case 2:
+        case "LBY":
             AntiAim.SetLBYOffset(value);
             break;
     }
@@ -1717,127 +1791,131 @@ function updateAA(preset)
     currentTime=Globals.Tickcount();
     //Cheat.Print("AA[preset][3][3][i] is "+AA[preset][3][3].toString()+"\n")
     //Cheat.Print("UPDATED AA WITH PRESET"+preset.toString()+"\n")
+
     //iterate through 3 angle types
 
-    for(i=0;i<3;i++)
+    Object.keys(angleTypes).forEach(function(key)
     {
-        
-    
-        switch(AA[preset][6][i])
+
+
+        switch(AA[preset].modes[key])
         {
             //static
             case 0:
-                SetOffset(AA[preset][1][i],i);
+                SetOffset(AA[preset].static[key].offset, key);
                 break;
 
             //jitter
             case 1:
 
                 //if time to change phase
-                if(currentTime>=clampTo(jitterTimer[i]+AA[preset][2][i+9]+jitterTimeOffset[i],1,0))
+                if(currentTime>=clampTo(jitterTimer[key] + AA[preset].jitter[key].delay + jitterTimeOffset[i], 1, 0))
                 {
                     
-                    jitterTimer[i]=currentTime;
+                    jitterTimer[key] = currentTime;
                     //generates offsets if randomized set to true
-                    if(AA[preset][2][i+6]==1)
+                    if(AA[preset].jitter[key].delayOffset != 0)
                     {
-                        jitterTimeOffset[i]=Math.round(zeroToNegOne(Math.round(Math.random()))*Math.random()*AA[preset][2][i+12]);
+                        jitterTimeOffset[key] = Math.round(zeroToNegOne(Math.round(Math.random()))*Math.random()*AA[preset].jitter[key].delayOffset);
                     }
                     else
                     {
-                        jitterTimeOffset[i]=0;
+                        jitterTimeOffset[key]=0;
                     }
                     
                     
-                    jitterPhaseCounter[i]=NOT(jitterPhaseCounter[i]);
+                    jitterPhaseCounter[key] = NOT(jitterPhaseCounter[key]);
                     
                 }        
                 
                 
-                if(jitterPhaseCounter[i]==0)
+                if(jitterPhaseCounter[key] == 0)
                 {
-                    SetOffset(AA[preset][2][i],i);
+                    SetOffset(AA[preset].jitter[key].offset, key);
                 }
                 else
                 {
-                    
-
-                    SetOffset(AA[preset][2][i]+AA[preset][2][i+3],i);
+                    SetOffset(AA[preset].jitter[key].offset + AA[preset].jitter[key].delta, key);
                 } 
                 break;
                 
 
             //switch
             case 2:
-                
-                
+                            
                 //if phase completed
                 
-                if(currentTime>=clampTo(switchTimer[i]+AA[preset][3][i+3][switchPhaseCounter[i]],1,0))
+                if(currentTime >= clampTo(switchTimer[key] + AA[preset].switch[key].delay[switchPhaseCounter[key]] + switchTimeOffset[key], 1, 0))
                 {
-                    switchTimer[i]=currentTime;
+                    switchTimer[key] = currentTime;
                     //if phase index maxed out
-                    if(switchPhaseCounter[i]>=AA[preset][3][6][i])
+                    if(switchPhaseCounter[key] >= AA[preset].switch[key].activePhases)
                     {
-                        switchPhaseCounter[i]=0;
+                        switchPhaseCounter[key] = 0;
                     }
                     else
                     {
-                        switchPhaseCounter[i]++;
+                        switchPhaseCounter[key]++;
                     }
+
                     //set offset from phase
+                    if(AA[preset].switch[key].delayOffset[switchPhaseCounter[key]] != 0)
+                    {
+                        switchTimeOffset[key] = Math.round(zeroToNegOne(Math.round(Math.random())) * Math.random() * AA[preset].switch[key].delayOffset[switchPhaseCounter[key]]);
+                    }
+                    else
+                    {
+                        switchTimeOffset[key] = 0;                      
+                    }
 
                 }
                 
-                SetOffset(AA[preset][3][i][switchPhaseCounter[i]],i);
+                SetOffset(AA[preset].switch[key].offset[switchPhaseCounter[key]], key);
                 break;
-
-
 
             //sway
             case 3:
-                
-                
-                if(currentTime<=clampTo(swayTimer[i]+AA[preset][4][i+6],1,0))
+
+                if(currentTime <= clampTo(swayTimer[key] + AA[preset].sway[key].delay, 1, 0))
                 {
-                    swayCycleTimer[i]=clampTo(swayTimer[i]+AA[preset][4][i+6],1,0)-currentTime;
+                    swayCycleTimer[key] = clampTo(swayTimer[key] + AA[preset].sway[key].delay, 1, 0) - currentTime;
                     //delta=(finish-start)
                     //percentage=(fullCycleTime-currentTime)/timePerCycle
                     
-                    SetOffset(Math.round(AA[preset][4][i]+(AA[preset][4][i+3]*(swayCycleTimer[i]/AA[preset][4][i+6]))),i);
+                    SetOffset(Math.round(AA[preset].sway[key].offset+(AA[preset].sway[key].delta * (swayCycleTimer[key] / AA[preset].sway[key].delay))), key);
                 }
                 else
                 {
-                    swayTimer[i]=currentTime;
-                    swayCycleTimer[i]=0;
-                    SetOffset(AA[preset][4][i],i);
+                    swayTimer[key] = currentTime;
+                    swayCycleTimer[key] = 0;
+                    SetOffset(AA[preset].sway[key].offset, key);
                 }
                 break;
 
             //random
             case 4:
-                if(currentTime>=clampTo(randomTimer[i]+AA[preset][5][i+9]+randomTimeOffset[i],1,0))
+                if(currentTime >= clampTo(randomTimer[key] + AA[preset].random[key].delay + randomTimeOffset[key], 1, 0))
                 {
-                    randomTimer[i]=currentTime;
-                    //generates offsets if randomized set to true
-                    if(AA[preset][5][i+6]==1)
+                    randomTimer[key] = currentTime;
+                    //generates offsets if offset nonzero
+                    if(AA[preset].random[key].delayOffset != 0)
                     {
-                        randomTimeOffset[i]=Math.round(zeroToNegOne(Math.round(Math.random()))*Math.random()*AA[preset][5][i+12]);
+                        randomTimeOffset[key] = Math.round(zeroToNegOne(Math.round(Math.random())) * Math.random() * AA[preset].random[key].delayOffset);
                     }
                     else
                     {
-                        randomTimeOffset[i]=0;                      
+                        randomTimeOffset[key] = 0;                      
                     }
                     //generates angle offset
-                    randomOffsetHolder[i]=Math.round(zeroToNegOne(Math.round(Math.random()))*Math.random()*AA[preset][5][i+3]);
+                    randomAngleOffset[key] = Math.round(zeroToNegOne(Math.round(Math.random())) * Math.random() * AA[preset].random[key].delta);
                     
                 
                 }
-                SetOffset(randomOffsetHolder[i],i);
+                SetOffset(randomAngleOffset[key], key);
                 break;
          
         }
-    }
+    })
     
 }
 
