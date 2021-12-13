@@ -240,19 +240,42 @@ var VISUALS=
     //REMEMBER THE 255 CHAR LIMIT PLEASE
     general : 
     {
-    indicators : 0,
-    crosshairIndicators : 0,
-    customCrosshair: 0,
-    rechargeBar : 0,
-    rainbowMenuFrame : 0,
+        indicators : 0,
+        crosshairIndicators : 0,
+        customCrosshair: 0,
+        rechargeBar : 0,
+        rainbowMenuFrame : 0,
+        watermark : 0,
+        
     },
     //MULTIDROPDOWN SETTINGS(WHICH INDICTS TO TOGGLE, ETC)
     activeItems : 
     {
+        rainbowBars : 0,
         activeIndicators : 0,
         activeCrosshairIndicators : 0,
 
+    },
+    customColors : 
+    {
+        "Custom 1" : [0,0,0,255],
+        "Custom 2" : [0,0,0,255],
+        "Custom 3" : [0,0,0,255],
+        "Custom 4" : [0,0,0,255],
+        "Custom 5" : [0,0,0,255],
+        "Custom 6" : [0,0,0,255],
+        "Custom 7" : [0,0,0,255],
+        "Custom 8" : [0,0,0,255],
+        "Custom 9" : [0,0,0,255],
+        "Custom 10" : [0,0,0,255],
+        "Custom 11" : [0,0,0,255],
+        "Custom 12" : [0,0,0,255],
+        "Custom 13" : [0,0,0,255],
+        "Custom 14" : [0,0,0,255],
+        "Custom 15" : [0,0,0,255],
+        "Custom 16" : [0,0,0,255],
     }
+
 
 };
 //config related
@@ -472,8 +495,17 @@ function pointRayDistance(point, rayStart, rayEnd)
 
 
 //vars
-const screen_size = Render.GetScreenSize();
+
 const angleTypes = ["real", "fake", "LBY"];
+const fonts = 
+{
+    Arial = "Arial.ttf"
+}
+
+var screenResolution = Render.GetScreenSize();
+var rainbowColor = [0,0,0,255]
+
+
 var presetCache=99;
 var realModeCache=99;
 var fakeModeCache=99;
@@ -599,23 +631,6 @@ var randomAngleOffset =
 var doSwitch=false;
 
 
-//indicator settings
-//PERFECT THIS THING BEFORE STRUCTURING IT
-//general settings
-
-//multidropdown setting
-var rainbowBars=0;
-
-var crosshairLength=100;
-var crosshairDist=10;
-var crosshairThickness=2;
-
-
-//colors are gonna be a BIG CONCERN due to the fucky nature of it
-//u can only fit 14 colors in a key, which means that we HAVE TO SPLIT IT INTO ARRAYS :(
-var crosshairColor1=[255,255,255,255];
-var crosshairColor2=[255,255,255,255];
-
 
 
 //UI Elements
@@ -668,7 +683,7 @@ UI.AddTextbox(main_path,"Config Name:")
 
 //preset management interface
 UI.AddDropdown(aa_control_path, "Conditions" ,["Dormant", "Running", "Slow-Walking", "Crouching", "In Air", "On Peek", "Fake-Ducking", "HS Active", "DT Active", "On Use", "Knifing", "Zeusing", "Override Key 1", "Override Key 2", "Override Key 3", "Override Key 4"],0);
-UI.AddDropdown(aa_control_path, "Switch" , ["Conditional","On Interval"],0);
+UI.AddDropdown(aa_control_path, "Switch" , ["Conditional", "On Interval"],0);
 UI.AddCheckbox(aa_control_path, "Anti Bruteforce");
 UI.AddMultiDropdown(aa_control_path, "Presets" ,[""]);
 UI.AddSliderInt(aa_control_path, "Switch Delay" , 1 , 256);
@@ -679,6 +694,9 @@ UI.AddHotkey(rage_keybinds,"AA Override Key 1" , "AA 1");
 UI.AddHotkey(rage_keybinds,"AA Override Key 2" , "AA 2");
 UI.AddHotkey(rage_keybinds,"AA Override Key 3" , "AA 3");
 UI.AddHotkey(rage_keybinds,"AA Override Key 4" , "AA 4");
+
+//indicators
+UI.AddMultiDropdown(indicators_path,"Active Indicators", ["AA Phase","Hide Shots","Double Tap","Fake Duck","Slow Walk",""])
 
 
 
@@ -1502,8 +1520,24 @@ function HSV2RGB(h, s, v) {
 
 function renderIndicators()
 {
+
+}
+
+function renderItems()
+{
+    //basic indicators
+    screenResolution = Render.GetScreenSize();
+    //use this
+    hueDegree = (Globals.Realtime() % (360 * rainbowSpeed))/rainbowSpeed;
+    rainbowRGB = HSV2RGB(hueDegree, 1, 1);
+    rainbowColor = [rainbowRGB.r, rainbowRGB.g, rainbowRGB.b, 255];
+
+
+
+    
     
 }
+
 
 
 
