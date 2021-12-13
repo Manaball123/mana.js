@@ -18,12 +18,12 @@
 
 //UI Subtabs
 //Config Password
-UI.AddSubTab( [ "Config","SUBTAB_MGR" ], "Secrets");
+UI.AddSubTab([ "Config", "SUBTAB_MGR" ], "Secrets");
 //js subtab
-UI.AddSubTab([ "Config","SUBTAB_MGR" ],"mana.js 1.0")
+UI.AddSubTab([ "Config", "SUBTAB_MGR" ], "mana.js 1.0")
 //aa subtab
-UI.AddSubTab([ "Rage","SUBTAB_MGR" ],"Custom Anti-Aim")
-UI.AddSubTab([ "Rage","SUBTAB_MGR",],"AA Preset Manager")
+UI.AddSubTab([ "Rage", "SUBTAB_MGR" ], "Custom Anti-Aim")
+UI.AddSubTab([ "Rage", "SUBTAB_MGR" ], "AA Preset Manager")
 
 
 //Config
@@ -44,8 +44,34 @@ const exploits_keybinds=["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "Keys", 
 //not making a toggle for custom aa, if u dont know what I meant
 //ahhhhh finally
 //my eyes and brain
+
+
+//HAHAHA NOW WE HAVE A UNIFORM 3 LAYERS OBJECT
+//IN YOUR FACE DATAFILE CHAR LIMIT
+//FUCK YOU BAHAHAHAH
 const presetTemplate = {
-    general : [0],//general settings(pitch, at targets, etc)
+    general : 
+    {
+        modes : 
+        {
+            real : 0,
+            fake : 0,
+            LBY : 0,
+        },
+        //active modes
+        AASettings : 
+        {
+            pitchMode : 0
+        },
+
+        misc : 
+        {
+            presetName : "Mana Default AA"
+        }
+
+        
+        
+    },//general settings(pitch, at targets, etc)
     static : 
     {
         real :
@@ -163,14 +189,9 @@ const presetTemplate = {
 
 
     },
-    modes : 
-    {
-        real : 0,
-        fake : 0,
-        LBY : 0,
-    },//active modes
+    
 
-    presetName : "Mana Default AA"
+    
     //self explanatory
 }
 var AA=
@@ -212,184 +233,7 @@ var AA_MANAGER=
 } 
 
 var RAGEBOT=[];
-/*
-const TYPE_SUBTAB=0;
-const TYPE_TEXTBOX=1;
-const TYPE_COLORPICKER=2;
-const TYPE_MULTIDROPDOWN=3;
-const TYPE_DROPDOWN=4;
-const TYPE_HOTKEY=5;
-const TYPE_SLIDERFLOAT=6;
-const TYPE_SLIDERINT=7;
-const TYPE_CHECKBOX=8;
-const TYPE_SEPERATOR=9;
-*/
-//pointless dont use
-//ok this is pasted
-//make the ui load this shit instead, to avoid fuckery
-//i didnt paste this from dhdj, i promise :(
 
-
-//ACTS LIKE A PROXY FOR VARS<---->UI SETTINGS, SO I DONT END UP BREAKING MY BRAIN
-/*
-var UI_SETTINGS=
-{
-    JS_SETTINGS :
-    {
-        PATH : main_path
-    },
-
-    AA_SETTINGS : 
-    {
-        PATH : aa_path,
-        //uses index of presets cuz it will fuck shit up if i dont
-        ACTIVE_PRESET : 0,
-        DROPDOWNS : 
-        {
-            //mode tabs
-            realModeValue :
-            {
-                NAME : "Real Mode",
-                VALUE : 0,
-            },
-            fakeModeValue :
-            {
-                NAME : "Fake Mode",
-                VALUE : 0,
-            },
-            LBYModeValue :
-            {
-                NAME : "LBY Mode",
-                VALUE : 0,
-            },
-            
-            //switch tabs
-            realSwitchValue :
-            {
-                NAME : "Real Switch Phase",
-                VALUE : 0,
-            },
-            fakeSwitchValue :
-            {
-                NAME : "Fake Switch Phase",
-                VALUE : 0,
-            },
-            LBYSwitchValue :
-            {
-                NAME : "LBY Switch Phase",
-                VALUE : 0,
-            },
-        },
-
-        //SLIDERS
-        //number of switch phases
-        SLIDERS : 
-        {
-            maxRealSwitchValue :
-            {
-                NAME : "Active Real Switch Phases",
-                VALUE : 0,
-            },
-            maxFakeSwitchValue :
-            {
-                NAME : "Active Fake Switch Phases",
-                VALUE : 0,
-            },
-            maxLBYSwitchValue :
-            {
-                NAME : "Active LBY Switch Phases",
-                VALUE : 0,
-            },
-            //offsets
-            realOffset : 
-            {
-                NAME : "Real Offset",
-                VALUE : 0,
-            },
-
-            fakeOffset : 
-            {
-                NAME : "Fake Offset",
-                VALUE : 0,
-            },
-            LBYOffset : 
-            {
-                NAME : "LBY Offset",
-                VALUE : 0,
-            },
-
-            //deltas
-            realDelta : 
-            {
-                NAME : "Real Delta",
-                VALUE : 0,
-            },
-
-            fakeDelta : 
-            {
-                NAME : "Fake Delta",
-                VALUE : 0,
-            },
-            LBYDelta : 
-            {
-                NAME : "LBY Delta",
-                VALUE : 0,
-            },
-
-            //delays
-            realDelay : 
-            {
-                NAME : "Real Delay",
-                VALUE : 0,
-            },
-
-            fakeDelay : 
-            {
-                NAME : "Fake Delay",
-                VALUE : 0,
-            },
-            LBYDelay : 
-            {
-                NAME : "LBY Delay",
-                VALUE : 0,
-            },
-            //delay offsets
-            realDelayOffset : 
-            {
-                NAME : "Real Delay Offset",
-                VALUE : 0,
-            },
-
-            fakeDelayOffset : 
-            {
-                NAME : "Fake Delay Offset",
-                VALUE : 0,
-            },
-            LBYDelayOffset : 
-            {
-                NAME : "LBY Delay Offset",
-                VALUE : 0,
-            },
-        }
-        
-
-    },
-
-    AA_MANAGER_SETTINGS :
-    {
-        PATH : aa_control_path,
-        
-    },
-
-    VISUALS_SETTINGS :
-    {
-
-    }
-
-};
-*/
-//nvm lol
-//
 var VISUALS= 
 {
     //GENERAL SETTINGS
@@ -411,61 +255,106 @@ var VISUALS=
     }
 
 };
-//config owner, password
-var SECRETS=["manaball123","configPass"]
+//config related
 
-var configName="Mana"
+var CONFIG_INFO =
+{
+    configName : "Mana",
+    owner : "manaball123",
+    password : "ilikecocks",
+
+    //length of aa preset array
+    presetsLength : 1,
+
+}
+
 
 //USE JSON.PARSE AND STRINGTIFY
-function NOT(variable)
-{
-    return variable == 1 ? 0 : 1;
-}
+
 function saveConfig()
 {
     DataFile.Save(configName);
+
+
+    //aa
     for(i=0;i<AA.length;i++)
     {
-        for(j=0;j<AA[i].length;j++)
+        string1 = i.toString()+"_"
+        Object.keys(AA[i]).forEach(function(key1)
         {
-            DataFile.SetKey(configName,"AA_"+i.toString()+"_"+j.toString(),JSON.stringify(AA[i][j]));
-        }
+            string2 = key1+"_"
+            Object.keys(AA[i][key1]).forEach(function(key2)
+            {
+                string3 = key2+"_"
+                Object.keys(AA[i][key1][key2]).forEach(function(key3)
+                {
+                    DataFile.SetKey(configName,"AA_" + string1 + string2 + string3 + key3, JSON.stringify(AA[i][key1][key2][key3]));
+                })
+            })
+        })
         
     }
-    for(i=0;i<AA_MANAGER.length;i++)
+
+    //aa manager
+    Object.keys(AA_MANAGER).forEach(function(key)
     {
-        DataFile.SetKey(configName,"AA_MANAGER_"+i.toString(),JSON.stringify(AA_MANAGER[i]));
-    }
-    
-    DataFile.SetKey(configName,"SECRETS",JSON.stringify(SECRETS))
+        DataFile.SetKey(configName, "AA_MANAGER_" + key, JSON.stringify(AA_MANAGER[key]));
+    })
+
+    CONFIG_INFO.owner = Cheat.GetUsername();
+    CONFIG_INFO.presetsLength = AA.length
+
+    Object.keys(CONFIG_INFO).forEach(function(key)
+    {
+        DataFile.SetKey(configName, "CONFIG_INFO_" + key, JSON.stringify(CONFIG_INFO))
+    })
 
 }
 function loadConfig()
 {
     DataFile.Load(configName);
+    //load config info first
+    Object.keys(CONFIG_INFO).forEach(function(key)
+    {
+        CONFIG_INFO[key] = JSON.parse(DataFile.GetKey(configName, "CONFIG_INFO_" + key))
+    })
+
+
+    //populates aa array with stuff first
+    for(i = 0;i < CONFIG_INFO.presetsLength;i++)
+    {
+        AA[i] = JSON.parse(JSON.stringify(presetTemplate))
+    }
     for(i=0;i<AA.length;i++)
     {
-        for(j=0;j<AA[i].length;j++)
+        string1 = i.toString() + "_";
+        Object.keys(AA[i]).forEach(function(key1)
         {
-            AA[i][j]=JSON.parse(DataFile.GetKey(configName,"AA_"+i.toString()+"_"+j.toString()));
-        }
+            string2 = key1 + "_";
+            Object.keys(AA[i][key1]).forEach(function(key2)
+            {
+                string3 = key2 + "_";
+                Object.keys(AA[i][key1][key2]).forEach(function(key3)
+                {
+                    AA[i][key1][key2][key3] = JSON.parse(DataFile.GetKey(configName, "AA_" + string1 + string2 + string3 + key3));
+                })
+            })
+        })
         
     }
-    for(i=0;i<AA_MANAGER.length;i++)
+
+    Object.keys(AA_MANAGER).forEach(function(key)
     {
-        AA_MANAGER[i]=JSON.parse(DataFile.GetKey(configName,"AA_MANAGER_"+i.toString()));
-    }
+        AA_MANAGER[key]=JSON.parse(DataFile.GetKey(configName, "AA_MANAGER_" + key));
+    })
     
-    SECRETS=JSON.parse(DataFile.GetKey(configName,"SECRETS"));
-    presetCache=420;
-    realModeCache=420;
-    fakeModeCache=420;
-    LBYModeCache=420;
-    realSwitchCache=420;
-    fakeSwitchCache=420;
-    LBYSwitchCache=420;
+
 
     
+}
+function NOT(variable)
+{
+    return variable == 1 ? 0 : 1;
 }
 
 function zeroToNegOne(variable)
@@ -887,6 +776,7 @@ function updatePresetNames()
 function updateConfig()
 {
     //Cheat.Print(UI.GetValue(aa_path.concat("Presets")).toString());
+    UI.SetValue(["Config", "Cheat", "General", "Restrictions"], 0);
     
     
     if(UI.GetValue(main_path.concat("UPDATE CONFIG"))==1)
@@ -913,8 +803,27 @@ function updateConfig()
             //set default shit to 0
             updatePresetNames();
         }
-        //
-        UI.SetValue(["Config", "Cheat", "General", "Restrictions"], 0);
+        //load and save
+        if(UI.GetValue(main_path.concat("SAVE CONFIG")) == 1)
+        {
+            UI.SetValue(main_path.concat("SAVE CONFIG"), 0)
+            configName = UI.GetString(main_path.concat("Config Name:"))
+            saveConfig();
+        }
+        if(UI.GetValue(main_path.concat("LOAD CONFIG")) == 1)
+        {
+            UI.SetValue(main_path.concat("LOAD CONFIG"), 0)
+            configName = UI.GetString(main_path.concat("Config Name:"))
+            loadConfig();
+            //forces stuff to switch
+            presetCache = 420;
+            realModeCache = 420;
+            fakeModeCache = 420;
+            LBYModeCache = 420;
+            realSwitchCache = 420;
+            fakeSwitchCache = 420;
+            LBYSwitchCache = 420;
+        }
 
         
         presetVal=UI.GetValue(aa_path.concat("Presets"));
@@ -931,6 +840,7 @@ function updateConfig()
             currentLength=AA.length;
             addAAPreset(currentLength , UI.GetString(main_path.concat("New Preset Name:")));
             updatePresetNames();
+            CONFIG_INFO.presetsLength++;
         }
         if(UI.GetValue(aa_path.concat("Confirm")))
         {
@@ -1681,79 +1591,9 @@ function OnBulletImpact()
         
         if(headDist<100.0)
         {
-            doSwitch=true;
+            antiBruteSwitch=true;
         }
 
-        
-        
-
-      
-        //if bullet went close to the player BODY
-        /*
-        if (bodyDist < 85.0)
-        {
-            var realAngle = Local.GetRealYaw();
-            var fakeAngle = Local.GetFakeYaw();
-            //get bullet dist from head
-            var headVec = ClosestPointOnRay(localEye, source, impact);
-            var headDist = VectorDistance(localEye, headVec);
-
-            //get bullet dist from feet(lmao)
-            var feetVec = ClosestPointOnRay(localOrigin, source, impact);
-            var feetDist = VectorDistance(localOrigin, feetVec);
-            var closestRayPoint;
-            var realPos;
-            var fakePos;
-            //no idea what this is
-            if (bodyDist < headDist && bodyDist < feetDist)
-            {            
-                closestRayPoint = bodyVec;
-                realPos = ExtendVector(bodyVec, realAngle + 180.0, 10.0);
-                fakePos = ExtendVector(bodyVec, fakeAngle + 180.0, 10.0);
-            }
-            else if (feetDist < headDist)
-            {                         
-                closestRayPoint = feetVec;
-                var realPos1 = ExtendVector(bodyVec, realAngle - 30.0 + 60.0, 10.0);
-                var realPos2 = ExtendVector(bodyVec, realAngle - 30.0 - 60.0, 10.0);
-                var fakePos1 = ExtendVector(bodyVec, fakeAngle - 30.0 + 60.0, 10.0);
-                var fakePos2 = ExtendVector(bodyVec, fakeAngle - 30.0 - 60.0, 10.0);
-                if (VectorDistance(feetVec, realPos1) < VectorDistance(feetVec, realPos2))
-                {
-                    realPos = realPos1;
-                }
-                else
-                {
-                    realPos = realPos2;
-                }
-                if (VectorDistance(feetVec, fakePos1) < VectorDistance(feetVec, fakePos2))
-                {
-                    fakePos = fakePos1;
-                }
-                else
-                {
-                    fakePos = fakePos2;
-                }
-            }
-            else                         
-            {
-                closestRayPoint = headVec;
-                realPos = ExtendVector(bodyVec, realAngle, 10.0);
-                fakePos = ExtendVector(bodyVec, fakeAngle, 10.0);
-            }
-            headDist = headDist.toFixed(1);
-
-            //if bullet shot closer to fake
-            if (VectorDistance(closestRayPoint, fakePos) < VectorDistance(closestRayPoint, realPos))
-            {
-                lastHitTime = curtime;
-
-                antiBruteSwitch=true;
-            }
-        }
-        lastImpacts[entity] = impact;
-        lastImpactTimes[entity] = curtime;
-        */
     }
 }
 
@@ -2096,16 +1936,6 @@ function switchAA()
     }
     
 
-    const AA_MODE_TEMPLATE =
-    {
-        switchMode : 0,
-        dodgeBruteforce : 0,
-        activePresets : 0,
-        switchDelay : 0,
-        switchDelta : 0,
-    }
-    
-    
     
 }
 
@@ -2116,4 +1946,6 @@ Cheat.RegisterCallback("Draw","renderIndicators");
 //the antibruteforce i pasted
 Cheat.RegisterCallback("player_hurt", "OnHurt");
 Cheat.RegisterCallback("bullet_impact", "OnBulletImpact");
+
+
 
