@@ -256,6 +256,28 @@ var VISUALS=
         activeCrosshairIndicators : 0,
 
     },
+    customCrosshair : 
+    {
+        color1 : [0,0,0,255],
+        color2 : [0,0,0,255],
+        length : 100,
+        thickness : 2,
+        distance : 10,
+
+    },
+    indicators : 
+    {
+
+    },
+    crosshairIndicators :
+    {
+
+    },
+    rainbow : 
+    {
+        changeRate = 1,
+        colorOffset = 10,
+    },
     customColors : 
     {
         "Custom 1" : [0,0,0,255],
@@ -501,6 +523,10 @@ const fonts =
 {
     Arial = "Arial.ttf"
 }
+const indicatorItems = ["AA Behavior","AA Preset","Hide Shots","Double Tap","Choke","Desync","Hitchance and Mindmg","Target"]
+const crosshairIndicatorItems = ["AA Behavior","AA Preset","Hide Shots","Double Tap","Hitchance and Mindmg","Target","Fakelag History"]
+
+var fakeLagCache = [0,0,0,0]
 
 var screenResolution = Render.GetScreenSize();
 var rainbowColor = [0,0,0,255]
@@ -696,7 +722,8 @@ UI.AddHotkey(rage_keybinds,"AA Override Key 3" , "AA 3");
 UI.AddHotkey(rage_keybinds,"AA Override Key 4" , "AA 4");
 
 //indicators
-UI.AddMultiDropdown(indicators_path,"Active Indicators", ["AA Phase","Hide Shots","Double Tap","Fake Duck","Slow Walk",""])
+UI.AddMultiDropdown(indicators_path,"Active Indicators", indicatorItems)
+UI.AddMultiDropdown(crosshair_indicators_path,"Active Crosshair Indicators",crosshairIndicatorItems)
 
 
 
@@ -717,7 +744,7 @@ function getDropdownValue(value, index)
     return value & mask ? true : false;
 }
 
-function getActiveDropdowns(value,maxIndex)
+function getActiveCount(value,maxIndex)
 {
     if(value == 0)
     {
@@ -732,6 +759,24 @@ function getActiveDropdowns(value,maxIndex)
         }
     }
     return found;
+}
+
+function getActiveItems(value,maxIndex)
+{
+    if(value == 0)
+    {
+        return [];
+    }
+    var activeItems = []
+    for(i = 0;i <= maxIndex;i++)
+    {
+        if(getDropdownValue(value, i) == true)
+        {
+            activeItems = activeItems.concat(i)
+        }
+    }
+    return activeItems;
+
 }
 
 function getValueFromCounter(value, varConter, maxIndex)
@@ -1518,19 +1563,72 @@ function HSV2RGB(h, s, v) {
 	};
 }
 
-function renderIndicators()
+function getIndicatorString(item)
 {
+    crosshairIndicatorItems
+    switch(item)
+    {
+        case "AA Behavior":
+            return currentAAMode;
 
+        case "AA Preset":
+            return AA[modeCounter].general.misc.presetName;
+
+        case "Hide Shots":
+            return "HS";
+
+        case "Double Tap":
+            return "DT";
+        
+        case "Hitchance and Mindmg":
+            return "wip, fuck you";
+        
+        case "Target":
+            return "again, wip";
+        
+        case "Fakelag History":
+            return fakeLagCache[0].toString() + ">>" + fakeLagCache[1].toString() + ">>"+ fakeLagCache[2].toString() + ">>" + fakeLagCache[3].toString();
+        
+    }
+    ["AA Behavior","AA Preset","Hide Shots","Double Tap","Hitchance and Mindmg","Target","Fakelag History"]
+}
+
+function renderCrosshairIndicators(activeItems)
+{
+    font = Render.GetFont(fonts.Arial)
+    hueDegree = (Globals.Realtime() % (360 * VISUALS.rainbow.changeRate))/VISUALS.rainbow.changeRate;
+    rainbowRGB = HSV2RGB(hueDegree1, 1, 1);
+    rainbowColor = [rainbowRGB.r, rainbowRGB.g, rainbowRGB.b, 255];
+
+    textOffset = 10
+
+    for(i = 0;i < activeItems.length;i++)
+    {
+        if(i==2 && UI.GetValue(exploits_keybinds.concat("Double tap"))==false)
+        {
+            
+        }
+        Render.String(screenResolution[0] / 2,(screenResolution[1] / 2) - textOffset * i , 0, getIndicatorString(), rainbowColor,font)
+    }
 }
 
 function renderItems()
 {
-    //basic indicators
+    
     screenResolution = Render.GetScreenSize();
     //use this
-    hueDegree = (Globals.Realtime() % (360 * rainbowSpeed))/rainbowSpeed;
-    rainbowRGB = HSV2RGB(hueDegree, 1, 1);
-    rainbowColor = [rainbowRGB.r, rainbowRGB.g, rainbowRGB.b, 255];
+    hueDegree1 = (Globals.Realtime() % (360 * VISUALS.rainbow.changeRate))/VISUALS.rainbow.changeRate;
+    rainbowRGB1 = HSV2RGB(hueDegree1, 1, 1);
+    rainbowColor1 = [rainbowRGB1.r, rainbowRGB1.g, rainbowRGB1.b, 255];
+
+    //for rainbow bars
+    hueDegree2 = ((Globals.Realtime() + VISUALS.rainbow.colorOffset) % (360 * VISUALS.rainbow.changeRate))/VISUALS.rainbow.changeRate;
+    rainbowRGB2 = HSV2RGB(hueDegree2, 1, 1);
+    rainbowColor2 = [rainbowRGB2.r, rainbowRGB2.g, rainbowRGB2.b, 255];
+
+    renderCrosshairIndicators();
+
+
 
 
 
@@ -1867,12 +1965,12 @@ function switchAA()
         currentAAMode = "Zeusing";
     }
     
-    else if(exploits_keybinds.concat("Hide shots"))
+    else if(UI.GetValue(exploits_keybinds.concat("Hide shots"))==true)
     {
         currentAAMode = "HS Active";
     }
     
-    else if(exploits_keybinds.concat("Double tap"))
+    else if(UI.GetValue(exploits_keybinds.concat("Double tap"))==true)
     {
         currentAAMode = "DT Active";
     }
@@ -1946,7 +2044,7 @@ function switchAA()
             doSwitch=false;
             //possible optmization, but im lazy
             //calculate and save length internally
-            if(modeCounter < getActiveDropdowns(AA_MANAGER[currentAAMode].activePresets,AA.length-1))
+            if(modeCounter < getActiveCount(AA_MANAGER[currentAAMode].activePresets,AA.length-1))
             {    
                 modeCounter++;
             }
