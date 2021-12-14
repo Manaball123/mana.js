@@ -25,6 +25,9 @@ UI.AddSubTab([ "Config", "SUBTAB_MGR" ], "mana.js 1.0")
 UI.AddSubTab([ "Rage", "SUBTAB_MGR" ], "Custom Anti-Aim")
 UI.AddSubTab([ "Rage", "SUBTAB_MGR" ], "AA Preset Manager")
 
+UI.AddSubTab(["Visuals","SUBTAB_MGR"], "Indicators")
+UI.AddSubTab(["Visuals","SUBTAB_MGR"], "Crosshair Indicators")
+
 
 //Config
 
@@ -38,6 +41,7 @@ const rage_keybinds=["Rage", "SUBTAB_MGR", "General", "SHEET_MGR", "General", "K
 const aa_keybinds=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "General", "Key assignment"];
 const aa_default_path=["Rage", "SUBTAB_MGR", "Anti Aim", "SHEET_MGR", "Directions"];
 const exploits_keybinds=["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "Keys", "Key assignment"];
+const exploits_path=["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "General"]
 //const secrets_path=["Config", "SUBTAB_MGR", "Secrets", "SHEET_MGR", "Secrets"];
 
 //hey, if ur not using my aa, then FUCK YOU
@@ -656,6 +660,34 @@ var randomAngleOffset =
 
 var doSwitch=false;
 
+const PLAYER_TEMPLATE=
+{
+    health : 100,
+    weapons : [],
+
+    position : [0.0,0.0,0.0],
+    positionHistories : 
+    [
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0],
+    ]
+
+};
+
+var players =
+{
+
+}
 
 
 
@@ -720,6 +752,9 @@ UI.AddHotkey(rage_keybinds,"AA Override Key 1" , "AA 1");
 UI.AddHotkey(rage_keybinds,"AA Override Key 2" , "AA 2");
 UI.AddHotkey(rage_keybinds,"AA Override Key 3" , "AA 3");
 UI.AddHotkey(rage_keybinds,"AA Override Key 4" , "AA 4");
+//doubletap 
+UI.AddSliderInt("Doubletap Tick Shift",1,64);
+UI.AddSliderInt("Doubletap Tolerance",0,16);
 
 //indicators
 UI.AddMultiDropdown(indicators_path,"Active Indicators", indicatorItems)
@@ -729,6 +764,8 @@ UI.AddMultiDropdown(crosshair_indicators_path,"Active Crosshair Indicators",cros
 
 
 //converts internal index to user-named aa presets
+
+function renderInWorld()
 
 
 function setDropdownValue(value, index, enable) 
@@ -1606,7 +1643,7 @@ function renderCrosshairIndicators(activeItems)
     {
         if(i==2 && UI.GetValue(exploits_keybinds.concat("Double tap"))==false)
         {
-            
+
         }
         Render.String(screenResolution[0] / 2,(screenResolution[1] / 2) - textOffset * i , 0, getIndicatorString(), rainbowColor,font)
     }
@@ -1634,6 +1671,12 @@ function renderItems()
 
     
     
+}
+
+function overrideDoubletap()
+{
+    Exploit.OverrideShift(UI.GetValue(exploits_path.concat("Doubletap Shift")))
+    Exploit.OverrideTolerance(UI.GetValue(exploits_path.concat("Doubletap Tolerance")))
 }
 
 
@@ -2078,6 +2121,5 @@ Cheat.RegisterCallback("Draw","renderIndicators");
 //the antibruteforce i pasted
 Cheat.RegisterCallback("player_hurt", "OnHurt");
 Cheat.RegisterCallback("bullet_impact", "OnBulletImpact");
-
-
+Cheat.RegisterCallback("CreateMove","overrideDoubletap");
 
