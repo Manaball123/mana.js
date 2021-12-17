@@ -47,15 +47,7 @@ const exploits_keybinds=["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "Keys", 
 const exploits_path=["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "General"]
 //const secrets_path=["Config", "SUBTAB_MGR", "Secrets", "SHEET_MGR", "Secrets"];
 
-//hey, if ur not using my aa, then FUCK YOU
-//not making a toggle for custom aa, if u dont know what I meant
-//ahhhhh finally
-//my eyes and brain
-
-
-//HAHAHA NOW WE HAVE A UNIFORM 3 LAYERS OBJECT
-//IN YOUR FACE DATAFILE CHAR LIMIT
-//FUCK YOU BAHAHAHAH
+//preset template
 const presetTemplate = {
     general : 
     {
@@ -216,9 +208,7 @@ const AA_MODE_TEMPLATE =
     switchDelta : 0,
 }
 
-//rework this for obvious reasons
-//im fine with ids representing unimportant values
-//I GET TO DECIDE WHT IS AND ISNT BTW
+//aa manager shit
 var AA_MANAGER=
 {
     "Dormant" : JSON.parse(JSON.stringify(AA_MODE_TEMPLATE)),
@@ -308,8 +298,12 @@ var VISUALS=
 
 };
 
+//exploit stuff(dt,hs,fl)
+var EXPLOIT = 
+{
+
+}
 //misc
-var EXPLOIT
 var MISC = 
 {
 
