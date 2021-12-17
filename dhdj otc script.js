@@ -2941,7 +2941,7 @@ const Material_Create = Material.Create;
 				//duckamount is probably duck progress(1 is fully ducked and 0 is not ig)
 				duckAmount = Entity.GetProp(Entity.GetLocalPlayer(), "CCSPlayer", "m_flDuckAmount");
 
-				//
+				
 				UserCMD.Choke();
 				//if too high crouch and keep choking
 				if (duckAmount <= maxLevel / 100) {
