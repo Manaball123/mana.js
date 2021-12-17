@@ -301,7 +301,10 @@ var VISUALS=
 //exploit stuff(dt,hs,fl)
 var EXPLOIT = 
 {
-
+    doubletap : 
+    {
+        
+    }
 }
 //misc
 var MISC = 
@@ -2136,11 +2139,11 @@ function switchAA()
     {
         currentAAMode = "Fake-Ducking";
     }
-    else if(getWeapons(localPlayer)=="knife")
+    else if(getWeapons(localPlayer)=="weapon_knife")
     {
         currentAAMode = "Knifing";
     }
-    else if(getWeapons(localPlayer) =="zeus x27")
+    else if(getWeapons(localPlayer) =="weapon_taser")
     {
         currentAAMode = "Zeusing";
     }
@@ -2151,6 +2154,7 @@ function switchAA()
     }
     
     else if(UI.GetValue(exploits_keybinds.concat("Double tap"))==true)
+    
     {
         currentAAMode = "DT Active";
     }
