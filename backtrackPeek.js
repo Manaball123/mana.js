@@ -116,24 +116,27 @@ Render.Filled3DCircle = function(position, radius, degrees, start_at, color, fil
     }
 }
 
-function cachePositions()
+function hitscan(origin, target, hitboxes)
 {
-
-    enemies = Entity.GetEnemies().filter(function(e) { return !Entity.IsDormant(e) && Entity.IsValid(e); });
-    var positions = {}
-    //shifts and makes space for newest position data
-    cache.shift();
-    //iterate through every enemy
-    for(var i in enemies)
+    if(Entity.IsValid(target) == true && Entity.IsAlive(target) && Entity.IsDormant(target) == false)
     {
-        //uses enemy entityid as key
-        cache[tickTrigger] = positions[enemies[i]] = []
-        for(var j in hitboxes)
+        localPlayer = Entity.GetLocalPlayer()
+        maxDmg = 0;
+        currentDmg = 0;
+        for(var i in hitboxes)
         {
-            cache[tickTrigger][enemies[i]][j] = Entity.GetHitboxPosition(enemies[i], hitboxes[j])
+            currentDmg = Trace.Bullet(localPlayer, target, origin, Entity.GetHitboxPosition(target, hitboxes[i]))
+            //overrides the maxdmg thing if damage is increased relative to previous results
+            maxdmg = currentDmg > maxDmg ? currentDmg : maxDmg
+            //did i do this right? i hope i did....
+
         }
+        return maxDmg;
+    }   
+    else 
+    {
+        return 0;
     }
-    
 }
 function getSelectedPosition()
 {
@@ -170,7 +173,20 @@ function renderSelectedPosition()
     Render.Filled3DCircle(screenPos[0],screenPos[1],360,0,UI.GetColor(settingsPath.concat("Outline Color")), UI.GetColor(settingsPath.concat("Circle Color")))
     };
 }
+function checkCache()
+{
+    if(peekActive == false){return;}
 
+    if(cache[0] == 1)
+    {
+        peekOut = true;
+        cache.shift();
+    }
+    else
+    {
+        cache.shift();
+    }
+}
 function checkTargets()
 {
     if(peekActive == false){return;}
@@ -181,17 +197,12 @@ function checkTargets()
     //check each enemy's hitbox cache poses
     for(i in enemies)
     {
-        for(j in hitboxes)
+        if(mindmg >= hitscan(origin, enemies[i], hitboxes))
         {
-            target = VectorAdd(origin, cache[0][enemies[i]][j])
-            result = Trace.Bullet(localPlayer, enemies[i], origin, target)
-            if(result[1] >= mindmg)
-            {
-                peekOut = true;
-                return;
-                
-            }
-        };
+            //sets the trigger
+            cache[tickTrigger] = 1
+            return;
+        }
     };
 }
 
@@ -223,7 +234,6 @@ function cm()
     getSelectedPosition();
     checkTargets();
     moveToPoint();
-    cachePositions();
 }
 function onDraw()
 {
