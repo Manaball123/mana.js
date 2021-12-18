@@ -1,4 +1,4 @@
-const { Exploit, UI, Render, Cheat } = require("./onetap");
+
 
 const bar_path = ["Visuals","SUBTAB_MGR","Recharge Bar","SHEET_MGR","Recharge Bar"]
 

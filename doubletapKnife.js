@@ -1,4 +1,3 @@
-const { Entity, UI, Cheat } = require("./onetap");
 
 
 
@@ -9,18 +8,19 @@ var timer = 0;
 
 function toggleDT()
 {   
-    
-    if(UI.GetHotkeyState(exploits_path.concat("Double tap")) == 1)
+    Cheat.Print(" fired\n")
+    if(UI.GetValue(exploits_path.concat("Double tap")) == 1)
     {
-        if(Event.GetInt("userid") == Entity.GetLocalPlayer())
+        if(Entity.IsLocalPlayer(Entity.GetEntityFromUserID(Event.GetInt("userid"))))
         {
-            if(Event.GetInt("weapon") == "weapon_knife")
-            {
+            Cheat.Print(" cewcfired\n")
+            //if(Event.GetInt("weapon") == "weapon_knife")
+            //{
                 //added this print thingy
                 Cheat.Print("knife fired\n")
-                UI.SetHotkeyState(exploits_path.concat("Double tap"), 0)
+                UI.ToggleHotkey(exploits_path.concat("Double tap"))
                 dtdisabled = true;
-            }
+            //}
 
         }
     }
@@ -28,12 +28,16 @@ function toggleDT()
 
 function retoggle()
 {
+    //Cheat.Print(UI.GetValue(exploits_path.concat("Double tap")).toString())
     if(dtdisabled)
     {
+        Exploit.OverrideShift(14)
+        Exploit.OverrideTolerance(0)
         if(timer >= tickDelay)
         {
-            UI.SetHotkeyState(exploits_path.concat("Double tap"), 1);
+            UI.ToggleHotkey(exploits_path.concat("Double tap"));
             dtdisabled = false;
+            timer = 0;
         }
         else
         {
