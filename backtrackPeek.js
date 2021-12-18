@@ -175,16 +175,29 @@ function renderSelectedPosition()
 }
 function checkCache()
 {
+    //if cache length isnt long enough, repopulates it or some shit idk
+    if(cache.length < tickTrigger + 1)
+    {
+        for(i = 0;i < tickTrigger;i++)
+        {
+            if(cache[i] == null)
+            {
+                cache[i] = 0;
+            }
+        }
+    }
     if(peekActive == false){return;}
 
     if(cache[0] == 1)
     {
         peekOut = true;
         cache.shift();
+        cache[tickTrigger] = 0;
     }
     else
     {
         cache.shift();
+        cache[tickTrigger] = 0;
     }
 }
 function checkTargets()
@@ -233,6 +246,7 @@ function cm()
     }
     getSelectedPosition();
     checkTargets();
+    checkCache();
     moveToPoint();
 }
 function onDraw()
