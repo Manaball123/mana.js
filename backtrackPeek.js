@@ -1,21 +1,40 @@
 //made by Mana#1092
 //trash code below dont look
 
+const { UI } = require("./onetap");
+
 UI.AddSubTab(["Config", "SUBTAB_MGR"], "Backtrack Peek Settings")
+UI.AddSubTab(["Visuals", "SUBTAB_MGR"], "Backtrack Peek Indicators")
 
 const settingsPath = ["Config", "SUBTAB_MGR", "Backtrack Peek Settings", "SHEET_MGR", "Backtrack Peek Settings"];
+const indicators_path = ["Visuals","SUBTAB_MGR","Backtrack Peek Indicators","SHEET_MGR","Backtrack Peek Indicators"]
+
 UI.AddMultiDropdown(settingsPath ,"Hitboxes",["Head","Neck","Pelvis","Body","Thorax","Chest","Upper Chest","Left Thigh","Right Thigh","Left Calf","Right Calf","Left Foot","Right Foot","Left Hand","Right Hand","Left Upper Arm","Left Upper Forearm","Right Upper Arm","Right Upper Forearm"]);
 UI.AddSliderInt(settingsPath, "Tick Trigger", 0, 16 );
 UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Select Position", "Select Position");
 UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Disable Selection", "Disable Selection");
-UI.AddColorPicker(settingsPath, "Outline Color")
-UI.AddColorPicker(settingsPath, "Circle Color")
+
+UI.AddSliderInt(settingsPath, "Circle Radius",1,32)
+UI.AddColorPicker(settingsPath, "Active Outline Color")
+UI.AddColorPicker(settingsPath, "Active Circle Color")
+
+UI.AddColorPicker(settingsPath, "Inactive Outline Color")
+UI.AddColorPicker(settingsPath, "Inactive Circle Color")
 
 UI.AddSliderInt(settingsPath,"Mindmg",1,101)
+UI.AddSliderInt(settingsPath,"Mindmg Override",1,101)
 
-UI.AddColorPicker(indics_path,"FD Color");
-UI.AddSliderInt(indics_path,"FD x",0,3840);
-UI.AddSliderInt(indics_path,"FD y",0,2160);
+UI.AddTextbox(indicators_path,"Font")
+UI.AddSliderInt(indicators_path,"Reload script after setting the font")
+
+UI.AddColorPicker(indicators_path,"Peek Active");
+UI.AddColorPicker(indicators_path,"Peek Inactive");
+UI.AddSliderInt(indicators_path,"Peek x",0,3840);
+UI.AddSliderInt(indicators_path,"Peek y",0,2160);
+
+UI.AddColorPicker(indicators_path,"Peek Timer Color");
+UI.AddSliderInt(indicators_path,"Peek Timer x",0,3840)
+UI.AddSliderInt(indicators_path,"Peek Timer y",0,2160)
 
 
 //cache settings so i dont run for loop every frame
@@ -25,14 +44,16 @@ hitboxesCache = 0;
 var hitboxes = [];
 
 var tickTrigger = 0;
+var timer = 0;
 
-var cache = []
+var triggerPeek = false;
 var selectedPoint = []
 var mindmg = 1;
 
 var peekOut = false;
 
 var peekActive = false;
+
 var enemies = Entity.GetEnemies().filter(function(e) { return !Entity.IsDormant(e) && Entity.IsValid(e); });
 
 const screensize = Render.GetScreenSize()
@@ -190,52 +211,24 @@ function renderSelectedPosition()
 {
     if(peekActive == true && selectedPoint.length != 0)
     {
-        //scanPoint = JSON.parse(JSON.stringify(selectedPoint))
-        //screenPos = Render.WorldToScreen(scanPoint[0], scanPoint[1], scanPoint[2] + Entity.GetProp(Entity.GetLocalPlayer(), "CBasePlayer", "m_vecViewOffset[2]")[0]);
-        //Cheat.Print("val is"+selectedPoint.toString())
-        Render.Filled3DCircle(selectedPoint,10,360,0,UI.GetColor(settingsPath.concat("Outline Color")), UI.GetColor(settingsPath.concat("Circle Color")))
         
-        //Render.FilledCircle(screenPos[0],screenPos[1],10,UI.GetColor(settingsPath.concat("Circle Color")))
+        Render.Filled3DCircle(selectedPoint, UI.GetValue(settingsPath.concat("Circle Radius")), 360, 0, peekOut ? UI.GetColor(settingsPath.concat("Active Outline Color")) : UI.GetColor(settingsPath.concat("Inactive Outline Color")), peekOut ? UI.GetColor(settingsPath.concat("Active Circle Color")) : UI.GetColor(settingsPath.concat("Inactive Circle Color")))
     };
 }
-function checkCache()
+function checkTrigger()
 {
-    //if cache length isnt long enough, repopulates it or some shit idk
-    if(cache.length < tickTrigger + 1)
+    if(triggerPeek == true)
     {
-        for(i = 0;i < tickTrigger + 1;i++)
+        if(timer >= tickTrigger)
         {
-            if(cache[i] == null)
-            {
-                cache[i] = 0;
-            }
-        }
-    }
-    //if cache array to long
-    if(cache.length > tickTrigger + 1)
-    {
-        cache = []
-        for(i = 0;i < tickTrigger;i++)
-        {
-            
-            cache[i] = 0;
-            
-        }
-    }
-    //Cheat.Print("cache is "+ cache.toString()+'\n')
-    if(peekActive == false){return;}
+            peekOut = true;
+            timer = 0;
 
-    if(cache[0] == 1)
-    {
-        peekOut = true;
-        Cheat.Print("TRIGGER CALLED "+'\n')
-        cache.shift();
-        cache[tickTrigger] = 0;
-    }
-    else
-    {
-        cache.shift();
-        cache[tickTrigger] = 0;
+        }
+        else
+        {
+            timer++;
+        }
     }
 }
 function checkTargets()
@@ -250,13 +243,16 @@ function checkTargets()
     {
         
         enemyDamage = hitscan(origin, enemies[i], hitboxes)
+        enemyHealth = Entity.GetProp(enemies[i], "CBasePlayer", "m_iHealth")
+
         Cheat.Print("function returned "+ hitscan(origin, enemies[i], hitboxes).toString())
         Cheat.Print("enemy damage is" + enemyDamage.toString()+'\n')
-        if(enemyDamage >= mindmg)
+
+        if(enemyDamage >= mindmg || enemyDamage > enemyHealth)
         {
             //sets the trigger
             Cheat.Print("trigger set \n")
-            cache[tickTrigger] = 1
+            triggerPeek = true;
             return;
         }
     };
@@ -264,27 +260,19 @@ function checkTargets()
 
 function moveToPoint()
 {
-    if(peekOut==true)
+    if(peekOut == true)
     {
         localplayerPos = Entity.GetProp(Entity.GetLocalPlayer(), "CBaseEntity", "m_vecOrigin");
-        /*
-        
-        deltaVector = VectorSubtract(selectedPoint, localplayerPos)
-        moveVector = VectorNormalize(VectorSubtract(selectedPoint, localplayerPos));
-        distance = VectorLength(deltaVector[0],deltaVector[1]);
-
-        serCMD.SetMovement([Math.cos(realAngle) * (distance < 20 ? 50 + distance * 5 : 450), Math.sin(realAngle) * (distance < 20 ? 50 + distance * 5 : 450), 0]);
-        */
-
-        //pasted shit below
+        //pasted shit below(kinda)
         var vecToPeek = VectorSubtract(selectedPoint,localplayerPos)
 		var angle = Math.atan2(vecToPeek[1], vecToPeek[0]) * (180 / Math.PI);;
 		var viewYaw = Local.GetViewAngles()[1] - 180;
 		var realAngle = (adjustAngle(angle - viewYaw) + 90) * (Math.PI / 180);
 		var distance = VectorLength(localplayerPos, [selectedPoint[0], selectedPoint[1], localplayerPos[2]]);
-		UserCMD.SetMovement([Math.cos(realAngle) * (distance < 20 ? 50 + distance * 5 : 450), Math.sin(realAngle) * (distance < 20 ? 50 + distance * 5 : 450), 0]);
+		UserCMD.SetMovement([Math.cos(realAngle) *  450, Math.sin(realAngle) * 450, 0]);
     }
 }
+//disables movements when ragebot fires
 function disableMovement()
 { 
     peekActive = false;
@@ -293,18 +281,26 @@ function disableMovement()
 
 function drawPeekIndicator()
 {
-    var font = Render.GetFont( "calibri.ttf", 32, false)
-    
-    if(peekOut == true)
+    var font = Render.GetFont(UI.GetString(indicators_path.concat("Font")), UI.GetValue(indicators_path.concat("Font Size")), false)
+    if(peekActive == true || UI.IsMenuOpen())
     {
-        Render.String(screensize[0]/2,screensize[1]/2, 0, "PEEK", [255,255,255,255], font)
+        if(peekOut == true)
+        {
+            Render.String(UI.GetValue(indicators_path.concat("Peek x")), UI.GetValue(indicators_path.concat("Peek y")), 0, "PEEKING", UI.GetColor(indicators_path.concat("Peek Active")), font)
 
+        }
+        else
+        {
+            Render.String(UI.GetValue(indicators_path.concat("Peek x")), UI.GetValue(indicators_path.concat("Peek y")), 0, "PEEKING", UI.GetColor(indicators_path.concat("Peek Inactive")), font)
+        }
     }
-    else
+
+    if(triggerPeek == true || UI.IsMenuOpen())
     {
-        Render.String(screensize[0]/2,screensize[1]/2, 0, "PEEK", [255,0,0,255], font)
+        Render.String(UI.GetValue(indicators_path.concat("Peek Timer x")), UI.GetValue(indicators_path.concat("Peek Timer y")), 0, "Peeking After "+(tickTrigger-timer).toString()+" Ticks",font)
     }
-}
+}   
+
 
 function cm()
 {
@@ -312,15 +308,16 @@ function cm()
     {
         peekActive = false;
         peekOut  = false;
+        timer = 0;
     }
     getSelectedPosition();
     checkTargets();
-    checkCache();
+    checkTrigger();
     moveToPoint();
 }
 function onDraw()
 {
-    mindmg = UI.GetValue(settingsPath.concat("Mindmg"))
+    mindmg = UI.GetValue(["Rage", "General", "General","Key assignment", "Damage override"]) == 1 ? UI.GetValue(settingsPath.concat("Mindmg")) : UI.GetValue(settingsPath.concat("Mindmg"))
     updateUI();
     renderSelectedPosition();
     drawPeekIndicator();
