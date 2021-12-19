@@ -13,7 +13,7 @@ UI.AddSliderInt(bar_path,"Height",10,1024);
 UI.AddSliderInt(bar_path,"x",0,3840);
 UI.AddSliderInt(bar_path,"y",0,2160);
 
-UI.AddSliderInt(indics_path,"Text Size");
+UI.AddSliderInt(indics_path,"Text Size",1,32);
 
 UI.AddColorPicker(indics_path,"DT Active Color");
 UI.AddColorPicker(indics_path,"DT Inactive Color");
@@ -62,7 +62,8 @@ function onDraw()
     Render.GradientRect(UI.GetValue(bar_path.concat("x")),UI.GetValue(bar_path.concat("y")),barlength,UI.GetValue(bar_path.concat("Height")),1,UI.GetColor(bar_path.concat("Color 1")),UI.GetColor(bar_path.concat("Color 2")))
     if(UI.GetValue(["Rage", "Exploits", "Keys", "Key assignment", "Double tap"]) == 1)
     {
-        if(Exploit.GetCharge < 1)
+
+        if(Exploit.GetCharge() < 1)
         {
             Render.String(UI.GetValue(indics_path.concat("DT x")),UI.GetValue(indics_path.concat("DT y")), 0, "DT", UI.GetColor(indics_path.concat("DT Inactive Color")), font)
         }
@@ -71,7 +72,7 @@ function onDraw()
             Render.String(UI.GetValue(indics_path.concat("DT x")),UI.GetValue(indics_path.concat("DT y")), 0, "DT", UI.GetColor(indics_path.concat("DT Active Color")), font)
         }
     }
-    if(UI.GetValue(["Rage", "Exploits", "Keys", "Key assignment", "Hide Shots"]) == 1)
+    if(UI.GetValue(["Rage", "Exploits", "Keys", "Key assignment", "Hide shots"]) == 1)
     {
         Render.String(UI.GetValue(indics_path.concat("HS x")),UI.GetValue(indics_path.concat("HS y")), 0, "HS", UI.GetColor(indics_path.concat("HS Color")), font)
     }
@@ -80,7 +81,7 @@ function onDraw()
     {
         Render.String(UI.GetValue(indics_path.concat("FD x")),UI.GetValue(indics_path.concat("FD y")), 0, "FD", UI.GetColor(indics_path.concat("FD Color")), font)
     }
-    if(UI.GetValue(["Rage", "General", "Keys", "Key assignment", "Minimum override"]) == 1)
+    if(UI.GetValue(["Rage", "General", "General", "Key assignment", "Damage override"]) == 1)
     {
         Render.String(UI.GetValue(indics_path.concat("Mindmg x")),UI.GetValue(indics_path.concat("Mindmg y")), 0, "Mindmg Override", UI.GetColor(indics_path.concat("Mindmg Color")), font)
     }
