@@ -788,6 +788,38 @@ for(i=0;i<MISC.backtrackPeek.ticks-1;i++)
 
 
 //UI Elements
+var UI_SETTINGS=
+{
+    JS_SETTINGS :
+    {
+        PATH : main_path
+    },
+
+    AA_SETTINGS : 
+    {
+        PATH : aa_path,
+        //uses index of presets cuz it will fuck shit up if i dont
+        ACTIVE_PRESET : 0,
+        STATIC : 
+        {
+            
+        }
+        
+
+    },
+
+    AA_MANAGER_SETTINGS :
+    {
+        PATH : aa_control_path,
+        
+    },
+
+    VISUALS_SETTINGS :
+    {
+ 
+    }
+
+};
 //password
 /*
 UI.AddCheckbox(secrets_path,"Protect Config With Password")
@@ -817,7 +849,7 @@ UI.AddSliderInt(aa_path,"Active Fake Switch Phases",1,16);
 UI.AddSliderInt(aa_path,"Fake Offset",-180,180);
 UI.AddSliderInt(aa_path,"Fake Delta",-180,180);
 UI.AddSliderInt(aa_path,"Fake Delay",1,256);
-UI.AddSliderInt(aa_path,"Fake Delay Offset",0,128);
+UI.AddSliderInt(aa_path,"Fake Delay Offset",0,128);    
 
 //lby
 UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"],0);
