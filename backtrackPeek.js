@@ -1,8 +1,6 @@
 //made by Mana#1092
 //trash code below dont look
 
-const { UI } = require("./onetap");
-
 UI.AddSubTab(["Config", "SUBTAB_MGR"], "Backtrack Peek Settings")
 UI.AddSubTab(["Visuals", "SUBTAB_MGR"], "Backtrack Peek Indicators")
 
@@ -25,7 +23,8 @@ UI.AddSliderInt(settingsPath,"Mindmg",1,101)
 UI.AddSliderInt(settingsPath,"Mindmg Override",1,101)
 
 UI.AddTextbox(indicators_path,"Font")
-UI.AddSliderInt(indicators_path,"Reload script after setting the font")
+UI.AddSliderInt(indicators_path,"Font Size",1,64)
+UI.AddSliderInt(indicators_path,"Reload script after setting the font",0,0)
 
 UI.AddColorPicker(indicators_path,"Peek Active");
 UI.AddColorPicker(indicators_path,"Peek Inactive");
@@ -189,7 +188,7 @@ function getSelectedPosition()
         angle = Local.GetCameraAngles();
         vector = ANGLE2VEC(angle);
         entity = Entity.GetLocalPlayer();
-        origin = Entity.GetRenderOrigin(entity);
+        origin = Entity.GetProp(entity, "CBaseEntity", "m_vecOrigin")
         origin[2] += Entity.GetProp(entity, "CBasePlayer", "m_vecViewOffset[2]")[0];
         rayLength = 8192
         end = [origin[0] + vector[0] * rayLength, origin[1] + vector[1] * rayLength, origin[2] + vector[2] * rayLength];
@@ -211,8 +210,13 @@ function renderSelectedPosition()
 {
     if(peekActive == true && selectedPoint.length != 0)
     {
-        
+        localPlayer = Entity.GetLocalPlayer();
+        origin = JSON.parse(JSON.stringify(selectedPoint))
+        origin[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
+        screenPos = Render.WorldToScreen(origin)
+
         Render.Filled3DCircle(selectedPoint, UI.GetValue(settingsPath.concat("Circle Radius")), 360, 0, peekOut ? UI.GetColor(settingsPath.concat("Active Outline Color")) : UI.GetColor(settingsPath.concat("Inactive Outline Color")), peekOut ? UI.GetColor(settingsPath.concat("Active Circle Color")) : UI.GetColor(settingsPath.concat("Inactive Circle Color")))
+        Render.FilledCircle(screenPos[0],screenPos[1],10,peekOut ? UI.GetColor(settingsPath.concat("Active Circle Color")) : UI.GetColor(settingsPath.concat("Inactive Circle Color")))
     };
 }
 function checkTrigger()
@@ -237,7 +241,7 @@ function checkTargets()
 
     localPlayer = Entity.GetLocalPlayer();
     origin = JSON.parse(JSON.stringify(selectedPoint));
-    origin[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
+    //origin[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
     //check each enemy's hitbox cache poses
     for(i in enemies)
     {
@@ -245,7 +249,6 @@ function checkTargets()
         enemyDamage = hitscan(origin, enemies[i], hitboxes)
         enemyHealth = Entity.GetProp(enemies[i], "CBasePlayer", "m_iHealth")
 
-        Cheat.Print("function returned "+ hitscan(origin, enemies[i], hitboxes).toString())
         Cheat.Print("enemy damage is" + enemyDamage.toString()+'\n')
 
         if(enemyDamage >= mindmg || enemyDamage > enemyHealth)
@@ -268,7 +271,7 @@ function moveToPoint()
 		var angle = Math.atan2(vecToPeek[1], vecToPeek[0]) * (180 / Math.PI);;
 		var viewYaw = Local.GetViewAngles()[1] - 180;
 		var realAngle = (adjustAngle(angle - viewYaw) + 90) * (Math.PI / 180);
-		var distance = VectorLength(localplayerPos, [selectedPoint[0], selectedPoint[1], localplayerPos[2]]);
+		//var distance = VectorLength(localplayerPos, [selectedPoint[0], selectedPoint[1], localplayerPos[2]]);
 		UserCMD.SetMovement([Math.cos(realAngle) *  450, Math.sin(realAngle) * 450, 0]);
     }
 }
@@ -277,6 +280,8 @@ function disableMovement()
 { 
     peekActive = false;
     peekOut = false;
+    triggerPeek = false;
+    timer = 0;
 }
 
 function drawPeekIndicator()
@@ -297,7 +302,9 @@ function drawPeekIndicator()
 
     if(triggerPeek == true || UI.IsMenuOpen())
     {
-        Render.String(UI.GetValue(indicators_path.concat("Peek Timer x")), UI.GetValue(indicators_path.concat("Peek Timer y")), 0, "Peeking After "+(tickTrigger-timer).toString()+" Ticks",font)
+
+
+        Render.String(UI.GetValue(indicators_path.concat("Peek Timer x")), UI.GetValue(indicators_path.concat("Peek Timer y")), 0, "Peeking After "+(tickTrigger-timer).toString()+" Ticks",UI.GetColor(indicators_path.concat("Peek Timer Color")), font)
     }
 }   
 
@@ -306,9 +313,7 @@ function cm()
 {
     if(UI.GetValue(["Scripts", "Keys", "JS Keybinds", "Disable Selection"])==true)
     {
-        peekActive = false;
-        peekOut  = false;
-        timer = 0;
+        disableMovement();
     }
     getSelectedPosition();
     checkTargets();
