@@ -1,9 +1,6 @@
 //made by Mana#1092
 //trash code below dont look
 
-const { Entity, Trace } = require("./onetap");
-
-
 UI.AddSubTab(["Config", "SUBTAB_MGR"], "Backtrack Peek Settings")
 
 const settingsPath = ["Config", "SUBTAB_MGR", "Backtrack Peek Settings", "SHEET_MGR", "Backtrack Peek Settings"];
@@ -13,6 +10,13 @@ UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Select Position", "Select Posi
 UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Disable Selection", "Disable Selection");
 UI.AddColorPicker(settingsPath, "Outline Color")
 UI.AddColorPicker(settingsPath, "Circle Color")
+
+UI.AddSliderInt(settingsPath,"Mindmg",1,101)
+
+UI.AddColorPicker(indics_path,"FD Color");
+UI.AddSliderInt(indics_path,"FD x",0,3840);
+UI.AddSliderInt(indics_path,"FD y",0,2160);
+
 
 //cache settings so i dont run for loop every frame
 hitboxesCache = 0;
@@ -30,6 +34,8 @@ var peekOut = false;
 
 var peekActive = false;
 var enemies = Entity.GetEnemies().filter(function(e) { return !Entity.IsDormant(e) && Entity.IsValid(e); });
+
+const screensize = Render.GetScreenSize()
 
 function getDropdownValue(value, index)
 {
@@ -85,6 +91,16 @@ function VectorNormalize(vec)
     var length = VectorLength(vec[0], vec[1], vec[2]);
     return [vec[0] / length, vec[1] / length, vec[2] / length];
 }
+function  adjustAngle(angle) {
+    if (angle < 0) {
+        angle = (90 + angle * (-1));
+    } else if (angle > 0) {
+        angle = (90 - angle);
+    }
+
+    return angle;
+}
+
 //3d circle func from fourms, credits goes to this guy i think
 // https://www.onetap.com/members/epiccsgohaker1337.74887/
 
@@ -121,39 +137,44 @@ function hitscan(origin, target, hitboxes)
     if(Entity.IsValid(target) == true && Entity.IsAlive(target) && Entity.IsDormant(target) == false)
     {
         localPlayer = Entity.GetLocalPlayer()
-        maxDmg = 0;
-        currentDmg = 0;
+        origin[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
+        maxDmg = -1;
+        currentDmg = -1;
         for(var i in hitboxes)
         {
-            currentDmg = Trace.Bullet(localPlayer, target, origin, Entity.GetHitboxPosition(target, hitboxes[i]))
+            
+            currentDmg = Trace.Bullet(localPlayer, target, origin, Entity.GetHitboxPosition(target, hitboxes[i]))[1]
+            //Cheat.Print("scanning "+ target.toString()+" 's "+hitboxes[i]+", damage is "+currentDmg.toString()+"\n")
             //overrides the maxdmg thing if damage is increased relative to previous results
-            maxdmg = currentDmg > maxDmg ? currentDmg : maxDmg
+            maxDmg = currentDmg > maxDmg ? currentDmg : maxDmg
             //did i do this right? i hope i did....
 
         }
-        return maxDmg;
+        Cheat.Print(target.toString()+"'s maxdmg is"+ maxDmg.toString()+"\n")
+        return maxDmg; 
     }   
     else 
     {
-        return 0;
+        Cheat.Print("entity is dormant\n")
+        return -1;
     }
 }
 function getSelectedPosition()
 {
     if(UI.GetValue(["Scripts", "Keys", "JS Keybinds", "Select Position"])==true)
     {
+        UI.ToggleHotkey(["Scripts", "Keys", "JS Keybinds", "Select Position"])
         
         angle = Local.GetCameraAngles();
         vector = ANGLE2VEC(angle);
         entity = Entity.GetLocalPlayer();
         origin = Entity.GetRenderOrigin(entity);
         origin[2] += Entity.GetProp(entity, "CBasePlayer", "m_vecViewOffset[2]")[0];
-        rayLength = 65536
+        rayLength = 8192
         end = [origin[0] + vector[0] * rayLength, origin[1] + vector[1] * rayLength, origin[2] + vector[2] * rayLength];
         result = Trace.Line(entity, origin, end);
         if(result[1] != 1)
         {
-            result[1] = 1 - result[1]
             selectedPoint = [origin[0] + vector[0] * rayLength * result[1], origin[1] + vector[1] * rayLength * result[1], origin[2] + vector[2] * rayLength * result[1]];
             peekActive = true;
             
@@ -167,10 +188,14 @@ function getSelectedPosition()
 }
 function renderSelectedPosition()
 {
-    if(peekActive)
+    if(peekActive == true && selectedPoint.length != 0)
     {
-    screenPos = Render.WorldToScreen(selectedPoint);
-    Render.Filled3DCircle(screenPos[0],screenPos[1],360,0,UI.GetColor(settingsPath.concat("Outline Color")), UI.GetColor(settingsPath.concat("Circle Color")))
+        //scanPoint = JSON.parse(JSON.stringify(selectedPoint))
+        //screenPos = Render.WorldToScreen(scanPoint[0], scanPoint[1], scanPoint[2] + Entity.GetProp(Entity.GetLocalPlayer(), "CBasePlayer", "m_vecViewOffset[2]")[0]);
+        //Cheat.Print("val is"+selectedPoint.toString())
+        Render.Filled3DCircle(selectedPoint,10,360,0,UI.GetColor(settingsPath.concat("Outline Color")), UI.GetColor(settingsPath.concat("Circle Color")))
+        
+        //Render.FilledCircle(screenPos[0],screenPos[1],10,UI.GetColor(settingsPath.concat("Circle Color")))
     };
 }
 function checkCache()
@@ -178,7 +203,7 @@ function checkCache()
     //if cache length isnt long enough, repopulates it or some shit idk
     if(cache.length < tickTrigger + 1)
     {
-        for(i = 0;i < tickTrigger;i++)
+        for(i = 0;i < tickTrigger + 1;i++)
         {
             if(cache[i] == null)
             {
@@ -186,11 +211,24 @@ function checkCache()
             }
         }
     }
+    //if cache array to long
+    if(cache.length > tickTrigger + 1)
+    {
+        cache = []
+        for(i = 0;i < tickTrigger;i++)
+        {
+            
+            cache[i] = 0;
+            
+        }
+    }
+    //Cheat.Print("cache is "+ cache.toString()+'\n')
     if(peekActive == false){return;}
 
     if(cache[0] == 1)
     {
         peekOut = true;
+        Cheat.Print("TRIGGER CALLED "+'\n')
         cache.shift();
         cache[tickTrigger] = 0;
     }
@@ -205,14 +243,19 @@ function checkTargets()
     if(peekActive == false){return;}
 
     localPlayer = Entity.GetLocalPlayer();
-    origin = selectedPoint;
+    origin = JSON.parse(JSON.stringify(selectedPoint));
     origin[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
     //check each enemy's hitbox cache poses
     for(i in enemies)
     {
-        if(mindmg >= hitscan(origin, enemies[i], hitboxes))
+        
+        enemyDamage = hitscan(origin, enemies[i], hitboxes)
+        Cheat.Print("function returned "+ hitscan(origin, enemies[i], hitboxes).toString())
+        Cheat.Print("enemy damage is" + enemyDamage.toString()+'\n')
+        if(enemyDamage >= mindmg)
         {
             //sets the trigger
+            Cheat.Print("trigger set \n")
             cache[tickTrigger] = 1
             return;
         }
@@ -221,15 +264,25 @@ function checkTargets()
 
 function moveToPoint()
 {
-    if(peekOut)
+    if(peekOut==true)
     {
-        
         localplayerPos = Entity.GetProp(Entity.GetLocalPlayer(), "CBaseEntity", "m_vecOrigin");
+        /*
+        
         deltaVector = VectorSubtract(selectedPoint, localplayerPos)
         moveVector = VectorNormalize(VectorSubtract(selectedPoint, localplayerPos));
         distance = VectorLength(deltaVector[0],deltaVector[1]);
 
-        UserCMD.SetMovement([moveVector[0] * (distance < 20 ? 50 + distance * 5 : 450), moveVector[1] * (distance < 20 ? 50 + distance * 5 : 450), 0]);
+        serCMD.SetMovement([Math.cos(realAngle) * (distance < 20 ? 50 + distance * 5 : 450), Math.sin(realAngle) * (distance < 20 ? 50 + distance * 5 : 450), 0]);
+        */
+
+        //pasted shit below
+        var vecToPeek = VectorSubtract(selectedPoint,localplayerPos)
+		var angle = Math.atan2(vecToPeek[1], vecToPeek[0]) * (180 / Math.PI);;
+		var viewYaw = Local.GetViewAngles()[1] - 180;
+		var realAngle = (adjustAngle(angle - viewYaw) + 90) * (Math.PI / 180);
+		var distance = VectorLength(localplayerPos, [selectedPoint[0], selectedPoint[1], localplayerPos[2]]);
+		UserCMD.SetMovement([Math.cos(realAngle) * (distance < 20 ? 50 + distance * 5 : 450), Math.sin(realAngle) * (distance < 20 ? 50 + distance * 5 : 450), 0]);
     }
 }
 function disableMovement()
@@ -238,11 +291,27 @@ function disableMovement()
     peekOut = false;
 }
 
+function drawPeekIndicator()
+{
+    var font = Render.GetFont( "calibri.ttf", 32, false)
+    
+    if(peekOut == true)
+    {
+        Render.String(screensize[0]/2,screensize[1]/2, 0, "PEEK", [255,255,255,255], font)
+
+    }
+    else
+    {
+        Render.String(screensize[0]/2,screensize[1]/2, 0, "PEEK", [255,0,0,255], font)
+    }
+}
+
 function cm()
 {
     if(UI.GetValue(["Scripts", "Keys", "JS Keybinds", "Disable Selection"])==true)
     {
         peekActive = false;
+        peekOut  = false;
     }
     getSelectedPosition();
     checkTargets();
@@ -251,8 +320,11 @@ function cm()
 }
 function onDraw()
 {
+    mindmg = UI.GetValue(settingsPath.concat("Mindmg"))
     updateUI();
     renderSelectedPosition();
+    drawPeekIndicator();
+    
 }
 Cheat.RegisterCallback("CreateMove","cm")
 Cheat.RegisterCallback("Draw","onDraw");
