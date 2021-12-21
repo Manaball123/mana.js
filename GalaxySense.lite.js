@@ -291,7 +291,7 @@ function EnableMenu() {
                 switch (UI.GetValue(Galaxy_Primary_Dropdown)) {
                     case 0:
                         UI.SetEnabled(Galaxy_Bar, 1);
-                        if (UI.GetValue(Galaxy_Bar)) {
+                        if (UI.GetValue(Galaxy_Bar) ) {
                             UI.SetEnabled(Galaxy_Bar_MenuOpen, 1);
                             UI.SetEnabled(Galaxy_Bar_Color, 1);
                             UI.SetEnabled(Galaxy_Bar_X, 1);

@@ -786,38 +786,470 @@ for(i=0;i<MISC.backtrackPeek.ticks-1;i++)
     targetsPosCaches[i] = {}
 }
 
+const TYPE_SUBTAB=0;
+const TYPE_TEXTBOX=1;
+const TYPE_COLORPICKER=2;
+const TYPE_MULTIDROPDOWN=3;
+const TYPE_DROPDOWN=4;
+const TYPE_HOTKEY=5;
+const TYPE_SLIDERFLOAT=6;
+const TYPE_SLIDERINT=7;
+const TYPE_CHECKBOX=8;
+const TYPE_SEPERATOR=9;
 
+const AA_MODES_ELEMENTS = ["Static", "Jitter", "Switch", "Sway", "Random"];
+const AA_SWITCH_ELEMENTS = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"];
 //UI Elements
+/*
+        {
+            name : "",
+            type : ,
+            properties :
+            {
+
+                enabled : true,
+            },
+            value : ,
+        },
+*/
 var UI_SETTINGS=
 {
+    PATHS :
+    {
+        JS_SETTINGS : main_path,
+        AA_SETTINGS : aa_path,
+        AA_MANAGER_SETTINGS : aa_control_path,
+        //TODO: FIX
+        VISUALS_SETTINGS : visuals_path
+
+    },
+    
     JS_SETTINGS :
     {
-        PATH : main_path
+        updateConfig : 
+        {
+            name : "UPDATE CONFIG",
+            type : TYPE_CHECKBOX,
+            properties :
+            {
+                enabled : true,
+            },
+            value : 0,
+
+        },
+        newPresetName :
+        {
+            name : "New Preset Name:",
+            type : TYPE_TEXTBOX,
+            properties :
+            {
+                enabled : true,
+            },
+            value : "",
+
+        },
+        createPreset :
+        {
+            name : "Create New Preset",
+            type : TYPE_CHECKBOX,
+            properties :
+            {
+                enabled : true,
+            },
+            value : 0,
+
+        },
+        saveConfig :
+        {
+            name : "SAVE CONFIG",
+            type : TYPE_CHECKBOX,
+            properties :
+            {
+                enabled : true,
+            },
+            value : 0,
+
+        },
+        loadConfig :
+        {
+            name : "LOAD CONFIG",
+            type : TYPE_CHECKBOX,
+            properties :
+            {
+                enabled : true,
+            },
+            value : 0,
+
+        },
+        configName :
+        {
+            name : "Config Name:",
+            type : TYPE_TEXTBOX,
+            properties :
+            {
+                enabled : true,
+            },
+            value : "",
+
+        },
+        
     },
 
     AA_SETTINGS : 
     {
-        PATH : aa_path,
-        //uses index of presets cuz it will fuck shit up if i dont
-        ACTIVE_PRESET : 0,
-        STATIC : 
+
+        //presets
+        presetSelection : 
         {
-            
-        }
+            name : "Presets",
+            type : TYPE_DROPDOWN,
+            properties : 
+            {
+                enabled : true,
+                elements : [""],
+                searchable : 0,
+            },
+            value : 0,
+        },
+
+        renamePreset :
+        {
+            name : "Rename Selected Preset:",
+            type : TYPE_TEXTBOX,
+            properties :
+            {
+                enabled : true,
+            },
+            value : "",
+
+        },
+        confirmRename :
+        {
+            name : "Confirm",
+            type : TYPE_CHECKBOX,
+            properties :
+            {
+                enabled : true,
+            },
+            value : 0,
+        },
+        //actual aa settings
+
+        //real
+        realMode : 
+        {
+            name : "Real Mode",
+            type : TYPE_DROPDOWN,
+            properties :
+            {
+                category : "real",
+                elements : AA_MODES_ELEMENTS,
+                searchable : 0,
+                enabled : 1,
+            },
+            value : 0,
+        },
+        realSwitchPhase :
+        {
+            name : "Real Switch Phase",
+            type : TYPE_DROPDOWN,
+            properties :
+            {
+                category : "real",
+                elements : AA_SWITCH_ELEMENTS,
+                searchable : 1,
+                enabled : 0,
+            },
+            value : 0,
+        },
+        activeRealSwitchPhases :
+        {
+            name : "Active Real Switch Phases",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "real",
+                min : 1,
+                max : 16,
+                enabled : 0,
+            },
+            value : 1,
+        },
+        realOffset : 
+        {
+            name : "Real Offset",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "real",
+                min : -180,
+                max : 180,
+                enabled : 0,
+            },
+            value : 0,
+        },
+        realDelta :
+        {
+            name : "Real Delta",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "real",
+                min : -180,
+                max : 180,
+                enabled : 0,
+            },
+            value : 0,
+        },
+        realDelay :
+        {
+            name : "Real Delay",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "real",
+                min : 1,
+                max : 256,
+                enabled : 0,
+            },
+            value : 1,
+        },
+        realDelayOffset : 
+        {
+            name : "Real Delay Offset",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "real",
+                min : 0,
+                max : 128,
+                enabled : 0,
+            },
+            value : 0,
+        },
         
+
+
+        //fake
+        fakeMode : 
+        {
+            name : "Fake Mode",
+            type : TYPE_DROPDOWN,
+            properties :
+            {
+                category : "fake",
+                elements : AA_MODES_ELEMENTS,
+                searchable : 0,
+                enabled : 1,
+            },
+            value : 0,
+        },
+        fakeSwitchPhase :
+        {
+            name : "Fake Switch Phase",
+            type : TYPE_DROPDOWN,
+            properties :
+            {
+                category : "fake",
+                elements : AA_SWITCH_ELEMENTS,
+                searchable : 1,
+                enabled : 0,
+            },
+            value : 0,
+        },
+        activeFakeSwitchPhases :
+        {
+            name : "Active Fake Switch Phases",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "fake",
+                min : 1,
+                max : 16,
+                enabled : 0,
+            },
+            value : 1,
+        },
+        fakeOffset : 
+        {
+            name : "Fake Offset",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "fake",
+                min : -180,
+                max : 180,
+                enabled : 1,
+            },
+            value : 0,
+        },
+        fakeDelta :
+        {
+            name : "Fake Delta",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "fake",
+                min : -180,
+                max : 180,
+                enabled : 0,
+            },
+            value : 0,
+        },
+        fakeDelay :
+        {
+            name : "Fake Delay",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "fake",
+                min : 1,
+                max : 256,
+                enabled : 0,
+            },
+            value : 1,
+        },
+        fakeDelayOffset : 
+        {
+            name : "Fake Delay Offset",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "fake",
+                min : 0,
+                max : 128,
+                enabled : 0,
+            },
+            value : 0,
+        },
+
+
+        //LBY
+        LBYMode : 
+        {
+            name : "LBY Mode",
+            type : TYPE_DROPDOWN,
+            properties :
+            {
+                category : "LBY",
+                elements : AA_MODES_ELEMENTS,
+                searchable : 0,
+                enabled : 1,
+            },
+            value : 0,
+
+        },
+        LBYSwitchPhase :
+        {
+            name : "LBY Switch Phase",
+            type : TYPE_DROPDOWN,
+            properties :
+            {
+                category : "LBY",
+                elements : AA_SWITCH_ELEMENTS,
+                searchable : 1,
+                enabled : 0,
+            },
+            value : 0,
+        },
+        activeLBYSwitchPhases :
+        {
+            name : "Active LBY Switch Phases",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "LBY",
+                min : 1,
+                max : 16,
+                enabled : 0,
+            },
+            value : 1,
+        },
+        LBYOffset : 
+        {
+            name : "LBY Offset",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "LBY",
+                min : -180,
+                max : 180,
+                enabled : 1,
+            },
+            value : 0,
+        },
+        LBYDelta :
+        {
+            name : "LBY Delta",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "LBY",
+                min : -180,
+                max : 180,
+                enabled : 0,
+            },
+            value : 0,
+        },
+        LBYDelay :
+        {
+            name : "LBY Delay",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "LBY",
+                min : 1,
+                max : 256,
+                enabled : 0,
+            },
+            value : 1,
+        },
+        LBYDelayOffset : 
+        {
+            name : "LBY Delay Offset",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                category : "LBY",
+                min : 0,
+                max : 128,
+                enabled : 0,
+            },
+            value : 0,
+        },
+
+
+
 
     },
 
     AA_MANAGER_SETTINGS :
     {
-        PATH : aa_control_path,
+        presetConditions :
+        {
+            name : "Conditions",
+            type : TYPE_DROPDOWN,
+            properties :
+            {
+                elements : ["Dormant", "Running", "Slow-Walking", "Crouching", "In Air", "On Peek", "Fake-Ducking", "HS Active", "DT Active", "On Use", "Knifing", "Zeusing", "Override Key 1", "Override Key 2", "Override Key 3", "Override Key 4"],
+                searchable : 1,
+                enabled : 1,
+            },
+            value : 0,
+        }
         
     },
 
-    VISUALS_SETTINGS :
+
+    INDICATOR_SETTINGS :
     {
- 
+        
+    },
+    CROSSHAIR_INDICATOR_SETTINGS :
+    {
+
     }
+    
 
 };
 //password
@@ -829,43 +1261,15 @@ UI.AddCheckbox(secrets_path,"Save Password")
 //update config settings
 UI.AddCheckbox(main_path,"UPDATE CONFIG");
 
+//["Static","Jitter","Switch","Sway","Random"]
+//["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"]
+//
+
 //aa settings(presets and stuff)
-UI.AddDropdown(aa_path,"Presets",[""],0);
-UI.AddTextbox(aa_path,"Rename Selected Preset:");
-UI.AddCheckbox(aa_path,"Confirm");
-//real
-UI.AddDropdown(aa_path,"Real Mode",["Static","Jitter","Switch","Sway","Random"],0);
-UI.AddDropdown(aa_path,"Real Switch Phase",["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],0);
-UI.AddSliderInt(aa_path,"Active Real Switch Phases",1,16);
-UI.AddSliderInt(aa_path,"Real Offset",-180,180);
-UI.AddSliderInt(aa_path,"Real Delta",-180,180);
-UI.AddSliderInt(aa_path,"Real Delay",1,256);
-UI.AddSliderInt(aa_path,"Real Delay Offset",0,128);
 
-//fake
-UI.AddDropdown(aa_path,"Fake Mode",["Static","Jitter","Switch","Sway","Random"],0);
-UI.AddDropdown(aa_path,"Fake Switch Phase",["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],0);
-UI.AddSliderInt(aa_path,"Active Fake Switch Phases",1,16);
-UI.AddSliderInt(aa_path,"Fake Offset",-180,180);
-UI.AddSliderInt(aa_path,"Fake Delta",-180,180);
-UI.AddSliderInt(aa_path,"Fake Delay",1,256);
-UI.AddSliderInt(aa_path,"Fake Delay Offset",0,128);    
-
-//lby
-UI.AddDropdown(aa_path,"LBY Mode",["Static","Jitter","Switch","Sway","Random"],0);
-UI.AddDropdown(aa_path,"LBY Switch Phase",["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],0);
-UI.AddSliderInt(aa_path,"Active LBY Switch Phases",1,16);
-UI.AddSliderInt(aa_path,"LBY Offset",-180,180);
-UI.AddSliderInt(aa_path,"LBY Delta",-180,180);
-UI.AddSliderInt(aa_path,"LBY Delay",1,256);
-UI.AddSliderInt(aa_path,"LBY Delay Offset",0,128);
 
 //preset interface
-UI.AddTextbox(main_path,"New Preset Name:");
-UI.AddCheckbox(main_path,"Create New Preset");
-UI.AddCheckbox(main_path,"SAVE CONFIG")
-UI.AddCheckbox(main_path,"LOAD CONFIG")
-UI.AddTextbox(main_path,"Config Name:")
+
 
 //preset management interface
 UI.AddDropdown(aa_control_path, "Conditions" ,["Dormant", "Running", "Slow-Walking", "Crouching", "In Air", "On Peek", "Fake-Ducking", "HS Active", "DT Active", "On Use", "Knifing", "Zeusing", "Override Key 1", "Override Key 2", "Override Key 3", "Override Key 4"],0);
@@ -880,7 +1284,8 @@ UI.AddHotkey(rage_keybinds,"AA Override Key 1" , "AA 1");
 UI.AddHotkey(rage_keybinds,"AA Override Key 2" , "AA 2");
 UI.AddHotkey(rage_keybinds,"AA Override Key 3" , "AA 3");
 UI.AddHotkey(rage_keybinds,"AA Override Key 4" , "AA 4");
-//doubletap 
+
+//exploits
 UI.AddSliderInt("Doubletap Tick Shift",1,64);
 UI.AddSliderInt("Doubletap Tolerance",0,16);
 
@@ -895,72 +1300,37 @@ UI.AddMultiDropdown(crosshair_indicators_path,"Active Crosshair Indicators",cros
 function updatePlayerslist()
 {
     enemies = Entity.GetEnemies();
+    teammates = Entity.GetTeammates();
     players = Entity.GetPlayers();
+    rageTargets = Ragebot.GetTargets();
 }
 
 
-function updateCachePositions()
+function hitscan(origin, target, hitboxes)
 {
-    //iterate through every rage target
-    for(i = 0;i < enemies.length;i++)
+    if(Entity.IsValid(target) == true && Entity.IsAlive(target) && Entity.IsDormant(target) == false)
     {
-        if(Entity.IsDormant(enemies[i])==false)
+        localPlayer = Entity.GetLocalPlayer()
+        maxDmg = -1;
+        currentDmg = -1;
+        for(var i in hitboxes)
         {
-            //initialize an object for the target caches
-            targetsPositions[enemies[i]] = [];
-            //iterate through every hitbox selected
-            for(i = 0;i <= MISC.backtrackPeek.hitscan.length;i++)
-            {
-                targetsPositions[enemies[i]][MISC.backtrackPeek.hitscan[i]] = Entity.GetHitboxPosition(enemies[i], MISC.backtrackPeek.hitscan[i])
-            }
+            currentDmg = Trace.Bullet(localPlayer, target, origin, Entity.GetHitboxPosition(target, hitboxes[i]))
+            //overrides the maxdmg thing if damage is increased relative to previous results
+            maxdmg = currentDmg > maxDmg ? currentDmg : maxDmg
+            //did i do this right? i hope i did....
+
         }
-    }
-    //now for the caching part
-    targetsPosCaches[0] = JSON.parse(JSON.stringify(targetsPositions))
-    //every cache gets overridden by previous
-    for(i = MISC.backtrackPeek.ticks-1;i > 0;i--)
+        //Cheat.Print(Entity.GetName(target).toString()+"'s maxdmg is"+ maxDmg.toString()+"\n")
+        return maxDmg;
+    }   
+    else 
     {
-        //for example, slot 14 gets the value of slot 13(14 automatically discarded)
-        targetsPosCaches[i] = JSON.parse(JSON.stringify(targetsPosCaches[i-1]))
-    }
-
-}
-//credits to Factor#7953 in ot scripting discord
-function cm()
-{
-    const enemies = Entity.GetEnemies().filter(function(e) { return !Entity.IsDormant(e) && Entity.IsValid(e); });
-    const hitboxes = [
-        0, // head
-        9, // left calf
-        10, // right calf
-        16, // left forearm
-        18 // right forearm
-    ];
-    
-    cache.push([]);
-    if(cache.length > 14)
-        cache.pop();
-    const currentTick = cache.length - 1;
-
-    for(var i in enemies)
-    {
-        cache[currentTick].push({ hitboxes: [] });
-        const currentEnemy = cache[currentTick].length - 1;
-        for(var j in hitboxes)
-        {
-            cache[currentTick][currentEnemy].hitboxes.push(Entity.GetHitboxPosition(enemies[i], hitboxes[j]));
-        }
+        //Cheat.Print("Entity "+Entity.GetName(target).toString()+" is invalid or dormant \n")
+        return -1;
     }
 }
 
-function clearCache()
-{
-    enemies = [];
-    players = [];
-    rageTargets = [];
-    //most importantly
-    targetsPositions = {};
-}
 
 function setDropdownValue(value, index, enable) 
 { // credits ed
@@ -1064,6 +1434,57 @@ function updatePresetNames()
 
 
 }
+function addItem(category,key)
+{
+    
+    switch(UI_SETTINGS[category][key].type)
+    {
+        case TYPE_CHECKBOX:
+            UI.AddCheckbox(UI_SETTINGS.PATHS[category], UI_SETTINGS[category][key].name);
+            break; 
+
+        case TYPE_SLIDERINT:
+            UI.AddSliderInt(UI_SETTINGS.PATHS[category], UI_SETTINGS[category][key].name, UI_SETTINGS[category][key].properties.min, UI_SETTINGS[category][key].properties.max);
+            break;
+
+        case TYPE_MULTIDROPDOWN:
+            UI.AddMultiDropdown(UI_SETTINGS.PATHS[category], UI_SETTINGS[category][key].name, UI_SETTINGS[category][key].properties.elements, UI_SETTINGS[category][key].properties.searchable);
+            
+
+        case TYPE_DROPDOWN:
+            UI.AddDropdown(UI_SETTINGS.PATHS[category], UI_SETTINGS[category][key].name, UI_SETTINGS[category][key].properties.elements, UI_SETTINGS[category][key].properties.searchable);
+            break;
+    
+        case TYPE_TEXTBOX:
+            UI.AddTextbox(UI_SETTINGS.PATHS[category], UI_SETTINGS[category][key].name);
+            break;
+    
+        case TYPE_SEPERATOR:
+            UI.AddSliderInt(UI_SETTINGS.PATHS[category], UI_SETTINGS[category][key].name, 0, 0);
+            break;
+        
+    }
+    UI.SetValue(UI_SETTINGS.PATHS[category].concat(UI_SETTINGS[category][key].name), UI_SETTINGS[category][key].value);
+    UI.SetEnabled(UI_SETTINGS.PATHS[category].concat(UI_SETTINGS[category][key].name), UI_SETTINGS[category][key].properties.enabled);
+}
+
+function updateItem(category,key)
+{
+    UI.SetValue(UI_SETTINGS.PATHS[category].concat(UI_SETTINGS[category][key].name), UI_SETTINGS[category][key].value);
+    UI.SetEnabled(UI_SETTINGS.PATHS[category].concat(UI_SETTINGS[category][key].name), UI_SETTINGS[category][key].properties.enabled);
+}
+function initUI()
+{
+    //aa menu items
+    Object.keys(UI_SETTINGS.AA_SETTINGS).forEach(function(key)
+    {
+        addItem("AA_SETTINGS", key)
+    })
+    Object.keys(UI_SETTINGS.AA_MANAGER_SETTINGS).forEach(function(key)
+    {
+        addItem("AA_MANAGER_SETTINGS", key)
+    })
+}
 
 //the reason this is a thing is due to how resource intensive it is to read a ton of sliders every single tick
 //so sliders are essentially just an interface and youd actually have to update a config for it to work
@@ -1074,7 +1495,7 @@ function updateConfig()
     UI.SetValue(["Config", "Cheat", "General", "Restrictions"], 0);
     
     
-    if(UI.GetValue(main_path.concat("UPDATE CONFIG"))==1)
+    if(UI.GetValue(main_path.concat("UPDATE CONFIG")) == 1)
     {
         // do magic here
         /*
@@ -1087,14 +1508,16 @@ function updateConfig()
 
         uiUpdate=false;
         presetUpdate=false;
-        if(initAA==true)
+        if(initMenuElements==true)
         {
-            initAA=false;
+            initMenuElements=false;
             //disables default ot aa
-            UI.SetValue(aa_default_path.concat("Yaw offset"),0);
-            UI.SetValue(aa_default_path.concat("Jitter offset"),0);
-            UI.SetEnabled(aa_default_path.concat("Yaw offset"),0);
-            UI.SetEnabled(aa_default_path.concat("Jitter offset"),0);
+            //TODO: make this disable most ot default ui
+            UI.SetValue(aa_default_path.concat("Yaw offset"), 0);
+            UI.SetValue(aa_default_path.concat("Jitter offset"), 0);
+            UI.SetEnabled(aa_default_path.concat("Yaw offset"), 0);
+            UI.SetEnabled(aa_default_path.concat("Jitter offset"), 0);
+            initUI();
             //set default shit to 0
             updatePresetNames();
         }

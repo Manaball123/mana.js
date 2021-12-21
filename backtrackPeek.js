@@ -53,7 +53,7 @@ var peekOut = false;
 
 var peekActive = false;
 
-var enemies = Entity.GetEnemies().filter(function(e) { return !Entity.IsDormant(e) && Entity.IsValid(e); });
+var enemies = Entity.GetEnemies()
 
 const screensize = Render.GetScreenSize()
 
@@ -111,7 +111,7 @@ function VectorNormalize(vec)
     var length = VectorLength(vec[0], vec[1], vec[2]);
     return [vec[0] / length, vec[1] / length, vec[2] / length];
 }
-function  adjustAngle(angle) {
+function adjustAngle(angle) {
     if (angle < 0) {
         angle = (90 + angle * (-1));
     } else if (angle > 0) {
@@ -170,7 +170,7 @@ function hitscan(origin, target, hitboxes)
             //did i do this right? i hope i did....
 
         }
-        Cheat.Print(target.toString()+"'s maxdmg is"+ maxDmg.toString()+"\n")
+        Cheat.Print(Entity.GetName(target).toString()+"'s maxdmg is"+ maxDmg.toString()+"\n")
         return maxDmg; 
     }   
     else 
@@ -238,7 +238,7 @@ function checkTrigger()
 function checkTargets()
 {
     if(peekActive == false){return;}
-
+    enemies = Entity.GetEnemies();
     localPlayer = Entity.GetLocalPlayer();
     origin = JSON.parse(JSON.stringify(selectedPoint));
     //origin[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
@@ -256,6 +256,7 @@ function checkTargets()
             //sets the trigger
             Cheat.Print("trigger set \n")
             triggerPeek = true;
+            
             return;
         }
     };
@@ -272,7 +273,7 @@ function moveToPoint()
 		var viewYaw = Local.GetViewAngles()[1] - 180;
 		var realAngle = (adjustAngle(angle - viewYaw) + 90) * (Math.PI / 180);
 		//var distance = VectorLength(localplayerPos, [selectedPoint[0], selectedPoint[1], localplayerPos[2]]);
-		UserCMD.SetMovement([Math.cos(realAngle) *  450, Math.sin(realAngle) * 450, 0]);
+		UserCMD.SetMovement([Math.cos(realAngle) * 450, Math.sin(realAngle) * 450, 0]);
     }
 }
 //disables movements when ragebot fires
@@ -304,7 +305,7 @@ function drawPeekIndicator()
     {
 
 
-        Render.String(UI.GetValue(indicators_path.concat("Peek Timer x")), UI.GetValue(indicators_path.concat("Peek Timer y")), 0, "Peeking After "+(tickTrigger-timer).toString()+" Ticks",UI.GetColor(indicators_path.concat("Peek Timer Color")), font)
+        Render.String(UI.GetValue(indicators_path.concat("Peek Timer x")), UI.GetValue(indicators_path.concat("Peek Timer y")), 0, "Peeking After " + (tickTrigger-timer).toString()+" Ticks",UI.GetColor(indicators_path.concat("Peek Timer Color")), font)
     }
 }   
 
