@@ -410,13 +410,17 @@ function loadConfig()
     {
         AA_MANAGER[key]=JSON.parse(DataFile.GetKey(configName, "AA_MANAGER_" + key));
     })
+
+}
     
 //print function from ot discord
-Cheat.LongPrint = function (string) {
-        for (x = 0; x < string.length; x += 255) {
-            Cheat.Print(string.substring(x, x + 255))
-        }
+Cheat.LongPrint = function (string) 
+{
+    for (x = 0; x < string.length; x += 255) 
+    {
+        Cheat.Print(string.substring(x, x + 255))
     }
+    
     
 }
 //3d circle func from fourms, credits goes to this guy i think
@@ -612,39 +616,11 @@ const fonts =
 {
     Arial = "Arial.ttf"
 }
-const indicatorItems = ["AA Behavior","AA Preset","Hide Shots","Double Tap","Choke","Desync","Hitchance and Mindmg","Target"];
-const crosshairIndicatorItems = ["AA Behavior","AA Preset","Hide Shots","Double Tap","Hitchance and Mindmg","Target","Fakelag History"];
 
 var fakeLagCache = [0,0,0,0]
 
 var screenResolution = Render.GetScreenSize();
 var rainbowColor = [0,0,0,255]
-
-
-var presetCache=99;
-var realModeCache=99;
-var fakeModeCache=99;
-var LBYModeCache=99;
-
-//forces an update
-var presetVal=0;
-var realModeVal=0;
-var fakeModeVal=0;
-var LBYModeVal=0;
-
-
-
-//forces an update
-var realSwitchCache=99;
-var fakeSwitchCache=99;
-var LBYSwitchCache=99;
-
-var realSwitchVal=0;
-var fakeSwitchVal=0;
-var LBYSwitchVal=0;
-
-var modeVal=0;
-var modeCache=0;
 
 var uiUpdate=false;
 var presetUpdate=false;
@@ -665,127 +641,99 @@ var initializePresets=true;
 var enableFakeLag = true;
 
 
-//timers:
-//0=real,1=fake,2=lby
-var jitterTimer = 
+//keeps track of time related stuff
+var TIMERS = 
 {
-    real : Globals.Tickcount(),
-    fake : Globals.Tickcount(),
-    LBY : Globals.Tickcount()
-};
+    currentTime : Globals.Tickcount(),
 
-var switchTimer = 
+    jitter : {
+
+        real : Globals.Tickcount(),
+        fake : Globals.Tickcount(),
+        LBY : Globals.Tickcount()
+    },
+    jitterOffset = 
+    {
+        real : 0,
+        fake : 0,
+        LBY : 0
+    },
+
+    switch : 
+    {
+        real : Globals.Tickcount(),
+        fake : Globals.Tickcount(),
+        LBY : Globals.Tickcount()
+    },
+    sway :
+    {
+        real : Globals.Tickcount(),
+        fake : Globals.Tickcount(),
+        LBY : Globals.Tickcount()
+    },
+    random :
+    {
+        real : Globals.Tickcount(),
+        fake : Globals.Tickcount(),
+        LBY : Globals.Tickcount()
+    },
+    swayCycle : 
+    {
+        real : 0,
+        fake : 0,
+        LBY : 0
+    }
+
+}
+//keeps track of other stuff(other than time)
+var COUNTERS =
 {
-    real : Globals.Tickcount(),
-    fake : Globals.Tickcount(),
-    LBY : Globals.Tickcount()
-};
-
-var swayTimer = 
-{
-    real : Globals.Tickcount(),
-    fake : Globals.Tickcount(),
-    LBY : Globals.Tickcount()
-};
-
-var randomTimer = 
-{
-    real : Globals.Tickcount(),
-    fake : Globals.Tickcount(),
-    LBY : Globals.Tickcount()
-};
-
-var swayCycleTimer = 
-{
-    real : 0,
-    fake : 0,
-    LBY : 0
-};
-
-
-var currentTime=Globals.Tickcount();
-var jitterTimeOffset = 
-{
-    real : 0,
-    fake : 0,
-    LBY : 0
-};
-
-var jitterPhaseCounter = 
-{
-    real : 0,
-    fake : 0,
-    LBY : 0
-};
-
-var switchPhaseCounter = 
-{
-    real : 0,
-    fake : 0,
-    LBY : 0
-};
-var switchTimeOffset = 
-{
-    real : 0,
-    fake : 0,
-    LBY : 0
-};
-
-var randomTimeOffset = 
-{
-    real : 0,
-    fake : 0,
-    LBY : 0
-};
-
-var randomAngleOffset = 
-{
-    real : 0,
-    fake : 0,
-    LBY : 0
-};
-
-
-var doSwitch=false;
+    doAntiBruteSwitch = false,
+    jitter :
+    {
+        real : 0,
+        fake : 0,
+        LBY : 0
+    },
+    switch :
+    {
+        real : 0,
+        fake : 0,
+        LBY : 0
+    },
+    random :
+    {
+        real : 0,
+        fake : 0,
+        LBY : 0
+    },
+    randomAngleOffset = 
+    {
+        real : 0,
+        fake : 0,
+        LBY : 0
+    },
+}
 
 const PLAYER_TEMPLATE=
 {
     health : 100,
+    money : 0,
+    id : 0,
+    name : "",
+    //list of weapons
     weapons : [],
-
+    //render origin
+    renderOrigin : [0.0,0.0,0.0],
+    //position
     position : [0.0,0.0,0.0],
-    positionHistories : 
-    [
-        [0.0,0.0,0.0],
-        [0.0,0.0,0.0],
-        [0.0,0.0,0.0],
-        [0.0,0.0,0.0],
-        [0.0,0.0,0.0],
-        [0.0,0.0,0.0],
-        [0.0,0.0,0.0],
-        [0.0,0.0,0.0],
-        [0.0,0.0,0.0],
-        [0.0,0.0,0.0],
-        [0.0,0.0,0.0],
-        [0.0,0.0,0.0],
-    ]
 
 };
 
 var enemies = Entity.GetEnemies();
 var players = Entity.GetPlayers();
-var targetsPositions = 
-{
 
-};
-
-var targetsPosCaches = [];
-//TODO: SEE IF THIS WORKS
-for(i=0;i<MISC.backtrackPeek.ticks-1;i++)
-{
-    targetsPosCaches[i] = {}
-}
-
+//UI STUFF BELOW
 const TYPE_SUBTAB=0;
 const TYPE_TEXTBOX=1;
 const TYPE_COLORPICKER=2;
@@ -823,7 +771,8 @@ var UI_SETTINGS=
         VISUALS_SETTINGS : visuals_path
 
     },
-    
+
+//==========================================================================================        GENERAL SETTINGS      =================================================================================================================
     JS_SETTINGS :
     {
         updateConfig : 
@@ -895,6 +844,7 @@ var UI_SETTINGS=
         
     },
 
+//==========================================================================================        AA      =================================================================================================================
     AA_SETTINGS : 
     {
 
@@ -909,7 +859,10 @@ var UI_SETTINGS=
                 elements : [""],
                 searchable : 0,
             },
+            
             value : 0,
+            //needs caching for obvious reasons
+            cache : 0,
         },
 
         renamePreset :
@@ -935,7 +888,7 @@ var UI_SETTINGS=
         },
         //actual aa settings
 
-        //real
+        //------------------------------------------------------------------------     real    -----------------------------------------------------
         realMode : 
         {
             name : "Real Mode",
@@ -948,6 +901,7 @@ var UI_SETTINGS=
                 enabled : 1,
             },
             value : 0,
+            cache : 0,
         },
         realSwitchPhase :
         {
@@ -961,6 +915,7 @@ var UI_SETTINGS=
                 enabled : 0,
             },
             value : 0,
+            cache : 0,
         },
         activeRealSwitchPhases :
         {
@@ -974,6 +929,7 @@ var UI_SETTINGS=
                 enabled : 0,
             },
             value : 1,
+            
         },
         realOffset : 
         {
@@ -987,6 +943,7 @@ var UI_SETTINGS=
                 enabled : 0,
             },
             value : 0,
+            
         },
         realDelta :
         {
@@ -1030,7 +987,7 @@ var UI_SETTINGS=
         
 
 
-        //fake
+        //-----------------------------------------------------     fake    ----------------------------------------
         fakeMode : 
         {
             name : "Fake Mode",
@@ -1043,6 +1000,7 @@ var UI_SETTINGS=
                 enabled : 1,
             },
             value : 0,
+            cache : 0,
         },
         fakeSwitchPhase :
         {
@@ -1056,6 +1014,7 @@ var UI_SETTINGS=
                 enabled : 0,
             },
             value : 0,
+            cache : 0,
         },
         activeFakeSwitchPhases :
         {
@@ -1124,7 +1083,7 @@ var UI_SETTINGS=
         },
 
 
-        //LBY
+        //-------------------------------------------------------------     LBY     -----------------------------------------
         LBYMode : 
         {
             name : "LBY Mode",
@@ -1137,6 +1096,7 @@ var UI_SETTINGS=
                 enabled : 1,
             },
             value : 0,
+            cache : 0,
 
         },
         LBYSwitchPhase :
@@ -1151,6 +1111,7 @@ var UI_SETTINGS=
                 enabled : 0,
             },
             value : 0,
+            cache : 0,
         },
         activeLBYSwitchPhases :
         {
@@ -1217,15 +1178,12 @@ var UI_SETTINGS=
             },
             value : 0,
         },
-
-
-
-
     },
 
+//==========================================================================================        PRESET MANAGER      =================================================================================================================
     AA_MANAGER_SETTINGS :
     {
-        presetConditions :
+        AAConditions :
         {
             name : "Conditions",
             type : TYPE_DROPDOWN,
@@ -1234,6 +1192,46 @@ var UI_SETTINGS=
                 elements : ["Dormant", "Running", "Slow-Walking", "Crouching", "In Air", "On Peek", "Fake-Ducking", "HS Active", "DT Active", "On Use", "Knifing", "Zeusing", "Override Key 1", "Override Key 2", "Override Key 3", "Override Key 4"],
                 searchable : 1,
                 enabled : 1,
+            },
+            value : 0,
+            //requires caches for switching different AA behaviors
+            cache : 0,
+        },
+        presetSwitchConditions : 
+        {
+            name : "Switch",
+            type : TYPE_DROPDOWN,
+            properties :
+            {
+                elements : ["Dodge Bruteforce", "On Interval"],
+                searchable : 0,
+                enabled : 1,
+            },
+            value : 0,
+            //requires cache for enabling the switch interval sliders
+            cache : 0,
+        },
+        switchDelay : 
+        {
+            name : "Switch Delay",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                min : 1,
+                max : 256,
+                enabled : 0,
+            },
+            value : 1,
+        },
+        switchDelta : 
+        {
+            name : "Switch Delta",
+            type : TYPE_SLIDERINT,
+            properties :
+            {
+                min : 0,
+                max : 256,
+                enabled : 0,
             },
             value : 0,
         }
@@ -1265,19 +1263,6 @@ UI.AddCheckbox(main_path,"UPDATE CONFIG");
 //["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"]
 //
 
-//aa settings(presets and stuff)
-
-
-//preset interface
-
-
-//preset management interface
-UI.AddDropdown(aa_control_path, "Conditions" ,["Dormant", "Running", "Slow-Walking", "Crouching", "In Air", "On Peek", "Fake-Ducking", "HS Active", "DT Active", "On Use", "Knifing", "Zeusing", "Override Key 1", "Override Key 2", "Override Key 3", "Override Key 4"],0);
-UI.AddDropdown(aa_control_path, "Switch" , ["Conditional", "On Interval"],0);
-UI.AddCheckbox(aa_control_path, "Anti Bruteforce");
-UI.AddMultiDropdown(aa_control_path, "Presets" ,[""]);
-UI.AddSliderInt(aa_control_path, "Switch Delay" , 1 , 256);
-UI.AddSliderInt(aa_control_path,"Switch Delta" ,1 , 256);
 
 //keybinds
 UI.AddHotkey(rage_keybinds,"AA Override Key 1" , "AA 1");
