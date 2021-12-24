@@ -1,3 +1,5 @@
+
+
 const Globals_ChokedCommands = Globals.ChokedCommands;
 const Globals_Realtime = Globals.Realtime;
 const Globals_Frametime = Globals.Frametime;
@@ -1463,7 +1465,7 @@ const Material_Create = Material.Create;
 			peekReturn = false;
 		}
 	}
-
+	
 	function onDraw() {
 		if (!jsLoaded) return;
 		dhdjTime+=Globals.Frametime();
