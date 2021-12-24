@@ -1,6 +1,6 @@
 //made by Mana#1092
 //trash code below dont look
-
+//TODO: make autopeek compatible(goes back after not able to shoot)
 UI.AddSubTab(["Config", "SUBTAB_MGR"], "Backtrack Peek Settings")
 UI.AddSubTab(["Visuals", "SUBTAB_MGR"], "Backtrack Peek Indicators")
 
@@ -9,9 +9,11 @@ const indicators_path = ["Visuals","SUBTAB_MGR","Backtrack Peek Indicators","SHE
 
 UI.AddMultiDropdown(settingsPath ,"Hitboxes",["Head","Neck","Pelvis","Body","Thorax","Chest","Upper Chest","Left Thigh","Right Thigh","Left Calf","Right Calf","Left Foot","Right Foot","Left Hand","Right Hand","Left Upper Arm","Left Upper Forearm","Right Upper Arm","Right Upper Forearm"]);
 UI.AddSliderInt(settingsPath, "Tick Trigger", 0, 16 );
+UI.AddSliderInt(settingsPath, "Disable after X ticks", 0, 16 );
 UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Select Position", "Select Position");
-UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Disable Selection", "Disable Selection");
+//UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Disable Selection", "Disable Selection");
 
+UI.AddSliderInt(settingsPath,"Point Distance",1,128)
 UI.AddSliderInt(settingsPath, "Circle Radius",1,32)
 UI.AddColorPicker(settingsPath, "Active Outline Color")
 UI.AddColorPicker(settingsPath, "Active Circle Color")
@@ -35,7 +37,11 @@ UI.AddColorPicker(indicators_path,"Peek Timer Color");
 UI.AddSliderInt(indicators_path,"Peek Timer x",0,3840)
 UI.AddSliderInt(indicators_path,"Peek Timer y",0,2160)
 
+UI.AddColorPicker(indicators_path,"Point Position Color");
+UI.AddSliderInt(indicators_path,"Point Position x",0,3840)
+UI.AddSliderInt(indicators_path,"Point Position y",0,2160)
 
+const direction_indexes = ["none","left","right"]
 //cache settings so i dont run for loop every frame
 hitboxesCache = 0;
 
@@ -44,6 +50,7 @@ var hitboxes = [];
 
 var tickTrigger = 0;
 var timer = 0;
+var peekedoutTicks = 0;
 
 var triggerPeek = false;
 var selectedPoint = []
@@ -52,7 +59,7 @@ var mindmg = 1;
 var peekOut = false;
 
 var peekActive = false;
-
+var peekPosPhase = 0;
 var enemies = Entity.GetEnemies()
 
 const screensize = Render.GetScreenSize()
@@ -160,27 +167,30 @@ function hitscan(origin, target, hitboxes)
         origin[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
         maxDmg = -1;
         currentDmg = -1;
+        //Cheat.Print("hitboxes is "+hitboxes.toString()+"\n")
         for(var i in hitboxes)
         {
             
             currentDmg = Trace.Bullet(localPlayer, target, origin, Entity.GetHitboxPosition(target, hitboxes[i]))[1]
-            //Cheat.Print("scanning "+ target.toString()+" 's "+hitboxes[i]+", damage is "+currentDmg.toString()+"\n")
+            //Cheat.Print("scanning "+ target.toString()+" 's "+ hitboxes[i]+", damage is "+currentDmg.toString()+"\n")
             //overrides the maxdmg thing if damage is increased relative to previous results
             maxDmg = currentDmg > maxDmg ? currentDmg : maxDmg
             //did i do this right? i hope i did....
 
         }
-        Cheat.Print(Entity.GetName(target).toString()+"'s maxdmg is"+ maxDmg.toString()+"\n")
+        //Cheat.Print(Entity.GetName(target).toString()+"'s maxdmg is"+ maxDmg.toString()+"\n")
         return maxDmg; 
     }   
     else 
     {
-        Cheat.Print("entity is dormant\n")
+        //Cheat.Print(Entity.GetName(target).toString()+" is dormant\n")
         return -1;
     }
 }
 function getSelectedPosition()
 {
+    //setting peekpoint depending on camangle instead, this is useless for now
+    /*
     if(UI.GetValue(["Scripts", "Keys", "JS Keybinds", "Select Position"])==true)
     {
         UI.ToggleHotkey(["Scripts", "Keys", "JS Keybinds", "Select Position"])
@@ -205,6 +215,56 @@ function getSelectedPosition()
         }
 
     }
+    */
+    if(UI.GetValue(["Scripts", "Keys", "JS Keybinds", "Select Position"])==true)
+    {
+        UI.ToggleHotkey(["Scripts", "Keys", "JS Keybinds", "Select Position"])
+        peekPosPhase++;
+        if(peekPosPhase > 2)
+        {
+            
+            disableMovement();
+            return;
+
+        }
+        else
+        {
+            peekActive = true;
+        }
+        
+    }
+    if(peekOut){return;}
+    angle = Local.GetCameraAngles();
+    if(peekPosPhase == 0)
+    {
+        UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Toggle");
+        UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Toggle"); 
+        disableMovement();
+        return;
+        
+    }
+    if(peekPosPhase == 1)
+    {
+        angle[1] += 90;
+        UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Always");
+        UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Toggle"); 
+    }
+    else
+    {
+        angle[1] -=90;   
+        UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Toggle");
+        UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Always");
+        
+    }
+    angle[0] = 0 
+    vector = ANGLE2VEC(angle);
+    length = UI.GetValue(settingsPath.concat("Point Distance"));
+    entity = Entity.GetLocalPlayer();
+    origin = Entity.GetProp(entity, "CBaseEntity", "m_vecOrigin");
+    selectedPoint = [origin[0] + vector[0] * length, origin[1] + vector[1] * length, origin[2]];
+
+
+
 }
 function renderSelectedPosition()
 {
@@ -241,6 +301,7 @@ function checkTargets()
     enemies = Entity.GetEnemies();
     localPlayer = Entity.GetLocalPlayer();
     origin = JSON.parse(JSON.stringify(selectedPoint));
+
     //origin[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
     //check each enemy's hitbox cache poses
     for(i in enemies)
@@ -249,12 +310,12 @@ function checkTargets()
         enemyDamage = hitscan(origin, enemies[i], hitboxes)
         enemyHealth = Entity.GetProp(enemies[i], "CBasePlayer", "m_iHealth")
 
-        Cheat.Print("enemy damage is" + enemyDamage.toString()+'\n')
+        //Cheat.Print("enemy damage is" + enemyDamage.toString()+'\n')
 
         if(enemyDamage >= mindmg || enemyDamage > enemyHealth)
         {
             //sets the trigger
-            Cheat.Print("trigger set \n")
+            //Cheat.Print("trigger set \n")
             triggerPeek = true;
             
             return;
@@ -266,28 +327,47 @@ function moveToPoint()
 {
     if(peekOut == true)
     {
+        
         localplayerPos = Entity.GetProp(Entity.GetLocalPlayer(), "CBaseEntity", "m_vecOrigin");
         //pasted shit below(kinda)
         var vecToPeek = VectorSubtract(selectedPoint,localplayerPos)
 		var angle = Math.atan2(vecToPeek[1], vecToPeek[0]) * (180 / Math.PI);;
 		var viewYaw = Local.GetViewAngles()[1] - 180;
 		var realAngle = (adjustAngle(angle - viewYaw) + 90) * (Math.PI / 180);
-		//var distance = VectorLength(localplayerPos, [selectedPoint[0], selectedPoint[1], localplayerPos[2]]);
+		var distance = VectorLength(localplayerPos, [selectedPoint[0], selectedPoint[1], localplayerPos[2]]);
+        
+        if(distance <= 10)
+        {
+            peekedoutTicks++;
+            if(peekedoutTicks>=4)
+            {
+                disableMovement();
+                return;
+            }
+             
+        }
+        
 		UserCMD.SetMovement([Math.cos(realAngle) * 450, Math.sin(realAngle) * 450, 0]);
+        
     }
 }
 //disables movements when ragebot fires
 function disableMovement()
 { 
+    peekedoutTicks = 0;
     peekActive = false;
     peekOut = false;
     triggerPeek = false;
+    peekPosPhase = 0;
     timer = 0;
+    UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Toggle");
+    UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Toggle"); 
 }
 
 function drawPeekIndicator()
 {
     var font = Render.GetFont(UI.GetString(indicators_path.concat("Font")), UI.GetValue(indicators_path.concat("Font Size")), false)
+    if(font == null){ return;}
     if(peekActive == true || UI.IsMenuOpen())
     {
         if(peekOut == true)
@@ -303,23 +383,19 @@ function drawPeekIndicator()
 
     if(triggerPeek == true || UI.IsMenuOpen())
     {
-
-
         Render.String(UI.GetValue(indicators_path.concat("Peek Timer x")), UI.GetValue(indicators_path.concat("Peek Timer y")), 0, "Peeking After " + (tickTrigger-timer).toString()+" Ticks",UI.GetColor(indicators_path.concat("Peek Timer Color")), font)
     }
+    Render.String(UI.GetValue(indicators_path.concat("Point Position x")), UI.GetValue(indicators_path.concat("Point Position y")), 0, "Current Point Position: " + direction_indexes[peekPosPhase],UI.GetColor(indicators_path.concat("Point Position Color")), font)
 }   
 
 
 function cm()
 {
-    if(UI.GetValue(["Scripts", "Keys", "JS Keybinds", "Disable Selection"])==true)
-    {
-        disableMovement();
-    }
-    getSelectedPosition();
+
     checkTargets();
     checkTrigger();
     moveToPoint();
+    getSelectedPosition();
 }
 function onDraw()
 {
