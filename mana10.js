@@ -1,6 +1,6 @@
 //search for "TODO" to get a list of shit u need to do
 
-const { UI, Cheat, Entity, Globals, Local, AntiAim } = require("./onetap");
+const { UI, Cheat, Entity, Globals, Local, AntiAim, Exploit } = require("./onetap");
 
 //TODO:
 //antibruteforce(bullet_impact event)
@@ -111,7 +111,6 @@ const presetTemplate = {
             delayOffset : 0,
 
         }
-
     },
     switch : 
     {
@@ -136,8 +135,6 @@ const presetTemplate = {
             delayOffset : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
             activePhases : 1
         },
-
-
     },
     sway : 
     {
@@ -184,13 +181,7 @@ const presetTemplate = {
             delay : 0,
             delayOffset : 0,
         },
-
-
     },
-    
-
-    
-    //self explanatory
 }
 var AA=
 [
@@ -624,12 +615,13 @@ function pointRayDistance(point, rayStart, rayEnd)
 
 
 //vars
-
+const weaponNames = ["General", "USP", "Glock", "Five Seven", "Tec-9", "Deagle", "Revolver", "Dualies", "P250", "CZ-75", "Mac10", "P90", "MP5", "MP7", "MP9", "UMP45", "PP-Bizon", "M4A1-S", "M4A4", "AK47", "AUG", "SG553", "FAMAS", "GALIL", "AWP", "SSG08", "SCAR20", "G3SG1", "M249", "XM1014", "MAG7", "Negev", "Sawed off","Nova"];
 const angleTypes = ["real", "fake", "LBY"];
 const angleTypesCAPS = ["Real", "Fake", "LBY"]
 const fonts = 
 {
-    Arial = "Arial.ttf"
+    Arial = "Arial.ttf",
+    Calibri = "Calibri.ttf",
 }
 
 var fakeLagCache = [0,0,0,0]
@@ -653,8 +645,11 @@ var initAA=true;
 var initializePresets=true;
 
 
-var enableFakeLag = true;
+var enableFakelag = true;
 
+
+var minimumDamage = 1;
+var hitchance  = 1;
 
 //keeps track of time related stuff
 var TIMERS = 
@@ -901,7 +896,16 @@ var UI_SETTINGS=
         switchDelta : new UI_ELEMENT("Switch Delta", TYPE_SLIDERINT, {min : 1, max : 256, enabled : 0})
     },
 
+//==========================================================================================        EXPLOIT SETTINGS        ===================================================================================================================
+    EXPLOITS_SETTINGS : 
+    {
 
+    },
+//==========================================================================================        FAKELAG SETTINGS        ===================================================================================================================
+    FAKELAG_SETTINGS : 
+    {
+
+    },
     INDICATOR_SETTINGS :
     {
         
@@ -932,6 +936,11 @@ UI.AddHotkey(rage_keybinds,"AA Override Key 1" , "AA 1");
 UI.AddHotkey(rage_keybinds,"AA Override Key 2" , "AA 2");
 UI.AddHotkey(rage_keybinds,"AA Override Key 3" , "AA 3");
 UI.AddHotkey(rage_keybinds,"AA Override Key 4" , "AA 4");
+
+UI.AddHotkey(rage_keybinds,"Mindmg Override Key 1", "Mindmg 1");
+UI.AddHotkey(rage_keybinds,"Mindmg Override Key 2", "Mindmg 2");
+UI.AddHotkey(rage_keybinds,"Mindmg Override Key 3", "Mindmg 3");
+UI.AddHotkey(rage_keybinds,"Mindmg Override Key 4", "Mindmg 4");
 
 //exploits
 UI.AddSliderInt("Doubletap Tick Shift",1,64);
@@ -1392,34 +1401,34 @@ function updateConfig()
                 {
                     //static
                     case 0:
-                        AA[presetVal].static[angleTypes[i]].offset = UI.GetValue(aa_path.concat("Real Offset"));
+                        AA[presetVal].static[angleTypes[i]].offset = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Offset"));
                         break;
                     //jitter
                     case 1:
-                        AA[presetVal].jitter[angleTypes[i]].offset = UI.GetValue(aa_path.concat("Real Offset"));
-                        AA[presetVal].jitter[angleTypes[i]].delta = UI.GetValue(aa_path.concat("Real Delta"));
-                        AA[presetVal].jitter[angleTypes[i]].delay = UI.GetValue(aa_path.concat("Real Delay"));
-                        AA[presetVal].jitter[angleTypes[i]].delayOffset = UI.GetValue(aa_path.concat("Real Delay Offset"));
+                        AA[presetVal].jitter[angleTypes[i]].offset = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Offset"));
+                        AA[presetVal].jitter[angleTypes[i]].delta = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Delta"));
+                        AA[presetVal].jitter[angleTypes[i]].delay = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Delay"));
+                        AA[presetVal].jitter[angleTypes[i]].delayOffset = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + "Real Delay Offset"));
                         break;
                     //switch
                     case 2:
                         
-                        AA[presetVal].switch[angleTypes[i]].offset[UI_SETTINGS.AA_SETTINGS[angleTypes[i] + " Switch Phase"]] = UI.GetValue(aa_path.concat("Real Offset"));
-                        AA[presetVal].switch[angleTypes[i]].delay[realSwitchVal] = UI.GetValue(aa_path.concat("Real Delay"));
-                        AA[presetVal].switch[angleTypes[i]].activePhases = UI.GetValue(aa_path.concat("Active Real Switch Phases"))-1;
+                        AA[presetVal].switch[angleTypes[i]].offset[UI_SETTINGS.AA_SETTINGS[angleTypes[i] + " Switch Phase"]] = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Offset"));
+                        AA[presetVal].switch[angleTypes[i]].delay[realSwitchVal] = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Delay"));
+                        AA[presetVal].switch[angleTypes[i]].activePhases = UI.GetValue(aa_path.concat("Active " + angleTypesCAPS[i] + " Switch Phases"))-1;
                         break;
                     //sway
                     case 3:
-                        AA[presetVal].sway[angleTypes[i]].offset = UI.GetValue(aa_path.concat("Real Offset"));
-                        AA[presetVal].sway[angleTypes[i]].delta = UI.GetValue(aa_path.concat("Real Delta"));
-                        AA[presetVal].sway[angleTypes[i]].delay = UI.GetValue(aa_path.concat("Real Delay"));
+                        AA[presetVal].sway[angleTypes[i]].offset = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Offset"));
+                        AA[presetVal].sway[angleTypes[i]].delta = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Delta"));
+                        AA[presetVal].sway[angleTypes[i]].delay = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Delay"));
                         break;
                     //random
                     case 4:
-                        AA[presetVal].random[angleTypes[i]].offset = UI.GetValue(aa_path.concat("Real Offset"));
-                        AA[presetVal].random[angleTypes[i]].delta = UI.GetValue(aa_path.concat("Real Delta"));
-                        AA[presetVal].random[angleTypes[i]].delay = UI.GetValue(aa_path.concat("Real Delay"));
-                        AA[presetVal].random[angleTypes[i]].delayOffset = UI.GetValue(aa_path.concat("Real Delay Offset"))
+                        AA[presetVal].random[angleTypes[i]].offset = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Offset"));
+                        AA[presetVal].random[angleTypes[i]].delta = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Delta"));
+                        AA[presetVal].random[angleTypes[i]].delay = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Delay"));
+                        AA[presetVal].random[angleTypes[i]].delayOffset = UI.GetValue(aa_path.concat(angleTypesCAPS[i] + " Delay Offset"))
                         break;
                 }
             }
@@ -1446,15 +1455,15 @@ function updateConfig()
             presetUpdate = true;
             if(AA_MANAGER[modeVal].switchMode == 0)
             {
-                UI.SetEnabled(aa_control_path.concat("Switch Delay"),0);
-                UI.SetEnabled(aa_control_path.concat("Switch Delta"),0);
+                UI.SetEnabled(aa_control_path.concat("Switch Delay"), 0);
+                UI.SetEnabled(aa_control_path.concat("Switch Delta"), 0);
 
                 UI.SetValue(aa_control_path.concat("Anti Bruteforce"),AA_MANAGER[modeVal].dodgeBruteforce);
             }
             else
             {
-                UI.SetEnabled(aa_control_path.concat("Switch Delay"),1);
-                UI.SetEnabled(aa_control_path.concat("Switch Delta"),1);
+                UI.SetEnabled(aa_control_path.concat("Switch Delay"), 1);
+                UI.SetEnabled(aa_control_path.concat("Switch Delta"), 1);
 
                 UI.SetValue(aa_control_path.concat("Anti Bruteforce"),AA_MANAGER[modeVal].dodgeBruteforce);
                 UI.SetValue(aa_control_path.concat("Switch Delay"),AA_MANAGER[modeVal].switchDelay);
@@ -1465,9 +1474,9 @@ function updateConfig()
         {
             AA_MANAGER[modeVal].switchMode = UI.GetValue(aa_control_path.concat("Switch"));
             AA_MANAGER[modeVal].dodgeBruteforce = UI.GetValue(aa_control_path.concat("Anti Bruteforce"));
-            AA_MANAGER[modeVal].activePresets =UI.GetValue(aa_control_path.concat("Presets"));
-            AA_MANAGER[modeVal].switchDelay=UI.GetValue(aa_control_path.concat("Switch Delay"));
-            AA_MANAGER[modeVal].switchDelta=UI.GetValue(aa_control_path.concat("Switch Delta"));
+            AA_MANAGER[modeVal].activePresets = UI.GetValue(aa_control_path.concat("Presets"));
+            AA_MANAGER[modeVal].switchDelay = UI.GetValue(aa_control_path.concat("Switch Delay"));
+            AA_MANAGER[modeVal].switchDelta = UI.GetValue(aa_control_path.concat("Switch Delta"));
         }
         
         
@@ -1703,6 +1712,7 @@ function renderItems()
 
 function overrideDoubletap()
 {
+    Exploit.OverrideMaxProcessedTicks(UI.GetValue(exploits_path.concat("Max Processed Ticks")))
     Exploit.OverrideShift(UI.GetValue(exploits_path.concat("Doubletap Shift")))
     Exploit.OverrideTolerance(UI.GetValue(exploits_path.concat("Doubletap Tolerance")))
 }
@@ -1827,6 +1837,21 @@ function getWeapons(player)
 {
     return Entity.GetName(Entity.GetWeapon(player));
 }
+//get player weapon
+//courtesy to dhdj
+function getCurrentWeapon(player) 
+{
+	if (!Entity.IsAlive(player)) return General;
+	var weapon = Entity.GetProp(player, "CBasePlayer", "m_hActiveWeapon");
+	if (weapon === "m_hActiveWeapon") return General;
+	weapon = (Entity.GetProp(weapon, "CBaseAttributableItem", "m_iItemDefinitionIndex") & 0xFFFF);
+	if (weaponNames[weapon] != undefined) {
+		return weaponNames[weapon];
+	} else {
+		return General;
+	}
+}
+
 
 //mode: 0=real, 1=fake, 2=lby
 
