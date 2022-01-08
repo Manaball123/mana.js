@@ -1,7 +1,0 @@
-
-function onRagebotFire()
-{
-    Exploit.Recharge()
-}
-
-
