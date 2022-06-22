@@ -1,13 +1,13 @@
 //made by Mana#1092
 //trash code below dont look
-const UI_SLIDERINT =     0;
-const UI_SLIDERFLOAT =   1;
-const UI_DROPDOWN =      2;
-const UI_MULTIDROPDOWN = 3;
-const UI_CHECKBOX =      4;
-const UI_TEXTBOX =       5;
-const UI_COLORPICKER =   6;
-const UI_HOTKEY =        7;
+const SLIDERINT =     0;
+const SLIDERFLOAT =   1;
+const DROPDOWN =      2;
+const MULTIDROPDOWN = 3;
+const CHECKBOX =      4;
+const TEXTBOX =       5;
+const COLORPICKER =   6;
+const HOTKEY =        7;
 
 function UIElement(path, name, type, val1, val2)
 {
@@ -42,13 +42,13 @@ function UIElement(path, name, type, val1, val2)
 
     switch(this.type)
     {
-        case UI_SLIDERINT:
+        case SLIDERINT:
             UI.AddSliderInt(this.path, this.name, this.val1, this.val2);
             break;
-        case UI_SLIDERFLOAT:
+        case SLIDERFLOAT:
             UI.AddSliderFloat(this.path, this.name, this.val1, this.val2);
             break;
-        case UI_DROPDOWN:
+        case DROPDOWN:
             if(this.val2 == undefined)
             {
                 this.val2 = 0;
@@ -56,7 +56,7 @@ function UIElement(path, name, type, val1, val2)
             UI.AddDropdown(this.path, this.name, this.val1, this.val2);
             break;
 
-        case UI_MULTIDROPDOWN:
+        case MULTIDROPDOWN:
             
             UI.AddMultiDropdown(this.path, this.name, this.val1)
             this.GetAtIndex = function(i)
@@ -69,11 +69,11 @@ function UIElement(path, name, type, val1, val2)
                 UI.SetValue(this.fullpath, UI.GetValue(this.fullpath) | (1 << i));
             }
             break;
-        case UI_CHECKBOX:
+        case CHECKBOX:
             UI.AddCheckbox(this.path, this.name);
             break;
 
-        case UI_TEXTBOX:
+        case TEXTBOX:
             UI.AddTextbox(this.path, this.name);
             this.Get = function()
             {
@@ -81,7 +81,7 @@ function UIElement(path, name, type, val1, val2)
             }
             break;
             
-        case UI_COLORPICKER:
+        case COLORPICKER:
 
             UI.AddColorPicker(this.path, this.name);
 
@@ -94,7 +94,7 @@ function UIElement(path, name, type, val1, val2)
                 UI.SetColor(this.fullpath, n);
             }
             break;
-        case UI_HOTKEY:
+        case HOTKEY:
             UI.AddHotkey(this.path, this.name, this.val1);
             this.GetState = function()
             {
@@ -384,15 +384,15 @@ function AutoPeeker()
     const defAutoPeekPath = ["Misc.","SUBTAB_MGR", "Keys" , "SHEET_MGR", "Keys", "Auto peek"]
     const dtPath = ["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "Keys", "Double tap"];
 
-    this.hitboxesSetting =      new UIElement(settingsPath,     "Hitboxes",             UI_MULTIDROPDOWN,["Head","Neck","Pelvis","Body","Thorax","Chest","Upper Chest","Left Thigh","Right Thigh","Left Calf","Right Calf","Left Foot","Right Foot","Left Hand","Right Hand","Left Upper Arm","Left Upper Forearm","Right Upper Arm","Right Upper Forearm"]);
-    this.enableDelay =          new UIElement(settingsPath,     "Enable Delay",         UI_SLIDERINT, 0, 16 );
-    this.forceDisableTime =     new UIElement(settingsPath,     "Force Return Delay",   UI_SLIDERINT, 0, 64 );
-    this.disableDelay =         new UIElement(settingsPath,     "Return Delay",         UI_SLIDERINT, 0, 16 );
-    this.pointDistance =        new UIElement(settingsPath,     "Point Distance",       UI_SLIDERFLOAT, 1, 128);
-    this.uptraceOffset =        new UIElement(settingsPath,     "Uptrace Offset",       UI_SLIDERFLOAT, 0, 64);
-    this.downtraceOffset =      new UIElement(settingsPath,     "Downtrace Offset",     UI_SLIDERINT, 0, 64);
-    this.mindmg =               new UIElement(settingsPath,      "Mindmg",               UI_SLIDERINT, 1,101);
-    this.mindmgOverride =       new UIElement(settingsPath,      "Mindmg Override",      UI_SLIDERINT, 1,101);
+    this.hitboxesSetting =      new UIElement(settingsPath,     "Hitboxes",                 MULTIDROPDOWN,["Head","Neck","Pelvis","Body","Thorax","Chest","Upper Chest","Left Thigh","Right Thigh","Left Calf","Right Calf","Left Foot","Right Foot","Left Hand","Right Hand","Left Upper Arm","Left Upper Forearm","Right Upper Arm","Right Upper Forearm"]);
+    this.enableDelay =          new UIElement(settingsPath,     "Enable Delay",             SLIDERINT, 0, 16 );
+    this.forceDisableTime =     new UIElement(settingsPath,     "Force Return Delay",       SLIDERINT, 0, 64 );
+    this.disableDelay =         new UIElement(settingsPath,     "Return Delay",             SLIDERINT, 0, 16 );
+    this.pointDistance =        new UIElement(settingsPath,     "Point Distance",           SLIDERFLOAT, 1, 128);
+    this.uptraceOffset =        new UIElement(settingsPath,     "Uptrace Offset",           SLIDERFLOAT, 0, 64);
+    this.downtraceOffset =      new UIElement(settingsPath,     "Downtrace Offset",         SLIDERFLOAT, 0, 64);
+    this.mindmg =               new UIElement(settingsPath,      "Mindmg",                  SLIDERINT, 1,101);
+    this.mindmgOverride =       new UIElement(settingsPath,      "Mindmg Override",         SLIDERINT, 1,101);
 
     //UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Disable Selection", "Disable Selection");
 
@@ -400,47 +400,47 @@ function AutoPeeker()
     UI.AddSliderInt(visualsPath, "World Visuals",0,0)
 
     
-    this.circleRadius =         new UIElement(visualsPath,      "Circle Radius",            UI_SLIDERFLOAT, 1, 32);
+    this.circleRadius =         new UIElement(visualsPath,      "Circle Radius",            SLIDERFLOAT, 1, 32);
     
-    this.activeOutlineColor =   new UIElement(visualsPath,      "Active Outline Color",     UI_COLORPICKER);
-    this.activeColor =          new UIElement(visualsPath,      "Active Color",             UI_COLORPICKER);
+    this.activeOutlineColor =   new UIElement(visualsPath,      "Active Outline Color",     COLORPICKER);
+    this.activeColor =          new UIElement(visualsPath,      "Active Color",             COLORPICKER);
 
-    this.inactiveOutlineColor = new UIElement(visualsPath,      "Inactive Outline Color",   UI_COLORPICKER);
-    this.inactiveColor =        new UIElement(visualsPath,      "Inactive Color",           UI_COLORPICKER);
+    this.inactiveOutlineColor = new UIElement(visualsPath,      "Inactive Outline Color",   COLORPICKER);
+    this.inactiveColor =        new UIElement(visualsPath,      "Inactive Color",           COLORPICKER);
 
-    this.dormantOutlineColor =  new UIElement(visualsPath,      "Dormant Outline Color",    UI_COLORPICKER);
-    this.dormantColor =         new UIElement(visualsPath,      "Dormant Color",            UI_COLORPICKER);
+    this.dormantOutlineColor =  new UIElement(visualsPath,      "Dormant Outline Color",    COLORPICKER);
+    this.dormantColor =         new UIElement(visualsPath,      "Dormant Color",            COLORPICKER);
 
     UI.AddSliderInt(visualsPath,"Indicators",0,0);
     UI.AddSliderInt(visualsPath,"Reload script after setting the font",0,0);
-    this.fontName =             new UIElement(visualsPath,      "Font",                     UI_TEXTBOX);
-    this.fontSize =             new UIElement(visualsPath,      "Font Size",                UI_SLIDERINT, 1, 64);
+    this.fontName =             new UIElement(visualsPath,      "Font",                     TEXTBOX);
+    this.fontSize =             new UIElement(visualsPath,      "Font Size",                SLIDERINT, 1, 64);
     
 
-    this.activePeekColor =      new UIElement(visualsPath,      "Peek Active",              UI_COLORPICKER);
-    this.inactivePeekColor =    new UIElement(visualsPath,      "Peek Inactive",            UI_COLORPICKER);
-    this.returnPeekColor =      new UIElement(visualsPath,      "Peek Returning",           UI_COLORPICKER);
+    this.activePeekColor =      new UIElement(visualsPath,      "Peek Active",              COLORPICKER);
+    this.inactivePeekColor =    new UIElement(visualsPath,      "Peek Inactive",            COLORPICKER);
+    this.returnPeekColor =      new UIElement(visualsPath,      "Peek Returning",           COLORPICKER);
 
-    this.peekTextX =            new UIElement(visualsPath,      "Peek Text x",              UI_SLIDERINT,0,3840);
-    this.peekTextY =            new UIElement(visualsPath,      "Peek Text y",              UI_SLIDERINT,0,2160);
+    this.peekTextX =            new UIElement(visualsPath,      "Peek Text x",              SLIDERINT,0,3840);
+    this.peekTextY =            new UIElement(visualsPath,      "Peek Text y",              SLIDERINT,0,2160);
 
 
-    this.PeekTimerColor =       new UIElement(visualsPath,      "Peek Timer Color",         UI_COLORPICKER);
-    this.peekTimerX =           new UIElement(visualsPath,      "Peek Timer x",             UI_SLIDERINT, 0,3840);
-    this.peekTimerY =           new UIElement(visualsPath,      "Peek Timer y",             UI_SLIDERINT,0,2160);
+    this.PeekTimerColor =       new UIElement(visualsPath,      "Peek Timer Color",         COLORPICKER);
+    this.peekTimerX =           new UIElement(visualsPath,      "Peek Timer x",             SLIDERINT, 0,3840);
+    this.peekTimerY =           new UIElement(visualsPath,      "Peek Timer y",             SLIDERINT,0,2160);
 
-    this.posTextColor =         new UIElement(visualsPath,      "Point Position Color",     UI_COLORPICKER);
-    this.posTextX =             new UIElement(visualsPath,      "Point Position x",         UI_SLIDERINT, 0,3840);
-    this.posTextY =             new UIElement(visualsPath,      "Point Position y",         UI_SLIDERINT, 0,2160);
+    this.posTextColor =         new UIElement(visualsPath,      "Point Position Color",     COLORPICKER);
+    this.posTextX =             new UIElement(visualsPath,      "Point Position x",         SLIDERINT, 0,3840);
+    this.posTextY =             new UIElement(visualsPath,      "Point Position y",         SLIDERINT, 0,2160);
 
-    this.hsVisual =             new UIElement(visualsPath,      "Hitscan Visualization",    UI_CHECKBOX);
-    this.hsVisualHeadOnly =     new UIElement(visualsPath,      "Draw To Head Only",        UI_CHECKBOX);
-    this.hsLineColor =          new UIElement(visualsPath,      "HS Line Color",     UI_COLORPICKER);
+    this.hsVisual =             new UIElement(visualsPath,      "Hitscan Visualization",    CHECKBOX);
+    this.hsVisualHeadOnly =     new UIElement(visualsPath,      "Draw To Head Only",        CHECKBOX);
+    this.hsLineColor =          new UIElement(visualsPath,      "HS Line Color",     COLORPICKER);
 
     
-    this.autoPeek =             new UIElement(keybindsPath, "Auto Peek", UI_HOTKEY, "Auto Peek");
-    this.selectPos =            new UIElement(keybindsPath, "Select Position", UI_HOTKEY, "Select Position");
-    this.HSMindmgOverride =     new UIElement(keybindsPath, "Enable Hitscan Mindmg Override", UI_HOTKEY, "HS MD Override")
+    this.autoPeek =             new UIElement(keybindsPath, "Auto Peek", HOTKEY, "Auto Peek");
+    this.selectPos =            new UIElement(keybindsPath, "Select Position", HOTKEY, "Select Position");
+    this.HSMindmgOverride =     new UIElement(keybindsPath, "Enable Hitscan Mindmg Override", HOTKEY, "HS MD Override")
     
     this.DrawPeekIndicator = function()
     {
