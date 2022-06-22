@@ -1,5 +1,6 @@
 //made by Mana#1092
 //trash code below dont look
+//TODO: make autopeek compatible(goes back after not able to shoot)
 const SLIDERINT =     0;
 const SLIDERFLOAT =   1;
 const DROPDOWN =      2;
@@ -11,7 +12,7 @@ const HOTKEY =        7;
 
 function UIElement(path, name, type, val1, val2)
 {
-    //Cheat.Print(name)
+
     this.path = path;
     this.name = name;
     this.fullpath = this.path.concat(this.name)
@@ -261,8 +262,6 @@ function MoveToPoint(point)
 {
 
     localplayerPos = GetLocalOrigin();
-    //Cheat.Print(vecToPeek.x.toString() +" , " + vecToPeek.z.toString())
-    //pasted shit below(kinda)
     var vecToPeek = point.Sub(localplayerPos);
     vecToPeek.y = 0
 	var angle = Math.atan2(vecToPeek.z, vecToPeek.x) * (180 / Math.PI);;
@@ -275,8 +274,6 @@ function MoveToPoint(point)
 
 Render.Filled3DCircle = function(position, radius, degrees, start_at, color, fill_color) 
 {
-    //Cheat.Print("\nRENDERING AT ")
-    //Cheat.Print(position.toString())
     //position, radius, color, fill_color: self explanatory
     //degrees: circle span(can be used to make half circles too, but use 360 for full circle)
     //start_at: start span at x degrees
@@ -313,13 +310,9 @@ Render.Line3D = function(pos1, pos2, color)
 Trace.LineToWall = function(pos1, pos2)
 {
     var res = Trace.Line(Entity.GetLocalPlayer(), pos1.GetArr(), pos2.GetArr())
-    //Cheat.Print("Original v1: " + pos1.GetArr().toString() +", v2: " + pos2.GetArr().toString())
     var resvec = pos2.Sub(pos1)
-    //Cheat.Print("\nDelta Vec: " + resvec.GetArr().toString())
     resvec.Scale(res[1]);
-    //Cheat.Print("\nr1: " +res[1].toString())
-    //Cheat.Print("\nDelta Vec scaled: " + resvec.GetArr().toString())
-    
+
     
     return resvec.Add(pos1);
     //return resvec;
@@ -384,15 +377,15 @@ function AutoPeeker()
     const defAutoPeekPath = ["Misc.","SUBTAB_MGR", "Keys" , "SHEET_MGR", "Keys", "Auto peek"]
     const dtPath = ["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "Keys", "Double tap"];
 
-    this.hitboxesSetting =      new UIElement(settingsPath,     "Hitboxes",                 MULTIDROPDOWN,["Head","Neck","Pelvis","Body","Thorax","Chest","Upper Chest","Left Thigh","Right Thigh","Left Calf","Right Calf","Left Foot","Right Foot","Left Hand","Right Hand","Left Upper Arm","Left Upper Forearm","Right Upper Arm","Right Upper Forearm"]);
-    this.enableDelay =          new UIElement(settingsPath,     "Enable Delay",             SLIDERINT, 0, 16 );
-    this.forceDisableTime =     new UIElement(settingsPath,     "Force Return Delay",       SLIDERINT, 0, 64 );
-    this.disableDelay =         new UIElement(settingsPath,     "Return Delay",             SLIDERINT, 0, 16 );
-    this.pointDistance =        new UIElement(settingsPath,     "Point Distance",           SLIDERFLOAT, 1, 128);
-    this.uptraceOffset =        new UIElement(settingsPath,     "Uptrace Offset",           SLIDERFLOAT, 0, 64);
-    this.downtraceOffset =      new UIElement(settingsPath,     "Downtrace Offset",         SLIDERFLOAT, 0, 64);
-    this.mindmg =               new UIElement(settingsPath,      "Mindmg",                  SLIDERINT, 1,101);
-    this.mindmgOverride =       new UIElement(settingsPath,      "Mindmg Override",         SLIDERINT, 1,101);
+    this.hitboxesSetting =      new UIElement(settingsPath,     "Hitboxes",             MULTIDROPDOWN,["Head","Neck","Pelvis","Body","Thorax","Chest","Upper Chest","Left Thigh","Right Thigh","Left Calf","Right Calf","Left Foot","Right Foot","Left Hand","Right Hand","Left Upper Arm","Left Upper Forearm","Right Upper Arm","Right Upper Forearm"]);
+    this.enableDelay =          new UIElement(settingsPath,     "Enable Delay",         SLIDERINT, 0, 16 );
+    this.forceDisableTime =     new UIElement(settingsPath,     "Force Return Delay",   SLIDERINT, 0, 64 );
+    this.disableDelay =         new UIElement(settingsPath,     "Return Delay",         SLIDERINT, 0, 16 );
+    this.pointDistance =        new UIElement(settingsPath,     "Point Distance",       SLIDERFLOAT, 1, 128);
+    this.uptraceOffset =        new UIElement(settingsPath,     "Uptrace Offset",       SLIDERFLOAT, 0, 64);
+    this.downtraceOffset =      new UIElement(settingsPath,     "Downtrace Offset",     SLIDERINT, 0, 64);
+    this.mindmg =               new UIElement(settingsPath,      "Mindmg",               SLIDERINT, 1,101);
+    this.mindmgOverride =       new UIElement(settingsPath,      "Mindmg Override",      SLIDERINT, 1,101);
 
     //UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Disable Selection", "Disable Selection");
 
@@ -435,7 +428,7 @@ function AutoPeeker()
 
     this.hsVisual =             new UIElement(visualsPath,      "Hitscan Visualization",    CHECKBOX);
     this.hsVisualHeadOnly =     new UIElement(visualsPath,      "Draw To Head Only",        CHECKBOX);
-    this.hsLineColor =          new UIElement(visualsPath,      "HS Line Color",            COLORPICKER);
+    this.hsLineColor =          new UIElement(visualsPath,      "HS Line Color",     COLORPICKER);
 
     
     this.autoPeek =             new UIElement(keybindsPath, "Auto Peek", HOTKEY, "Auto Peek");
@@ -445,7 +438,6 @@ function AutoPeeker()
     this.DrawPeekIndicator = function()
     {
 
-        //Cheat.Print(this.fontName.Get())
         var font = Render.GetFont(this.fontName.Get(), this.fontSize.Get(), false);
         if(font == null){ return;}
         var peekColor;
@@ -571,23 +563,19 @@ function AutoPeeker()
             originPos.y += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
             maxDmg = -1;
             currentDmg = -1;
-            //Cheat.Print("hitboxes is "+hitboxes.toString()+"\n")
             for(var i in hitboxes)
             {
                 
                 currentDmg = Trace.Bullet(localPlayer, target, originPos.GetArr(), Entity.GetHitboxPosition(target, hitboxes[i]))[1]
-                //Cheat.Print("scanning "+ target.toString()+" 's "+ hitboxes[i]+", damage is "+currentDmg.toString()+"\n")
                 //overrides the maxdmg thing if damage is increased relative to previous results
                 maxDmg = currentDmg > maxDmg ? currentDmg : maxDmg
                 //did i do this right? i hope i did....
 
             }
-            //Cheat.Print(Entity.GetName(target).toString()+"'s maxdmg is"+ maxDmg.toString()+"\n")
             return maxDmg; 
         }   
         else 
         {
-            //Cheat.Print(Entity.GetName(target).toString()+" is dormant\n")
             return -1;
         }
     }
@@ -608,13 +596,11 @@ function AutoPeeker()
             var enemyDamage = this.Hitscan(originPos, this.enemies[i], this.hitboxes);
             var enemyHealth = Entity.GetProp(this.enemies[i], "CBasePlayer", "m_iHealth");
 
-            //Cheat.Print("enemy damage is" + enemyDamage.toString()+'\n')
             //UI.GetValue(["Rage", "General", "General","Key assignment", "Damage override"])
             var mindmg = this.HSMindmgOverride.Get() ? this.mindmgOverride.Get() : this.mindmg.Get();
             if(enemyDamage >= mindmg || enemyDamage > enemyHealth)
             {
                 //sets the trigger
-                //Cheat.Print("trigger set \n")
                 this.triggerPeek = true;
                 
                 return;
@@ -633,28 +619,23 @@ function AutoPeeker()
         if(this.autoPeek.Get())
         {
             
-            //Cheat.Print("BBBBBBBBBBBBBBBBBBBBBBBBB")
             //Set point if no point exist
             UI.SetHotkeyState(defAutoPeekPath, "Always")
             if(this.startPoint == undefined)
             {
                 this.startPoint = GetLocalOrigin();
-               // Cheat.Print("STARTPOINT IS GONE AAAA")
             }
             if(this.autoReturnActive == true)
             {
-                //Cheat.Print("ATTEMPTING RETURN")
                 UI.SetHotkeyState(dtPath, "None");
                 Exploit.DisableRecharge();
 
                 if(MoveToPoint(this.startPoint) < 1)
                 {
-                    //Cheat.Print("returned")
                     UI.SetHotkeyState(dtPath, "Toggle");
                     Exploit.EnableRecharge();
                     Exploit.Recharge();
                     
-                    //Cheat.Print("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
                     //this.autoPeek.Toggle();
                     this.autoReturnActive = false;
                     this.startPoint = undefined;
@@ -672,7 +653,6 @@ function AutoPeeker()
     }
     this.GetPeekPosition = function()
     {
-        //Cheat.Print("called")
         if(this.selectPos.Get())
         {
             this.selectPos.Toggle();
@@ -734,16 +714,7 @@ function AutoPeeker()
         //pointVec + playerpos
         var expectedPoint = originPos.Add(pointVec);
 
-        /*
-        Cheat.Print("\noriginpos:")
-        Cheat.Print(originPos.GetArr().toString())
 
-        Cheat.Print("\nexpp:")
-        Cheat.Print(expectedPoint.GetArr().toString())
-        
-        //peekPoint = expectedPoint.Copy()
-        //Cheat.Print(pointVec.GetArr().toString()+"\n")
-        */
     
         result = Trace.Line(entity, originPos.GetArr(), expectedPoint.GetArr());
         
@@ -802,7 +773,6 @@ function AutoPeeker()
             this.findHSLinesTimer = 0;
         }
         this.hsLines = []
-        //Cheat.Print("AAAAAAAAAAAAAAAAAAAAAAA")
         for(i in this.enemies)
         {
             var target = this.enemies[i];
@@ -825,7 +795,6 @@ function AutoPeeker()
                     {
                         var pos = new Vector(Entity.GetHitboxPosition(target, this.hitboxes[j]));
                         this.hsLines.push(Trace.LineToWall(origin, pos));
-                        //Cheat.Print(this.hsLines.length.toString())
                     }
                 }
                 
@@ -839,10 +808,8 @@ function AutoPeeker()
             return;
 
         }
-        //Cheat.Print(this.hsLines.length.toString())
         var origin = this.peekPoint.Copy()
         origin.y += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
-        //Cheat.Print(origin.toString())
         for(i in this.hsLines)
         {
             Render.Line3D(origin, this.hsLines[i], this.hsLineColor.Get())
@@ -884,7 +851,6 @@ function AutoPeeker()
         }
         else if(this.phase == PHASE_PEEK)
         {
-            //Cheat.Print("tick tock timers countin down")
             this.forceReturnTimer++;
             if(this.forceDisableTime.Get() <= this.forceReturnTimer)
             {
@@ -930,7 +896,6 @@ function AutoPeeker()
 
     this.OnCM = function()
     {
-        //Cheat.Print("\n cur phase " + this.phase.toString())
         this.AutoReturn();
         this.TickTimer();
         this.FindHSLines();
@@ -1012,8 +977,6 @@ function OnFire()
     if(Entity.GetEntityFromUserID(Event.GetString("userid")) == Entity.GetLocalPlayer())
     {
         AutoPeekModule.OnLocalPlayerFire();
-        
-        //Cheat.Print("D")
     }
     
 }
