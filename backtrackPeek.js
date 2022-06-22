@@ -1,6 +1,5 @@
 //made by Mana#1092
 //trash code below dont look
-//TODO: make autopeek compatible(goes back after not able to shoot)
 const UI_SLIDERINT =     0;
 const UI_SLIDERFLOAT =   1;
 const UI_DROPDOWN =      2;
