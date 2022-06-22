@@ -435,7 +435,7 @@ function AutoPeeker()
 
     this.hsVisual =             new UIElement(visualsPath,      "Hitscan Visualization",    CHECKBOX);
     this.hsVisualHeadOnly =     new UIElement(visualsPath,      "Draw To Head Only",        CHECKBOX);
-    this.hsLineColor =          new UIElement(visualsPath,      "HS Line Color",     COLORPICKER);
+    this.hsLineColor =          new UIElement(visualsPath,      "HS Line Color",            COLORPICKER);
 
     
     this.autoPeek =             new UIElement(keybindsPath, "Auto Peek", HOTKEY, "Auto Peek");
