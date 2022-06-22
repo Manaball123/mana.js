@@ -1,70 +1,248 @@
 //made by Mana#1092
 //trash code below dont look
 //TODO: make autopeek compatible(goes back after not able to shoot)
-UI.AddSubTab(["Config", "SUBTAB_MGR"], "Backtrack Peek Settings")
-UI.AddSubTab(["Visuals", "SUBTAB_MGR"], "Backtrack Peek Indicators")
+const UI_SLIDERINT =     0;
+const UI_SLIDERFLOAT =   1;
+const UI_DROPDOWN =      2;
+const UI_MULTIDROPDOWN = 3;
+const UI_CHECKBOX =      4;
+const UI_TEXTBOX =       5;
+const UI_COLORPICKER =   6;
+const UI_HOTKEY =        7;
 
-const settingsPath = ["Config", "SUBTAB_MGR", "Backtrack Peek Settings", "SHEET_MGR", "Backtrack Peek Settings"];
-const indicators_path = ["Visuals","SUBTAB_MGR","Backtrack Peek Indicators","SHEET_MGR","Backtrack Peek Indicators"]
+function UIElement(path, name, type, val1, val2)
+{
+    //Cheat.Print(name)
+    this.path = path;
+    this.name = name;
+    this.fullpath = this.path.concat(this.name)
+    this.type = type;
+    this.val1 = val1;
+    this.val2 = val2;
 
-UI.AddMultiDropdown(settingsPath ,"Hitboxes",["Head","Neck","Pelvis","Body","Thorax","Chest","Upper Chest","Left Thigh","Right Thigh","Left Calf","Right Calf","Left Foot","Right Foot","Left Hand","Right Hand","Left Upper Arm","Left Upper Forearm","Right Upper Arm","Right Upper Forearm"]);
-UI.AddSliderInt(settingsPath, "Tick Trigger", 0, 16 );
-UI.AddSliderInt(settingsPath, "Disable after X ticks", 0, 16 );
-UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Select Position", "Select Position");
-//UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Disable Selection", "Disable Selection");
+    this.Get = function()
+    {
+        return UI.GetValue(this.fullpath);
+    }
+    this.Set = function(n)
+    {
+        UI.SetValue(this.fullpath, n);
+    }
+    this.Hide = function()
+    {
+        UI.SetEnabled(this.fullpath, 0);
+    }
+    this.Show = function()
+    {
+        UI.SetEnabled(this.fullpath, 1);
+    }
+    this.Delete = function()
+    {
+        UI.RemoveItem(this.fullpath);
+    }
 
-UI.AddSliderInt(settingsPath,"Point Distance",1,128)
-UI.AddSliderInt(settingsPath, "Circle Radius",1,32)
-UI.AddColorPicker(settingsPath, "Active Outline Color")
-UI.AddColorPicker(settingsPath, "Active Circle Color")
+    switch(this.type)
+    {
+        case UI_SLIDERINT:
+            UI.AddSliderInt(this.path, this.name, this.val1, this.val2);
+            break;
+        case UI_SLIDERFLOAT:
+            UI.AddSliderFloat(this.path, this.name, this.val1, this.val2);
+            break;
+        case UI_DROPDOWN:
+            if(this.val2 == undefined)
+            {
+                this.val2 = 0;
+            }
+            UI.AddDropdown(this.path, this.name, this.val1, this.val2);
+            break;
 
-UI.AddColorPicker(settingsPath, "Inactive Outline Color")
-UI.AddColorPicker(settingsPath, "Inactive Circle Color")
+        case UI_MULTIDROPDOWN:
+            
+            UI.AddMultiDropdown(this.path, this.name, this.val1)
+            this.GetAtIndex = function(i)
+            {
+                var mask = 1 << i;
+                return UI.GetValue(this.fullpath) & mask ? true : false;
+            }
+            this.SetAtIndex = function(i)
+            {
+                UI.SetValue(this.fullpath, UI.GetValue(this.fullpath) | (1 << i));
+            }
+            break;
+        case UI_CHECKBOX:
+            UI.AddCheckbox(this.path, this.name);
+            break;
 
-UI.AddSliderInt(settingsPath,"Mindmg",1,101)
-UI.AddSliderInt(settingsPath,"Mindmg Override",1,101)
+        case UI_TEXTBOX:
+            UI.AddTextbox(this.path, this.name);
+            this.Get = function()
+            {
+                return UI.GetString(this.fullpath);
+            }
+            break;
+            
+        case UI_COLORPICKER:
 
-UI.AddTextbox(indicators_path,"Font")
-UI.AddSliderInt(indicators_path,"Font Size",1,64)
-UI.AddSliderInt(indicators_path,"Reload script after setting the font",0,0)
+            UI.AddColorPicker(this.path, this.name);
 
-UI.AddColorPicker(indicators_path,"Peek Active");
-UI.AddColorPicker(indicators_path,"Peek Inactive");
-UI.AddSliderInt(indicators_path,"Peek x",0,3840);
-UI.AddSliderInt(indicators_path,"Peek y",0,2160);
+            this.Get = function()
+            {
+                return UI.GetColor(this.fullpath);
+            }
+            this.Set = function(n)
+            {
+                UI.SetColor(this.fullpath, n);
+            }
+            break;
+        case UI_HOTKEY:
+            UI.AddHotkey(this.path, this.name, this.val1);
+            this.GetState = function()
+            {
+                return UI.GetHotkeyState(this.fullpath);
+            }
+            this.SetState = function(n)
+            {
+                UI.SetHotkeyState(this.fullpath, n);
+            }
 
-UI.AddColorPicker(indicators_path,"Peek Timer Color");
-UI.AddSliderInt(indicators_path,"Peek Timer x",0,3840)
-UI.AddSliderInt(indicators_path,"Peek Timer y",0,2160)
+            this.Set = function(n)
+            {
+                this.Get() != n ? UI.ToggleHotkey(this.fullpath) : 0;
+            }
+            this.Toggle = function()
+            {
+                UI.ToggleHotkey(this.fullpath)
+            }
+            break;
+    }
 
-UI.AddColorPicker(indicators_path,"Point Position Color");
-UI.AddSliderInt(indicators_path,"Point Position x",0,3840)
-UI.AddSliderInt(indicators_path,"Point Position y",0,2160)
 
-const direction_indexes = ["none","left","right"]
-//cache settings so i dont run for loop every frame
-hitboxesCache = 0;
+}
 
 
-var hitboxes = [];
 
-var tickTrigger = 0;
-var timer = 0;
-var peekedoutTicks = 0;
 
-var triggerPeek = false;
-var selectedPoint = []
-var mindmg = 1;
 
-var peekOut = false;
 
-var peekActive = false;
-var peekPosPhase = 0;
-var enemies = Entity.GetEnemies()
+
+
+const und = undefined;
 
 const screensize = Render.GetScreenSize()
 
-function getDropdownValue(value, index)
+function Vector(a, x, y, z)
+{
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    if(a != undefined)
+    {
+        this.x = a[0];
+        this.z = a[1];
+        this.y = a[2]; 
+    }
+
+    this.GetArr = function()
+    {
+
+        return [this.x,this.z,this.y];
+    }
+    this.Copy = function()
+    {
+        return new Vector(und, this.x, this.y, this.z);
+    }
+    this.Length = function()
+    {
+        return Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2);
+    }
+    this.AddFrom = function(v)
+    {
+
+        this.x += v.x;
+        this.y += v.y;
+        this.z += v.z;
+
+    }
+    this.SubFrom = function(v)
+    {
+        this.x -= v.x;
+        this.y -= v.y;
+        this.z -= v.z;
+    }
+    this.Scale = function(n)
+    {
+        this.x = this.x * n;
+        this.y = this.y * n;
+        this.z = this.z * n;
+    }
+    this.GetNormalized = function()
+    {
+        var length = this.Length();
+        return new Vector(und, this.x / length, this.y / length, this.z / length);
+    }
+    this.Normalize = function()
+    {
+        var length = this.Length();
+        this.x = this.x / length;
+        this.y = this.y / length;
+        this.z = this.z / length;
+    }
+    this.Add = function(v)
+    {
+        res = new Vector(und, this.x + v.x,this.y + v.y,this.z + v.z);
+        return res;
+    };
+    this.Sub = function(v)
+    {
+        res = new Vector(
+            und,
+            this.x - v.x,
+            this.y - v.y,
+            this.z - v.z)
+            return res;
+    }
+
+    this.Dot = function(v)
+    {
+        return this.x * v.x + this.y * v.y + this.z * v.z;
+    }
+
+
+}
+function Angles(a, yaw, pitch, roll)
+{
+
+        this.yaw = yaw;
+        this.pitch = pitch;
+        this.roll = roll;
+    
+    if(a != undefined)
+    {
+        this.pitch = a[0];
+        this.yaw = a[1];
+        this.roll = a[2];
+
+    }
+        
+    
+    this.GetArr = function()
+    {
+       
+        return [this.pitch,this.yaw,this.roll];
+    }
+    this.ToVec = function()
+    {
+        return new Vector(und, Math.cos(DEG2RAD(this.pitch)) * Math.cos(DEG2RAD(this.yaw)),  -Math.sin(DEG2RAD(this.pitch)), Math.cos(DEG2RAD(this.pitch)) * Math.sin(DEG2RAD(this.yaw)));
+    }
+}
+
+function ExtrapolatedTimeToPoint()
+{
+    
+}
+
+function GetDropdownValue(value, index)
 {
     var mask = 1 << index;
     return value & mask ? true : false;
@@ -80,59 +258,26 @@ function DEG2RAD(degree)
 {
     return degree * Math.PI / 180.0;
 }
-
-
-function updateUI()
+function MoveToPoint(point)
 {
-    hitboxesValue = UI.GetValue(settingsPath.concat("Hitboxes"))
-    tickTrigger = UI.GetValue(settingsPath.concat("Tick Trigger"))
-    if(hitboxesValue != hitboxesCache)
-    {
-        hitboxesCache = hitboxesValue
-        hitboxes = [];
-        for(i=0;i<19;i++)
-        {
-            if(getDropdownValue(hitboxesValue,i))
-            {
-                hitboxes.push(i)
-            }
-        }
-    }
 
+    localplayerPos = GetLocalOrigin();
+    //Cheat.Print(vecToPeek.x.toString() +" , " + vecToPeek.z.toString())
+    //pasted shit below(kinda)
+    var vecToPeek = point.Sub(localplayerPos);
+    vecToPeek.y = 0
+	var angle = Math.atan2(vecToPeek.z, vecToPeek.x) * (180 / Math.PI);;
+	var viewYaw = Local.GetViewAngles()[1] - 180;
+	var realAngle = (AdjustAngle(angle - viewYaw) + 90) * (Math.PI / 180);
+	var distance = vecToPeek.Length();
+    UserCMD.SetMovement([Math.cos(realAngle) * (distance < 20 ? 50 + distance * 5 : 450), Math.sin(realAngle) * (distance < 20 ? 50 + distance * 5 : 450), 0]);
+    return distance;
 }
-function VectorAdd(a, b)
-{
-    return [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
-}
-function VectorSubtract(a, b)
-{
-    return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-}
-function VectorLength(a)
-{
-    return Math.sqrt(a[1]**2+a[2]**2+a[3]**2);
-}
-
-function VectorNormalize(vec)
-{
-    var length = VectorLength(vec[0], vec[1], vec[2]);
-    return [vec[0] / length, vec[1] / length, vec[2] / length];
-}
-function adjustAngle(angle) {
-    if (angle < 0) {
-        angle = (90 + angle * (-1));
-    } else if (angle > 0) {
-        angle = (90 - angle);
-    }
-
-    return angle;
-}
-
-//3d circle func from fourms, credits goes to this guy i think
-// https://www.onetap.com/members/epiccsgohaker1337.74887/
 
 Render.Filled3DCircle = function(position, radius, degrees, start_at, color, fill_color) 
 {
+    //Cheat.Print("\nRENDERING AT ")
+    //Cheat.Print(position.toString())
     //position, radius, color, fill_color: self explanatory
     //degrees: circle span(can be used to make half circles too, but use 360 for full circle)
     //start_at: start span at x degrees
@@ -159,254 +304,728 @@ Render.Filled3DCircle = function(position, radius, degrees, start_at, color, fil
     }
 }
 
-function hitscan(origin, target, hitboxes)
+Render.Line3D = function(pos1, pos2, color)
 {
-    if(Entity.IsValid(target) == true && Entity.IsAlive(target) && Entity.IsDormant(target) == false)
-    {
-        localPlayer = Entity.GetLocalPlayer()
-        origin[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
-        maxDmg = -1;
-        currentDmg = -1;
-        //Cheat.Print("hitboxes is "+hitboxes.toString()+"\n")
-        for(var i in hitboxes)
-        {
-            
-            currentDmg = Trace.Bullet(localPlayer, target, origin, Entity.GetHitboxPosition(target, hitboxes[i]))[1]
-            //Cheat.Print("scanning "+ target.toString()+" 's "+ hitboxes[i]+", damage is "+currentDmg.toString()+"\n")
-            //overrides the maxdmg thing if damage is increased relative to previous results
-            maxDmg = currentDmg > maxDmg ? currentDmg : maxDmg
-            //did i do this right? i hope i did....
+    p1 = Render.WorldToScreen(pos1.GetArr());
+    p2 = Render.WorldToScreen(pos2.GetArr());
 
-        }
-        //Cheat.Print(Entity.GetName(target).toString()+"'s maxdmg is"+ maxDmg.toString()+"\n")
-        return maxDmg; 
-    }   
-    else 
-    {
-        //Cheat.Print(Entity.GetName(target).toString()+" is dormant\n")
-        return -1;
-    }
+    Render.Line(p1[0], p1[1],p2[0],p2[1],color);
 }
-function getSelectedPosition()
+Trace.LineToWall = function(pos1, pos2)
 {
-    //setting peekpoint depending on camangle instead, this is useless for now
-    /*
-    if(UI.GetValue(["Scripts", "Keys", "JS Keybinds", "Select Position"])==true)
+    var res = Trace.Line(Entity.GetLocalPlayer(), pos1.GetArr(), pos2.GetArr())
+    //Cheat.Print("Original v1: " + pos1.GetArr().toString() +", v2: " + pos2.GetArr().toString())
+    var resvec = pos2.Sub(pos1)
+    //Cheat.Print("\nDelta Vec: " + resvec.GetArr().toString())
+    resvec.Scale(res[1]);
+    //Cheat.Print("\nr1: " +res[1].toString())
+    //Cheat.Print("\nDelta Vec scaled: " + resvec.GetArr().toString())
+    
+    
+    return resvec.Add(pos1);
+    //return resvec;
+
+}
+
+function AdjustAngle(angle) {
+    if (angle < 0) {
+        angle = (90 + angle * (-1));
+    } else if (angle > 0) {
+        angle = (90 - angle);
+    }
+
+    return angle;
+}
+function GetLocalOrigin()
+{
+    return new Vector(Entity.GetProp(Entity.GetLocalPlayer(), "CBaseEntity", "m_vecOrigin"));
+}
+
+
+
+
+//Hitscan autopeek thing active
+function AutoPeeker()
+{
+    this.peekPosPhase = 0;
+    this.phase = 0;
+    //Vanilla autopeek(auto return) active
+    this.autoReturnActive = false;
+
+    const PHASE_DORMANT = 0;
+    const PHASE_SCAN = 1;
+    const PHASE_PEEK = 2;
+    const PHASE_RETURN = 3;
+
+    //Timers:
+    //Phase 1 -> 2
+    this.peekOutTimer = 0;
+    //Phase 2 -> 3
+    this.forceReturnTimer = 0;
+    this.returnTimer = 0;
+    this.enemies = Entity.GetEnemies()
+
+    this.hitboxesSettingCache = 0;
+    this.hitboxes = []
+
+    this.startPoint = undefined;
+    this.peekPoint  = undefined;
+    
+    this.hsLines = []
+    this.findHSLinesTimer = 0x0fffffff;
+
+    
+    UI.AddSubTab(["Config", "SUBTAB_MGR"], "Auto Peek Settings")
+    UI.AddSubTab(["Visuals", "SUBTAB_MGR"], "Auto Peek Visuals")
+
+    const settingsPath = ["Config", "SUBTAB_MGR", "Auto Peek Settings", "SHEET_MGR", "Auto Peek Settings"];
+    const keybindsPath = ["Config", "SUBTAB_MGR", "Scripts", "SHEET_MGR", "JS Keybinds"];
+    const visualsPath = ["Visuals","SUBTAB_MGR","Auto Peek Visuals","SHEET_MGR","Auto Peek Visuals"];
+    const directions = ["none","left","right"];
+    const defAutoPeekPath = ["Misc.","SUBTAB_MGR", "Keys" , "SHEET_MGR", "Keys", "Auto peek"]
+    const dtPath = ["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "Keys", "Double tap"];
+
+    this.hitboxesSetting =      new UIElement(settingsPath,     "Hitboxes",             UI_MULTIDROPDOWN,["Head","Neck","Pelvis","Body","Thorax","Chest","Upper Chest","Left Thigh","Right Thigh","Left Calf","Right Calf","Left Foot","Right Foot","Left Hand","Right Hand","Left Upper Arm","Left Upper Forearm","Right Upper Arm","Right Upper Forearm"]);
+    this.enableDelay =          new UIElement(settingsPath,     "Enable Delay",         UI_SLIDERINT, 0, 16 );
+    this.forceDisableTime =     new UIElement(settingsPath,     "Force Return Delay",   UI_SLIDERINT, 0, 64 );
+    this.disableDelay =         new UIElement(settingsPath,     "Return Delay",         UI_SLIDERINT, 0, 16 );
+    this.pointDistance =        new UIElement(settingsPath,     "Point Distance",       UI_SLIDERFLOAT, 1, 128);
+    this.uptraceOffset =        new UIElement(settingsPath,     "Uptrace Offset",       UI_SLIDERFLOAT, 0, 64);
+    this.downtraceOffset =      new UIElement(settingsPath,     "Downtrace Offset",     UI_SLIDERINT, 0, 64);
+    this.mindmg =               new UIElement(settingsPath,      "Mindmg",               UI_SLIDERINT, 1,101);
+    this.mindmgOverride =       new UIElement(settingsPath,      "Mindmg Override",      UI_SLIDERINT, 1,101);
+
+    //UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Disable Selection", "Disable Selection");
+
+    //World Visuals
+    UI.AddSliderInt(visualsPath, "World Visuals",0,0)
+
+    
+    this.circleRadius =         new UIElement(visualsPath,      "Circle Radius",            UI_SLIDERFLOAT, 1, 32);
+    
+    this.activeOutlineColor =   new UIElement(visualsPath,      "Active Outline Color",     UI_COLORPICKER);
+    this.activeColor =          new UIElement(visualsPath,      "Active Color",             UI_COLORPICKER);
+
+    this.inactiveOutlineColor = new UIElement(visualsPath,      "Inactive Outline Color",   UI_COLORPICKER);
+    this.inactiveColor =        new UIElement(visualsPath,      "Inactive Color",           UI_COLORPICKER);
+
+    this.dormantOutlineColor =  new UIElement(visualsPath,      "Dormant Outline Color",    UI_COLORPICKER);
+    this.dormantColor =         new UIElement(visualsPath,      "Dormant Color",            UI_COLORPICKER);
+
+    UI.AddSliderInt(visualsPath,"Indicators",0,0);
+    UI.AddSliderInt(visualsPath,"Reload script after setting the font",0,0);
+    this.fontName =             new UIElement(visualsPath,      "Font",                     UI_TEXTBOX);
+    this.fontSize =             new UIElement(visualsPath,      "Font Size",                UI_SLIDERINT, 1, 64);
+    
+
+    this.activePeekColor =      new UIElement(visualsPath,      "Peek Active",              UI_COLORPICKER);
+    this.inactivePeekColor =    new UIElement(visualsPath,      "Peek Inactive",            UI_COLORPICKER);
+    this.returnPeekColor =      new UIElement(visualsPath,      "Peek Returning",           UI_COLORPICKER);
+
+    this.peekTextX =            new UIElement(visualsPath,      "Peek Text x",              UI_SLIDERINT,0,3840);
+    this.peekTextY =            new UIElement(visualsPath,      "Peek Text y",              UI_SLIDERINT,0,2160);
+
+
+    this.PeekTimerColor =       new UIElement(visualsPath,      "Peek Timer Color",         UI_COLORPICKER);
+    this.peekTimerX =           new UIElement(visualsPath,      "Peek Timer x",             UI_SLIDERINT, 0,3840);
+    this.peekTimerY =           new UIElement(visualsPath,      "Peek Timer y",             UI_SLIDERINT,0,2160);
+
+    this.posTextColor =         new UIElement(visualsPath,      "Point Position Color",     UI_COLORPICKER);
+    this.posTextX =             new UIElement(visualsPath,      "Point Position x",         UI_SLIDERINT, 0,3840);
+    this.posTextY =             new UIElement(visualsPath,      "Point Position y",         UI_SLIDERINT, 0,2160);
+
+    this.hsVisual =             new UIElement(visualsPath,      "Hitscan Visualization",    UI_CHECKBOX);
+    this.hsVisualHeadOnly =     new UIElement(visualsPath,      "Draw To Head Only",        UI_CHECKBOX);
+    this.hsLineColor =          new UIElement(visualsPath,      "HS Line Color",     UI_COLORPICKER);
+
+    
+    this.autoPeek =             new UIElement(keybindsPath, "Auto Peek", UI_HOTKEY, "Auto Peek");
+    this.selectPos =            new UIElement(keybindsPath, "Select Position", UI_HOTKEY, "Select Position");
+    this.HSMindmgOverride =     new UIElement(keybindsPath, "Enable Hitscan Mindmg Override", UI_HOTKEY, "HS MD Override")
+    
+    this.DrawPeekIndicator = function()
     {
-        UI.ToggleHotkey(["Scripts", "Keys", "JS Keybinds", "Select Position"])
-        
-        angle = Local.GetCameraAngles();
-        vector = ANGLE2VEC(angle);
-        entity = Entity.GetLocalPlayer();
-        origin = Entity.GetProp(entity, "CBaseEntity", "m_vecOrigin")
-        origin[2] += Entity.GetProp(entity, "CBasePlayer", "m_vecViewOffset[2]")[0];
-        rayLength = 8192
-        end = [origin[0] + vector[0] * rayLength, origin[1] + vector[1] * rayLength, origin[2] + vector[2] * rayLength];
-        result = Trace.Line(entity, origin, end);
-        if(result[1] != 1)
+
+        //Cheat.Print(this.fontName.Get())
+        var font = Render.GetFont(this.fontName.Get(), this.fontSize.Get(), false);
+        if(font == null){ return;}
+        var peekColor;
+        switch(this.phase)
         {
-            selectedPoint = [origin[0] + vector[0] * rayLength * result[1], origin[1] + vector[1] * rayLength * result[1], origin[2] + vector[2] * rayLength * result[1]];
-            peekActive = true;
+            case PHASE_DORMANT:
+                peekColor = this.inactivePeekColor.Get()
+                break;
+            case PHASE_SCAN:
+                peekColor = this.inactivePeekColor.Get()
+                break;
+            case PHASE_PEEK:
+                peekColor = this.activePeekColor.Get()
+                break;
+            case PHASE_RETURN:
+                peekColor = this.returnPeekColor.Get()
+                break;
+        }
+                
+
+        Render.String(this.peekTextX.Get(), this.peekTextY.Get(), 0, "PEEKING", peekColor, font);
+
+        
+        
+        if(this.phase == PHASE_PEEK)
+        {
             
+            Render.String(this.peekTimerX.Get(), this.peekTimerY.Get(), 0, "Force Returning After " + (this.forceDisableTime.Get() - this.forceReturnTimer).toString() + " Ticks",this.PeekTimerColor.Get(), font)
         }
         else
         {
-            selectedPoint = []
-        }
-
-    }
-    */
-    if(UI.GetValue(["Scripts", "Keys", "JS Keybinds", "Select Position"])==true)
-    {
-        UI.ToggleHotkey(["Scripts", "Keys", "JS Keybinds", "Select Position"])
-        peekPosPhase++;
-        if(peekPosPhase > 2)
-        {
-            
-            disableMovement();
-            return;
-
-        }
-        else
-        {
-            peekActive = true;
+            Render.String(this.peekTimerX.Get(), this.peekTimerY.Get(), 0, "Peeking After " + (this.enableDelay.Get() - this.peekOutTimer).toString() + " Ticks", this.PeekTimerColor.Get(), font)
         }
         
-    }
-    if(peekOut){return;}
-    angle = Local.GetCameraAngles();
-    if(peekPosPhase == 0)
-    {
-        UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Toggle");
-        UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Toggle"); 
-        disableMovement();
-        return;
         
-    }
-    if(peekPosPhase == 1)
-    {
-        angle[1] += 90;
-        UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Always");
-        UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Toggle"); 
-    }
-    else
-    {
-        angle[1] -=90;   
-        UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Toggle");
-        UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Always");
-        
-    }
-    angle[0] = 0 
-    vector = ANGLE2VEC(angle);
-    length = UI.GetValue(settingsPath.concat("Point Distance"));
-    entity = Entity.GetLocalPlayer();
-    origin = Entity.GetProp(entity, "CBaseEntity", "m_vecOrigin");
-    selectedPoint = [origin[0] + vector[0] * length, origin[1] + vector[1] * length, origin[2]];
-
-
-
-}
-function renderSelectedPosition()
-{
-    if(peekActive == true && selectedPoint.length != 0)
-    {
-        localPlayer = Entity.GetLocalPlayer();
-        origin = JSON.parse(JSON.stringify(selectedPoint))
-        origin[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
-        screenPos = Render.WorldToScreen(origin)
-
-        Render.Filled3DCircle(selectedPoint, UI.GetValue(settingsPath.concat("Circle Radius")), 360, 0, peekOut ? UI.GetColor(settingsPath.concat("Active Outline Color")) : UI.GetColor(settingsPath.concat("Inactive Outline Color")), peekOut ? UI.GetColor(settingsPath.concat("Active Circle Color")) : UI.GetColor(settingsPath.concat("Inactive Circle Color")))
-        Render.FilledCircle(screenPos[0],screenPos[1],10,peekOut ? UI.GetColor(settingsPath.concat("Active Circle Color")) : UI.GetColor(settingsPath.concat("Inactive Circle Color")))
+        Render.String(this.posTextX.Get(), this.posTextY.Get(), 0, "Current Point Position: " + directions[this.peekPosPhase], this.posTextColor.Get(), font);
     };
-}
-function checkTrigger()
-{
-    if(triggerPeek == true)
+
+    this.RenderSelectedPosition = function()
     {
-        if(timer >= tickTrigger)
+
+        if(this.peekPoint != undefined)
         {
-            peekOut = true;
-            timer = 0;
-
-        }
-        else
-        {
-            timer++;
-        }
-    }
-}
-function checkTargets()
-{
-    if(peekActive == false){return;}
-    enemies = Entity.GetEnemies();
-    localPlayer = Entity.GetLocalPlayer();
-    origin = JSON.parse(JSON.stringify(selectedPoint));
-
-    //origin[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
-    //check each enemy's hitbox cache poses
-    for(i in enemies)
-    {
-        
-        enemyDamage = hitscan(origin, enemies[i], hitboxes)
-        enemyHealth = Entity.GetProp(enemies[i], "CBasePlayer", "m_iHealth")
-
-        //Cheat.Print("enemy damage is" + enemyDamage.toString()+'\n')
-
-        if(enemyDamage >= mindmg || enemyDamage > enemyHealth)
-        {
-            //sets the trigger
-            //Cheat.Print("trigger set \n")
-            triggerPeek = true;
             
-            return;
-        }
-    };
-}
-
-function moveToPoint()
-{
-    if(peekOut == true)
-    {
-        
-        localplayerPos = Entity.GetProp(Entity.GetLocalPlayer(), "CBaseEntity", "m_vecOrigin");
-        //pasted shit below(kinda)
-        var vecToPeek = VectorSubtract(selectedPoint,localplayerPos)
-		var angle = Math.atan2(vecToPeek[1], vecToPeek[0]) * (180 / Math.PI);;
-		var viewYaw = Local.GetViewAngles()[1] - 180;
-		var realAngle = (adjustAngle(angle - viewYaw) + 90) * (Math.PI / 180);
-		var distance = VectorLength(localplayerPos, [selectedPoint[0], selectedPoint[1], localplayerPos[2]]);
-        
-        if(distance <= 10)
-        {
-            peekedoutTicks++;
-            if(peekedoutTicks>=4)
+            localPlayer = Entity.GetLocalPlayer();
+            originPos = this.peekPoint.Copy();
+            originPos.y += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
+            screenPos = Render.WorldToScreen(originPos.GetArr())
+            
+            var outlineColor;
+            var color;
+            switch(this.phase)
             {
-                disableMovement();
+                case PHASE_DORMANT:
+                    outlineColor = this.dormantOutlineColor.Get()
+                    color = this.dormantColor.Get()
+                    break;
+                case PHASE_SCAN:
+                    outlineColor = this.inactiveOutlineColor.Get()
+                    color = this.inactiveColor.Get()
+                    break;
+                case PHASE_PEEK:
+                    outlineColor = this.activeOutlineColor.Get()
+                    color = this.activeColor.Get()
+                    break;
+                case PHASE_RETURN:
+                    outlineColor = this.activeOutlineColor.Get()
+                    color = this.activeColor.Get()
+                    break;
+            }
+            //Renders selected pos circles
+            Render.Filled3DCircle(this.peekPoint.GetArr(), this.circleRadius.Get(), 360, 0, outlineColor, color)
+            Render.FilledCircle(screenPos[0],screenPos[1],10, color)
+        }
+        //Renders start circle
+        
+        if(this.startPoint != undefined)
+        {
+            var color;
+            var outlineColor;
+            if(this.autoReturnActive)
+            {
+                color = this.activeColor.Get()
+                outlineColor = this.activeOutlineColor.Get()
+            }
+            else
+            {
+                color = this.inactiveColor.Get()
+                outlineColor = this.inactiveOutlineColor.Get();
+            }
+            Render.Filled3DCircle(this.startPoint.GetArr(), this.circleRadius.Get(), 360, 0, outlineColor, color);
+        }
+            
+        
+    };
+
+    this.GetHitboxes = function()
+    {
+
+        if(this.hitboxesSetting.Get() != this.hitboxesSettingCache)
+        {
+            this.hitboxesSettingsCache = this.hitboxesSetting.Get()
+            this.hitboxes = [];
+            //iterate through hitboxes
+            for(i = 0;i < 19;i++)
+            {
+                if(GetDropdownValue(this.hitboxesSetting.Get(), i))
+                {
+                    this.hitboxes.push(i);
+                }
+            }
+        }
+
+    }
+
+
+    this.Hitscan = function(originPos, target, hitboxes)
+    {
+
+        if(Entity.IsValid(target) == true && Entity.IsAlive(target) && Entity.IsDormant(target) == false)
+        {
+            localPlayer = Entity.GetLocalPlayer()
+            originPos.y += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
+            maxDmg = -1;
+            currentDmg = -1;
+            //Cheat.Print("hitboxes is "+hitboxes.toString()+"\n")
+            for(var i in hitboxes)
+            {
+                
+                currentDmg = Trace.Bullet(localPlayer, target, originPos.GetArr(), Entity.GetHitboxPosition(target, hitboxes[i]))[1]
+                //Cheat.Print("scanning "+ target.toString()+" 's "+ hitboxes[i]+", damage is "+currentDmg.toString()+"\n")
+                //overrides the maxdmg thing if damage is increased relative to previous results
+                maxDmg = currentDmg > maxDmg ? currentDmg : maxDmg
+                //did i do this right? i hope i did....
+
+            }
+            //Cheat.Print(Entity.GetName(target).toString()+"'s maxdmg is"+ maxDmg.toString()+"\n")
+            return maxDmg; 
+        }   
+        else 
+        {
+            //Cheat.Print(Entity.GetName(target).toString()+" is dormant\n")
+            return -1;
+        }
+    }
+    this.CheckTargets = function()
+    {
+        if(this.phase != PHASE_SCAN || this.triggerPeek || this.peekPoint == undefined) 
+        {
+            return;
+        }
+        this.enemies = Entity.GetEnemies();
+        var originPos = this.peekPoint.Copy();
+
+        //originPos[2] += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
+        //check each enemy's hitbox cache poses
+        for(i in this.enemies)
+        {
+            
+            var enemyDamage = this.Hitscan(originPos, this.enemies[i], this.hitboxes);
+            var enemyHealth = Entity.GetProp(this.enemies[i], "CBasePlayer", "m_iHealth");
+
+            //Cheat.Print("enemy damage is" + enemyDamage.toString()+'\n')
+            //UI.GetValue(["Rage", "General", "General","Key assignment", "Damage override"])
+            var mindmg = this.HSMindmgOverride.Get() ? this.mindmgOverride.Get() : this.mindmg.Get();
+            if(enemyDamage >= mindmg || enemyDamage > enemyHealth)
+            {
+                //sets the trigger
+                //Cheat.Print("trigger set \n")
+                this.triggerPeek = true;
+                
                 return;
             }
-             
-        }
-        
-		UserCMD.SetMovement([Math.cos(realAngle) * 450, Math.sin(realAngle) * 450, 0]);
-        
+        };
     }
-}
-//disables movements when ragebot fires
-function disableMovement()
-{ 
-    peekedoutTicks = 0;
-    peekActive = false;
-    peekOut = false;
-    triggerPeek = false;
-    peekPosPhase = 0;
-    timer = 0;
-    UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Toggle");
-    UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Toggle"); 
-}
-
-function drawPeekIndicator()
-{
-    var font = Render.GetFont(UI.GetString(indicators_path.concat("Font")), UI.GetValue(indicators_path.concat("Font Size")), false)
-    if(font == null){ return;}
-    if(peekActive == true || UI.IsMenuOpen())
+    //The default autopeek
+    //AKA the "shoot and go back" auto peek
+    this.AutoReturn = function()
     {
-        if(peekOut == true)
-        {
-            Render.String(UI.GetValue(indicators_path.concat("Peek x")), UI.GetValue(indicators_path.concat("Peek y")), 0, "PEEKING", UI.GetColor(indicators_path.concat("Peek Active")), font)
+        //Binds the autopeek key to select
+        UI.SetValue(defAutoPeekPath,0x5D);
+        UI.SetHotkeyState(defAutoPeekPath, "None")
+        
 
+        if(this.autoPeek.Get())
+        {
+            
+            //Cheat.Print("BBBBBBBBBBBBBBBBBBBBBBBBB")
+            //Set point if no point exist
+            UI.SetHotkeyState(defAutoPeekPath, "Always")
+            if(this.startPoint == undefined)
+            {
+                this.startPoint = GetLocalOrigin();
+               // Cheat.Print("STARTPOINT IS GONE AAAA")
+            }
+            if(this.autoReturnActive == true)
+            {
+                //Cheat.Print("ATTEMPTING RETURN")
+                UI.SetHotkeyState(dtPath, "None");
+                Exploit.DisableRecharge();
+
+                if(MoveToPoint(this.startPoint) < 1)
+                {
+                    //Cheat.Print("returned")
+                    UI.SetHotkeyState(dtPath, "Toggle");
+                    Exploit.EnableRecharge();
+                    Exploit.Recharge();
+                    
+                    //Cheat.Print("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
+                    //this.autoPeek.Toggle();
+                    this.autoReturnActive = false;
+                    this.startPoint = undefined;
+                    this.phase = PHASE_DORMANT;
+                    this.Reset()
+                }
+            }
         }
         else
         {
-            Render.String(UI.GetValue(indicators_path.concat("Peek x")), UI.GetValue(indicators_path.concat("Peek y")), 0, "PEEKING", UI.GetColor(indicators_path.concat("Peek Inactive")), font)
+            this.startPoint = undefined;
+            Exploit.EnableRecharge();
+        }
+        
+    }
+    this.GetPeekPosition = function()
+    {
+        //Cheat.Print("called")
+        if(this.selectPos.Get())
+        {
+            this.selectPos.Toggle();
+            this.peekPosPhase++;
+            if(this.peekPosPhase > 2)
+            {
+                this.peekPosPhase = 0;
+                peekActive = false;
+                this.Reset();
+                return;
+            }
+     
+        }
+        if(this.phase >= PHASE_PEEK)
+        {
+            return;
+        }
+        angle = new Angles(Local.GetCameraAngles());
+
+        if(this.peekPosPhase == 0)
+        {
+            UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Toggle");
+            UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Toggle"); 
+            this.peekPoint = undefined;
+            this.phase = PHASE_DORMANT;
+            return;
+            
+        }
+        if(this.peekPosPhase == 1)
+        {
+            angle.yaw += 90;
+            UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Always");
+            UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Toggle"); 
+        }
+        else
+        {
+            angle.yaw -= 90;   
+            UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Toggle");
+            UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Always");
+            
+        }
+        angle.pitch = 0;
+        angle.roll = 0;
+
+        
+        var length = this.pointDistance.Get();
+        pointVec = angle.ToVec();
+        pointVec.y = 0;
+
+        pointVec.Scale(length);
+
+
+        entity = Entity.GetLocalPlayer();
+        originPos = new Vector(Entity.GetProp(entity, "CBaseEntity", "m_vecOrigin"));
+        var upOffset = UI.GetValue(settingsPath.concat("Uptrace Offset"));
+        var downOffset = UI.GetValue(settingsPath.concat("Downtrace Offset"));
+
+
+        //pointVec + playerpos
+        var expectedPoint = originPos.Add(pointVec);
+
+        /*
+        Cheat.Print("\noriginpos:")
+        Cheat.Print(originPos.GetArr().toString())
+
+        Cheat.Print("\nexpp:")
+        Cheat.Print(expectedPoint.GetArr().toString())
+        
+        //peekPoint = expectedPoint.Copy()
+        //Cheat.Print(pointVec.GetArr().toString()+"\n")
+        */
+    
+        result = Trace.Line(entity, originPos.GetArr(), expectedPoint.GetArr());
+        
+        //If there is no obstruction, attempt downtrace
+        if(result[1] >= 0.999)
+        {
+            //Trace down from the expected point as there is no obstruction
+            var downExpPoint = expectedPoint.Add(new Vector(und, 0, -downOffset, 0));
+
+            dresult = Trace.Line(entity, expectedPoint.GetArr(), downExpPoint.GetArr());
+            this.peekPoint = new Vector(und, expectedPoint.x, expectedPoint.y - (downOffset * dresult[1]), expectedPoint.z);
+        }
+        //Attempt uptrace otherwise
+        else
+        {
+
+            //Start trace from a point higher than player origin
+            var upOrigin = originPos.Copy();
+            upOrigin.y += upOffset;
+            //Towards expected point + y
+            var upExpPoint = upOrigin.Add(pointVec);
+            //Result of the horizontal trace
+            uhresult = Trace.Line(entity, upOrigin.GetArr(), upExpPoint.GetArr());
+            //If the horizontal trace didn't hit anything
+            if(uhresult[1] >= 0.999)
+            {
+                //Attempt downtrace at the resultant point
+                uvResult = Trace.Line(entity, upExpPoint.GetArr(), expectedPoint.GetArr());
+                this.peekPoint = new Vector(und, expectedPoint.x, expectedPoint.y + pointVec.y * (1 - uvResult[1]), expectedPoint.z)
+            }
+            else
+            {
+                this.peekPoint = new Vector(und, expectedPoint.x - pointVec.x * (1 - uhresult[1]), upExpPoint.y, expectedPoint.z - pointVec.z * (1 - uhresult[1]))
+            }
+            
+        }
+
+    }
+    
+    this.FindHSLines = function()
+    {
+        
+        if(!this.hsVisual.Get() || this.peekPoint == undefined)
+        {
+            this.hsLines = []
+            return;
+
+        }
+        if(this.findHSLinesTimer < 0)
+        {
+            this.findHSLinesTimer++;
+            return;
+        }
+        else
+        {
+            this.findHSLinesTimer = 0;
+        }
+        this.hsLines = []
+        //Cheat.Print("AAAAAAAAAAAAAAAAAAAAAAA")
+        for(i in this.enemies)
+        {
+            var target = this.enemies[i];
+            var origin = this.peekPoint.Copy();
+            var color = this.hsLineColor.Get()
+            origin.y += Entity.GetProp(Entity.GetLocalPlayer(), "CBasePlayer", "m_vecViewOffset[2]")[0];
+            if(Entity.IsValid(target) == true && Entity.IsAlive(target) && Entity.IsDormant(target) == false)
+            {
+                if(this.hsVisualHeadOnly.Get())
+                {
+                    var pos = new Vector(Entity.GetHitboxPosition(target, 0));
+                    this.hsLines.push(Trace.LineToWall(origin,pos));
+                    
+
+                }
+                else
+                {
+                    this.GetHitboxes();
+                    for(j in this.hitboxes)
+                    {
+                        var pos = new Vector(Entity.GetHitboxPosition(target, this.hitboxes[j]));
+                        this.hsLines.push(Trace.LineToWall(origin, pos));
+                        //Cheat.Print(this.hsLines.length.toString())
+                    }
+                }
+                
+            }
+        } 
+    }
+    this.DrawHSLines = function()
+    {
+        if(!this.hsVisual.Get() || this.peekPoint == undefined)
+        {
+            return;
+
+        }
+        //Cheat.Print(this.hsLines.length.toString())
+        var origin = this.peekPoint.Copy()
+        origin.y += Entity.GetProp(localPlayer, "CBasePlayer", "m_vecViewOffset[2]")[0];
+        //Cheat.Print(origin.toString())
+        for(i in this.hsLines)
+        {
+            Render.Line3D(origin, this.hsLines[i], this.hsLineColor.Get())
+            
+        }
+        
+    }
+    
+    this.StartPeek = function()
+    {
+        if(this.phase == PHASE_PEEK)
+        {
+            if(MoveToPoint(this.peekPoint) < 1)
+            {
+                this.phase = PHASE_RETURN;
+            }
         }
     }
 
-    if(triggerPeek == true || UI.IsMenuOpen())
+    this.TickTimer = function()
     {
-        Render.String(UI.GetValue(indicators_path.concat("Peek Timer x")), UI.GetValue(indicators_path.concat("Peek Timer y")), 0, "Peeking After " + (tickTrigger-timer).toString()+" Ticks",UI.GetColor(indicators_path.concat("Peek Timer Color")), font)
+        if(this.phase == PHASE_DORMANT)
+        {
+            return;
+        }
+        //Peek out timer
+        if(this.phase == PHASE_SCAN)
+        {
+            if(this.triggerPeek)
+            {
+                this.peekOutTimer++;
+                if(this.enableDelay.Get() <= this.peekOutTimer)
+                {
+                    this.phase = PHASE_PEEK;
+                }
+
+            }
+
+        }
+        else if(this.phase == PHASE_PEEK)
+        {
+            //Cheat.Print("tick tock timers countin down")
+            this.forceReturnTimer++;
+            if(this.forceDisableTime.Get() <= this.forceReturnTimer)
+            {
+                
+                this.phase = PHASE_RETURN;
+                this.autoReturnActive = true;
+            }
+        }
     }
-    Render.String(UI.GetValue(indicators_path.concat("Point Position x")), UI.GetValue(indicators_path.concat("Point Position y")), 0, "Current Point Position: " + direction_indexes[peekPosPhase],UI.GetColor(indicators_path.concat("Point Position Color")), font)
-}   
+    this.ResetCheck = function()
+    {
+        if(this.peekPosPhase == 0)
+        {
+            this.phase = PHASE_DORMANT;
+        }
+        else if(this.peekPosPhase == PHASE_RETURN && !this.autoReturnActive)
+        {
+            this.phase = PHASE_DORMANT;
+        }
 
+    }
+    
+    this.Reset = function()
+    {
+        UI.SetHotkeyState(["Rage", "Anti Aim","General", "Key assignment", "Right direction"], "Toggle");
+        UI.SetHotkeyState(["Rage", "Anti Aim", "General", "Key assignment","Left direction"], "Toggle"); 
+        this.peekOutTimer = 0;
+        this.triggerPeek = false;
+        //Phase 2 -> 3
+        this.forceReturnTimer = 0;
+        this.returnTimer = 0;
+        this.enemies = Entity.GetEnemies()
+    
+        this.hitboxesSettingCache = 0;
+        this.hitboxes = []
+    
+        this.phase = PHASE_DORMANT;
+        this.autoReturnActive = false;
+        UI.SetHotkeyState(dtPath, "Toggle");
+        
+    }
+    
 
-function cm()
-{
+    this.OnCM = function()
+    {
+        //Cheat.Print("\n cur phase " + this.phase.toString())
+        this.AutoReturn();
+        this.TickTimer();
+        this.FindHSLines();
+        this.GetPeekPosition();
+        if(this.autoPeek.Get())
+        {
+            if(this.phase <= PHASE_SCAN)
+            {
+                this.phase = PHASE_SCAN;
+            }
+            
+        }
+        else
+        {
+            this.Reset()
+        }
+        switch(this.phase)
+        {
+            case PHASE_DORMANT:
+                
+                break;
+            case PHASE_SCAN:
+                this.GetPeekPosition();
+                this.GetHitboxes();
+                this.CheckTargets();
+                
+                break;
+            case PHASE_PEEK:
+                this.StartPeek();
+            case PHASE_RETURN:
+                //this.autoReturnActive = true;
+                break;
+        }
 
-    checkTargets();
-    checkTrigger();
-    moveToPoint();
-    getSelectedPosition();
+    }
+    this.OnDraw = function()
+    {
+        this.DrawPeekIndicator();
+        this.RenderSelectedPosition()
+        this.DrawHSLines();
+    }
+    this.OnLocalPlayerFire = function()
+    {
+        this.autoReturnActive = true;
+        this.phase = PHASE_RETURN;
+    }
+    this.OnLocalPlayerDeath = function()
+    {
+        this.phase = PHASE_DORMANT;
+        this.Reset();
+    }
+            
+
 }
-function onDraw()
+
+
+var AutoPeekModule = new AutoPeeker();
+function OnCM()
 {
-    mindmg = UI.GetValue(["Rage", "General", "General","Key assignment", "Damage override"]) == 1 ? UI.GetValue(settingsPath.concat("Mindmg")) : UI.GetValue(settingsPath.concat("Mindmg"))
-    updateUI();
-    renderSelectedPosition();
-    drawPeekIndicator();
+
+    AutoPeekModule.OnCM();
+
+}
+function OnDraw()
+{
+    
+    AutoPeekModule.OnDraw();
+}
+
+function OnDeath()
+{
+    if(Entity.GetEntityFromUserID(Event.GetString("userid")) == Entity.GetLocalPlayer())
+    {
+        AutoPeekModule.OnLocalPlayerDeath();
+    }
+}
+function OnFire()
+{
+    if(Entity.GetEntityFromUserID(Event.GetString("userid")) == Entity.GetLocalPlayer())
+    {
+        AutoPeekModule.OnLocalPlayerFire();
+        
+        //Cheat.Print("D")
+    }
     
 }
-Cheat.RegisterCallback("CreateMove","cm")
-Cheat.RegisterCallback("Draw","onDraw");
-Cheat.RegisterCallback("ragebot_fire","disableMovement")
+function OnRBFire()
+{
+    AutoPeekModule.OnLocalPlayerFire();
+}
+Cheat.RegisterCallback("weapon_fire","OnFire")
+Cheat.RegisterCallback("CreateMove","OnCM")
+Cheat.RegisterCallback("Draw","OnDraw");
+Cheat.RegisterCallback("ragebot_fire", "OnRBFire")
+Cheat.RegisterCallback("player_death", "OnDeath")
 
 

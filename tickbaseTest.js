@@ -15,7 +15,7 @@ function can_shift_shot(ticks_to_shift) {
 
     
     var tickbase = Entity.GetProp(me, "CCSPlayer", "m_nTickBase");
-    var curtime = Globals.TickInterval() * (tickbase-ticks_to_shift)
+    var curtime = Globals.TickInterval() * (tickbase - ticks_to_shift)
 
     if (curtime < Entity.GetProp(me, "CCSPlayer", "m_flNextAttack"))
     {
