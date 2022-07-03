@@ -18,7 +18,8 @@ function SaveFromPath(fname, path, object)
 }
 function LoadFromPath(fname, path, root_object)
 {
-    var key = ""
+    var key = "";
+    var len = path.length;
     for(var i = 0; i < len; i++)
     {
         if(typeof(path[i]) == "string")
@@ -39,6 +40,7 @@ function LoadFromPath(fname, path, root_object)
     //obj should still be mutuable at this point
     obj[path[len - 1]] = DataFile.GetKey(fname, key)
 }
+
 function NavigateDataFile(fname, root_object, object, path, type)
 {
     var curPath = path;
@@ -82,7 +84,7 @@ function NavigateDataFile(fname, root_object, object, path, type)
 //Saves the object into the datafile cache
 //Note that this function is recursive
 //Enter object name in path
-DataFile.SaveObject(filename, object, path)
+DataFile.SaveObject = function(filename, object, path)
 {
     var cpath = path;
     if(path == undefined)
@@ -93,7 +95,7 @@ DataFile.SaveObject(filename, object, path)
 
 }
 
-DataFile.LoadObject(filename, object, path)
+DataFile.LoadObject = function(filename, object, path)
 {
     var cpath = path;
     if(path == undefined)
@@ -101,5 +103,26 @@ DataFile.LoadObject(filename, object, path)
         cpath = "/"
     }
     NavigateDataFile(filename, object, object, cpath, 1)
+
+}
+
+
+obj1 = {
+    "e1" : "hello",
+    "efg" : 1,
+    "a" : [1,2,
+    {
+        "1" : [3, 4,
+        {
+            "boob" : "dood"
+        }]
+    }]
+}
+
+
+DataFile.Load("test1")
+DataFile.SaveObject("test1", obj1, "obj1")
+function draw()
+{
 
 }
