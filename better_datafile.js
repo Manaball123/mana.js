@@ -1,7 +1,8 @@
 
 function SaveFromPath(fname, path, object)
 {
-    var key = ""
+    var key = "";
+    var len = path.length;
     for(var i = 0; i < len; i++)
     {
         if(typeof(path[i]) == "string")
