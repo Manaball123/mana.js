@@ -1,5 +1,14 @@
 //const { UI, Input } = require("./onetap");
-
+function GetRelative(abs_pos)
+{
+    var screenSize = Render.GetScreenSize();
+    return [abs_pos[0]/screenSize[0], abs_pos[1]/screenSize[1]];
+}
+function GetAbs(r_pos)
+{
+    var screenSize = Render.GetScreenSize();
+    return [r_pos[0] * screenSize[0], r_pos[1] * screenSize[1]];
+}
 function StringIndicator(initialString, initialColor, fontName, fontSize, initialX, initialY, hitboxW, hitboxH, centered)
 {
     this.screenSize = Render.GetScreenSize();
@@ -7,12 +16,12 @@ function StringIndicator(initialString, initialColor, fontName, fontSize, initia
     this.fontSize = fontSize * (this.screenSize[0] / 2560);
     this.string = initialString;
     this.color = initialColor;
-    this.x = initialX == undefined ? 200 : initialX;
-    this.y = initialY == undefined ? 200 : initialY;
-    this.x = this.x * (this.screenSize[0] / 2560)
-    this.y = this.y * (this.screenSize[0] / 2560)
-    this.hitboxW = hitboxW == undefined ? 200 : hitboxW;
-    this.hitboxH = hitboxH == undefined ? 200 : hitboxH;
+    this.x = initialX == undefined ? 0.1 : initialX;
+    this.y = initialY == undefined ? 0.1 : initialY;
+    //this.x = this.x * (this.screenSize[0] / 2560)
+    //this.y = this.y * (this.screenSize[0] / 2560)
+    this.hitboxW = hitboxW == undefined ? 0.1 : hitboxW;
+    this.hitboxH = hitboxH == undefined ? 0.1 : hitboxH;
     this.centered = centered == undefined ? 0 : 1;
 
     //this.font = Render.GetFont(this.fontName, this.fontSize, false);
@@ -25,7 +34,7 @@ function StringIndicator(initialString, initialColor, fontName, fontSize, initia
             //key for m1
             if(Input.IsKeyPressed(0x01))
             {
-                cursorPos = Input.GetCursorPosition()
+                cursorPos = GetRelative(Input.GetCursorPosition())
                 cursorPos[0] -= (this.hitboxW / 2);
                 //I dont know why this works
                 //But trust me it does
@@ -61,12 +70,15 @@ function StringIndicator(initialString, initialColor, fontName, fontSize, initia
 
     this.Draw = function()
     {   
-        Render.String(this.x, this.y, this.centered, this.string, this.color, this.font);
+        var abspos = GetAbs([this.x, this.y])
+        Render.String(abspos[0], abspos[1], this.centered, this.string, this.color, this.font);
     }
     this.DrawHitbox = function()
     {
         //Cheat.Print("called")
-        Render.FilledRect(this.x,this.y,this.hitboxW,this.hitboxH, [255,255,255,128])
+        var abspos = GetAbs([this.x, this.y])
+        var absSize = GetAbs([this.hitboxW, this.hitboxH])
+        Render.FilledRect(abspos[0], abspos[1], absSize[0], absSize[1], [255,255,255,128])
     }
     
     this.GetHitboxSize = function()
