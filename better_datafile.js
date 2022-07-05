@@ -1,10 +1,17 @@
 
-function SaveFromPath(fname, path, object)
+
+function CopyObj(object)
 {
-    var key = "";
+    return JSON.parse(JSON.stringify(object))
+}
+function SaveFromPath(fname, path, objectName, object)
+{
+    var key = objectName;
     var len = path.length;
+   //Cheat.Print("\n Processing path " + path.toString())
     for(var i = 0; i < len; i++)
     {
+        
         if(typeof(path[i]) == "string")
         {
             key = key + "/" + path[i];
@@ -13,13 +20,16 @@ function SaveFromPath(fname, path, object)
         {
             key = key + "_" + path[i].toString();
         }
+        //Cheat.Print("Key is currently " + key.toString())
+        
 
     }
-    DataFile.SetKey(fname, key, object)
+    //Cheat.Print("\n Saving " + JSON.stringify(object) + " @ key " + key)
+    DataFile.SetKey(fname, key, JSON.stringify(object))
 }
-function LoadFromPath(fname, path, root_object)
+function LoadFromPath(fname, path, objectName, root_object)
 {
-    var key = "";
+    var key = objectName;
     var len = path.length;
     for(var i = 0; i < len; i++)
     {
@@ -39,20 +49,24 @@ function LoadFromPath(fname, path, root_object)
         obj = obj[path[i]]
     }
     //obj should still be mutuable at this point
-    Cheat.Print("Current obj: " + obj.toString())
-    obj[path[len - 1]] = DataFile.GetKey(fname, key)
+
+    //Cheat.Print("\n Loading " + DataFile.GetKey(fname, key) + " @ key " + key)
+    obj[path[len - 1]] = JSON.parse(DataFile.GetKey(fname, key))
 }
 
-function NavigateDataFile(fname, root_object, object, path, type)
+function NavigateDataFile(fname, root_object, object, path, objectName, type)
 {
-    var curPath = path;
+    //Cheat.Print("\n path is currently: " + path.toString())
     //If its an array
     if(Array.isArray(object))
     {
         var len = object.length;
         for(var i = 0; i < len; i++)
         {
-            NavigateDataFile(fname, object[i], curPath.concat(i), type);
+            var newPath = CopyObj(path);
+            newPath.push(i)
+            //Cheat.Print("\nLoading path " + newPath.toString())
+            NavigateDataFile(fname, root_object, object[i], newPath, objectName, type);
         }
     }
     //If its not an array
@@ -63,7 +77,11 @@ function NavigateDataFile(fname, root_object, object, path, type)
         {
             Object.keys(object).forEach(function(key)
             {
-                NavigateDataFile(fname, object[key], curPath.concat(key), type);
+                var newPath = CopyObj(path);
+                newPath.push(key)
+                //Cheat.Print("\nLoading path " + newPath.toString())
+                NavigateDataFile(fname, root_object, object[key], newPath, objectName, type);
+                
             })
         }
         //If not array or object 
@@ -71,13 +89,13 @@ function NavigateDataFile(fname, root_object, object, path, type)
             //If saving
             if(type == 0)
             {
-                SaveFromPath(fname, path, object)
+                SaveFromPath(fname, path, objectName, object)
             }
             //If loading
             else
             {
-                LoadFromPath(fname, path, root_object)
-                Cheat.Print("Loading path " + path.toString())
+                LoadFromPath(fname, path, objectName, root_object)
+                //Cheat.Print("\nLoading object from path " + path.toString())
             }
         }
     }
@@ -87,25 +105,19 @@ function NavigateDataFile(fname, root_object, object, path, type)
 //Saves the object into the datafile cache
 //Note that this function is recursive
 //Enter object name in path
-DataFile.SaveObject = function(filename, object, path)
+DataFile.SaveObject = function(filename, object, objectName)
 {
-    var cpath = path;
-    if(path == undefined)
-    {
-        cpath = "/"
-    }
-    NavigateDataFile(filename, object, object, cpath, 0)
+    var path = []
+
+    NavigateDataFile(filename, object, object, path, objectName, 0)
 
 }
 
-DataFile.LoadObject = function(filename, object, path)
+DataFile.LoadObject = function(filename, object, objectName)
 {
-    var cpath = [path];
-    if(path == undefined)
-    {
-        cpath = ["/"]
-    }
-    NavigateDataFile(filename, object, object, cpath, 1)
+    var path = []
+
+    NavigateDataFile(filename, object, object, path, objectName, 1)
 
 }
 //Prints a nested object recursively
@@ -148,25 +160,23 @@ function RecPrint(object)
 
 
 obj1 = {
-    "e1" : "qwerrt",
-    "efg" : 0,
-    "a" : [3,4,
+    "e1" : "lsdfghergh",
+    "efg" : 6222,
+    "a" : [3434,52313,
     {
-        "1" : [2, 1,
+        "1" : [123, 246,
         {
-            "boob" : "dddd"
+            "boob" : "dood"
         }]
     }]
 }
 
-
-//RecPrint(obj1)
+Cheat.Print("obj before load: \n")
+RecPrint(obj1)
+Cheat.Print("\n")
 DataFile.Load("test1")
+//DataFile.SaveObject("test1", obj1, "obj1")
 DataFile.LoadObject("test1", obj1, "obj1")
 //DataFile.Save("test1")
-//RecPrint(obj1)
-
-function draw()
-{
-
-}
+Cheat.Print("obj after load: \n")
+RecPrint(obj1)
