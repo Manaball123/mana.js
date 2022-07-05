@@ -39,6 +39,7 @@ function LoadFromPath(fname, path, root_object)
         obj = obj[path[i]]
     }
     //obj should still be mutuable at this point
+    Cheat.Print("Current obj: " + obj.toString())
     obj[path[len - 1]] = DataFile.GetKey(fname, key)
 }
 
@@ -76,6 +77,7 @@ function NavigateDataFile(fname, root_object, object, path, type)
             else
             {
                 LoadFromPath(fname, path, root_object)
+                Cheat.Print("Loading path " + path.toString())
             }
         }
     }
@@ -98,31 +100,72 @@ DataFile.SaveObject = function(filename, object, path)
 
 DataFile.LoadObject = function(filename, object, path)
 {
-    var cpath = path;
+    var cpath = [path];
     if(path == undefined)
     {
-        cpath = "/"
+        cpath = ["/"]
     }
     NavigateDataFile(filename, object, object, cpath, 1)
 
 }
+//Prints a nested object recursively
+function RecPrint(object)
+{
+    //If its an array
+    if(Array.isArray(object))
+    {
+        var len = object.length;
+        Cheat.Print("[ ");
+        for(var i = 0; i < len; i++)
+        {
+            RecPrint(object[i])
+            Cheat.Print(", ")
+        }
+        Cheat.Print(" ]");
+    }
+    //If its not an array
+    else
+    {
+        //It could be an object
+        if(typeof(object) === "object" && object != null)
+        {
+            Cheat.Print("{ ")
+            Object.keys(object).forEach(function(key)
+            {
+                Cheat.Print( key + " : ");
+                RecPrint(object[key])
+                Cheat.Print(", ")
+            })
+            Cheat.Print(" }")
+        }
+        //If not array or object 
+        else{
+            //Print directly
+            Cheat.Print(object.toString());
+        }
+    }
+}
 
 
 obj1 = {
-    "e1" : "hello",
-    "efg" : 1,
-    "a" : [1,2,
+    "e1" : "qwerrt",
+    "efg" : 0,
+    "a" : [3,4,
     {
-        "1" : [3, 4,
+        "1" : [2, 1,
         {
-            "boob" : "dood"
+            "boob" : "dddd"
         }]
     }]
 }
 
 
+//RecPrint(obj1)
 DataFile.Load("test1")
-DataFile.SaveObject("test1", obj1, "obj1")
+DataFile.LoadObject("test1", obj1, "obj1")
+//DataFile.Save("test1")
+//RecPrint(obj1)
+
 function draw()
 {
 
