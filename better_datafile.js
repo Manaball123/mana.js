@@ -89,12 +89,12 @@ function NavigateDataFile(fname, root_object, object, path, objectName, type)
             //If saving
             if(type == 0)
             {
-                SaveFromPath(fname, path, objectName, object)
+                SaveFromPath(fname, path, objectName, object);
             }
             //If loading
             else
             {
-                LoadFromPath(fname, path, objectName, root_object)
+                LoadFromPath(fname, path, objectName, root_object);
                 //Cheat.Print("\nLoading object from path " + path.toString())
             }
         }
@@ -107,17 +107,15 @@ function NavigateDataFile(fname, root_object, object, path, objectName, type)
 //Enter object name in path
 DataFile.SaveObject = function(filename, object, objectName)
 {
-    var path = []
-
-    NavigateDataFile(filename, object, object, path, objectName, 0)
+    var path = [];
+    NavigateDataFile(filename, object, object, path, objectName, 0);
 
 }
 
 DataFile.LoadObject = function(filename, object, objectName)
 {
-    var path = []
-
-    NavigateDataFile(filename, object, object, path, objectName, 1)
+    var path = [];
+    NavigateDataFile(filename, object, object, path, objectName, 1);
 
 }
 //Prints a nested object recursively
@@ -127,13 +125,13 @@ function RecPrint(object)
     if(Array.isArray(object))
     {
         var len = object.length;
-        Cheat.Print("[ ");
+        Cheat.Print("[");
         for(var i = 0; i < len; i++)
         {
             RecPrint(object[i])
             Cheat.Print(", ")
         }
-        Cheat.Print(" ]");
+        Cheat.Print("]");
     }
     //If its not an array
     else
@@ -141,14 +139,14 @@ function RecPrint(object)
         //It could be an object
         if(typeof(object) === "object" && object != null)
         {
-            Cheat.Print("{ ")
+            Cheat.Print("{")
             Object.keys(object).forEach(function(key)
             {
                 Cheat.Print( key + " : ");
                 RecPrint(object[key])
                 Cheat.Print(", ")
             })
-            Cheat.Print(" }")
+            Cheat.Print("}")
         }
         //If not array or object 
         else{

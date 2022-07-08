@@ -377,15 +377,15 @@ function AutoPeeker()
     const defAutoPeekPath = ["Misc.","SUBTAB_MGR", "Keys" , "SHEET_MGR", "Keys", "Auto peek"]
     const dtPath = ["Rage", "SUBTAB_MGR", "Exploits", "SHEET_MGR", "Keys", "Double tap"];
 
-    this.hitboxesSetting =      new UIElement(settingsPath,     "Hitboxes",             MULTIDROPDOWN,["Head","Neck","Pelvis","Body","Thorax","Chest","Upper Chest","Left Thigh","Right Thigh","Left Calf","Right Calf","Left Foot","Right Foot","Left Hand","Right Hand","Left Upper Arm","Left Upper Forearm","Right Upper Arm","Right Upper Forearm"]);
-    this.enableDelay =          new UIElement(settingsPath,     "Enable Delay",         SLIDERINT, 0, 16 );
-    this.forceDisableTime =     new UIElement(settingsPath,     "Force Return Delay",   SLIDERINT, 0, 64 );
-    this.disableDelay =         new UIElement(settingsPath,     "Return Delay",         SLIDERINT, 0, 16 );
-    this.pointDistance =        new UIElement(settingsPath,     "Point Distance",       SLIDERFLOAT, 1, 128);
-    this.uptraceOffset =        new UIElement(settingsPath,     "Uptrace Offset",       SLIDERFLOAT, 0, 64);
-    this.downtraceOffset =      new UIElement(settingsPath,     "Downtrace Offset",     SLIDERINT, 0, 64);
-    this.mindmg =               new UIElement(settingsPath,      "Mindmg",               SLIDERINT, 1,101);
-    this.mindmgOverride =       new UIElement(settingsPath,      "Mindmg Override",      SLIDERINT, 1,101);
+    this.hitboxesSetting =      new UIElement(settingsPath,     "Hitboxes",                 MULTIDROPDOWN,["Head","Neck","Pelvis","Body","Thorax","Chest","Upper Chest","Left Thigh","Right Thigh","Left Calf","Right Calf","Left Foot","Right Foot","Left Hand","Right Hand","Left Upper Arm","Left Upper Forearm","Right Upper Arm","Right Upper Forearm"]);
+    this.enableDelay =          new UIElement(settingsPath,     "Enable Delay",             SLIDERINT, 0, 16 );
+    this.forceDisableTime =     new UIElement(settingsPath,     "Force Return Delay",       SLIDERINT, 0, 64 );
+    this.disableDelay =         new UIElement(settingsPath,     "Return Delay",             SLIDERINT, 0, 16 );
+    this.pointDistance =        new UIElement(settingsPath,     "Point Distance",           SLIDERFLOAT, 1, 128);
+    this.uptraceOffset =        new UIElement(settingsPath,     "Uptrace Offset",           SLIDERFLOAT, 0, 64);
+    this.downtraceOffset =      new UIElement(settingsPath,     "Downtrace Offset",         SLIDERFLOAT, 0, 64);
+    this.mindmg =               new UIElement(settingsPath,      "Mindmg",                  SLIDERINT, 1,101);
+    this.mindmgOverride =       new UIElement(settingsPath,      "Mindmg Override",         SLIDERINT, 1,101);
 
     //UI.AddHotkey(["Scripts", "Keys", "JS Keybinds"], "Disable Selection", "Disable Selection");
 
