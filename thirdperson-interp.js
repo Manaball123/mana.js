@@ -81,6 +81,6 @@ function OnUnload()
     UI.SetHotkeyState(["Misc.", "Keys", "Keys", "Key assignment", "Thirdperson"], "Toggle")
 }
 
-
+OnLoad()
 Cheat.RegisterCallback("Draw", "OnDraw");
 Cheat.RegisterCallback("Unload", "OnUnload");
