@@ -12,21 +12,9 @@ UI.AddSliderInt(["Misc.", "View", "Camera"], "Animated Thirdperson Distance", 10
 UI.AddSliderFloat(["Misc.", "View", "Camera"], "Interpolation Time", 1, 100);
 
 
-function Print(v)
-{
-    Cheat.Print(v.toString())
-    Cheat.Print("\n")
-}
 function Interpolate(v1,v2,weight)
 {
-    Print("frametime: ")
-    Print(Globals.Frametime())
-    Print("v1:")
-    Print(v1)
-    Print("v2: ")
-    Print(v2)
-    Print("weight: ")
-    Print(weight)
+
 
     return v1 + (v2 - v1) * weight
 }  
@@ -42,11 +30,9 @@ function OnDraw()
     interpTime = UI.GetValue(["Misc.", "View", "Camera", "Interpolation Time"])
     maxDist = UI.GetValue(["Misc.", "View", "Camera", "Animated Thirdperson Distance"])
     isActive = UI.GetValue(["Misc.", "Keys", "Keys", "Key assignment", "Animated Thirdperson"]),
-    Print("active state")
-    Print(isActive)
+
     weightDelta = (Globals.Frametime() / interpTime) * (maxDist - distThreshold);
-    Print("weight delta: ")
-    Print(weightDelta)
+
     if(isActive)
     {
         weight += weightDelta
