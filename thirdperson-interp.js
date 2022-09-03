@@ -8,11 +8,26 @@ const distThreshold = 50
 var weight = 0
 
 UI.AddHotkey(["Misc.", "Keys", "Keys", "Key assignment"], "Animated Thirdperson", "Animated Thirdperson")
-UI.AddSliderInt(["Misc.", "View", "Camera"], "Animated Thirdperson Distance", 100, 500)
-UI.AddSliderFloat(["Misc.", "View", "Camera"], "Interpolation Time", 0.1, 2);
+UI.AddSliderInt(["Misc.", "View", "Camera"], "Animated Thirdperson Distance", 100, 300)
+UI.AddSliderFloat(["Misc.", "View", "Camera"], "Interpolation Time", 1, 100);
 
+
+function Print(v)
+{
+    Cheat.Print(v.toString())
+    Cheat.Print("\n")
+}
 function Interpolate(v1,v2,weight)
 {
+    Print("frametime: ")
+    Print(Globals.Frametime())
+    Print("v1:")
+    Print(v1)
+    Print("v2: ")
+    Print(v2)
+    Print("weight: ")
+    Print(weight)
+
     return v1 + (v2 - v1) * weight
 }  
 
@@ -26,9 +41,12 @@ function OnDraw()
 {
     interpTime = UI.GetValue(["Misc.", "View", "Camera", "Interpolation Time"])
     maxDist = UI.GetValue(["Misc.", "View", "Camera", "Animated Thirdperson Distance"])
-    isActive = UI.GetHotkeyState(["Misc.", "Keys", "Keys", "Key assignment", "Animated Thirdperson"]),
-    
+    isActive = UI.GetValue(["Misc.", "Keys", "Keys", "Key assignment", "Animated Thirdperson"]),
+    Print("active state")
+    Print(isActive)
     weightDelta = (Globals.Frametime() / interpTime) * (maxDist - distThreshold);
+    Print("weight delta: ")
+    Print(weightDelta)
     if(isActive)
     {
         weight += weightDelta
@@ -43,14 +61,15 @@ function OnDraw()
     //toggle if weight drops 2 zero
     if(weight <= 0)
     {
-        UI.SetValue(["Misc.", "Keys", "Keys", "Key assignment", "Thirdperson"], false)
+        UI.SetHotkeyState(["Misc.", "Keys", "Keys", "Key assignment", "Thirdperson"], "None")
     }
     else
     {
-        UI.SetValue(["Misc.", "Keys", "Keys", "Key assignment", "Thirdperson"], true)
+        UI.SetHotkeyState(["Misc.", "Keys", "Keys", "Key assignment", "Thirdperson"], "Always")
     }
 
     var dist = Interpolate(distThreshold, maxDist, weight)
+    
     UI.SetValue(["Misc.", "View", "Camera", "Thirdperson distance"], dist)
 
 
@@ -73,7 +92,7 @@ function OnUnload()
 {
     //restore values
     UI.SetValue(["Misc.", "View", "Camera", "Thirdperson distance"], distCache);
-    //UI.SetValue(["Misc.", "Keys", "Keys", "Key assignment", "Thirdperson"], false)
+    UI.SetHotkeyState(["Misc.", "Keys", "Keys", "Key assignment", "Thirdperson"], "Toggle")
 }
 
 
